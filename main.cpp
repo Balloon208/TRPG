@@ -6,11 +6,24 @@
 
 using namespace std;
 
-double mobhppercent, playerhppercent, playermppercent;
+double mobhppercent, playerhppercent, playermppercent, playerexppercent;
 int point=1;
+int where = 0;
 int t=0; // 턴이 지난 횟수
 bool killtrigger = false;
-bool command = false;
+int stage = 9;
+string worldmap[10] = {
+"-",
+"시작의 숲 (권장 레벨 LV1 이상)",
+"케이브 동굴 (권장 레벨 LV3 이상)",
+"수상한 공터 (권장 레벨 LV10 이상)",
+"저주받은 땅 (권장 레벨 LV15 이상)",
+"-",
+"-",
+"-",
+"-",
+"-",
+};
 
 string Log[100000];
 
@@ -28,6 +41,7 @@ class Player
         int gold;
         int level;
         int exp;
+        int LVUPexp;
 
         void profile() // 프로필 파일 만들 예정
         {
@@ -42,6 +56,7 @@ class Player
             this->gold = 0;
             this->level = 1;
             this->exp = 0;
+            this->LVUPexp = 50;
         }
 
         void heal()
@@ -50,6 +65,20 @@ class Player
             this->mp=this->maxmp;
             Log[t] = this->name + "(이)는 휴식을 하여 전부 회복하였다.";
             t++;
+        }
+
+        void LVUP()
+        {
+            this->exp -= this->LVUPexp;
+            this->level++;
+            this->LVUPexp*=1.1;
+            Log[t] = "레벨이 상승 하였습니다!" + to_string(this->level-1) + "->" + to_string(this->level);
+            t++;
+
+            this->maxhp+=10;
+            this->maxmp+=5;
+            this->damage+=1;
+            this->speed+=1;
         }
 };
 
@@ -98,12 +127,12 @@ class mob
             this->hp=0;
             Log[t] = this->name + "(을)를 처치했다!";
             t++;
-            Log[t] = "보상으로 " + to_string(this->gold) + "골드(을)를 획득 했다!";
+            Log[t] = "+" + to_string(this->gold) + "G" + "   " + "+" + to_string(this->exp) + "EXP";
             p->gold+=this->gold;
-            t++;
-            Log[t] = "+" + to_string(this->exp) + "EXP";
             p->exp+=this->exp;
             t++;
+
+            if(p->LVUPexp<p->exp) p->LVUP();
         }
 };
 
@@ -122,16 +151,105 @@ class slime
 */
 
 void fight(Player *p);
+void fightmenu(mob *m, Player *p);
+void fightselectmenu(mob *m, Player *p);
+void home(Player *p);
+void readymenu(Player *p);
+
+void summonmob(Player *p)
+{
+    mob m;
+    if(where==1)
+    {
+        int n = rand()%2+1;
+        if(n==1) m.Slime();
+        if(n==2) m.Snake();
+        fightmenu(&m, p);
+        fightselectmenu(&m, p);
+    }
+}
 
 void movemenu(Player *p)
 {
-    fight(p);
+    bool command = false;
+
+    system("cls");
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    cout << "이동할 곳을 선택해 주세요.\n\n";
+
+    for(int i=point-1; i<=point+1; i++)
+    {
+        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        cout << worldmap[i] << '\n';
+    }
+
+    while(!command)
+    {
+        int key;
+        if(kbhit())
+        {
+            key=getch();
+            {
+                if(key==224) // 방향키
+                {
+                    key=getch();
+                    {
+                        if(key==72) // 위쪽
+                        {
+                            if(point>1)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==80) // 아래쪽
+                        {
+                            if(point<stage-1)
+                            {
+                                point++;
+                            }
+                        }
+                    }
+                }
+                if(key==13) // enter키
+                {
+                    if(point==1)
+                    {
+                        command = true;
+                        where = point;
+                        Log[t] = "당신은 " + worldmap[point] + "(으)로 여정을 떠났다.";
+                        t++;
+                        point = 1;
+                        fight(p);
+                        readymenu(p);
+                    }
+                }
+                if(key==27) //esc
+                {
+                    point = 1;
+                    break;
+                }
+            }
+            movemenu(p);
+        }
+    }
+    command=false;
+    home(p);
 }
 
 void homemenu(Player *p)
 {
     playerhppercent = (double)p->hp/p->maxhp * 100;
     playermppercent = (double)p->mp/p->maxmp * 100;
+    playerexppercent = (double)p->exp/p->LVUPexp * 100;
 
     for(int i=t-5; i<t; i++)
     {
@@ -175,11 +293,31 @@ void homemenu(Player *p)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     cout << "\n\n";
     cout << "레벨 : " << p->level << " (" << p->exp << ")" << "   ";
-    cout << "골드 : " << p->gold;
+    cout << "골드 : " << p->gold << '\n';
+
+    cout << "[";
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); // levelbar
+    for(int i=1; i<=25; i++)
+    {
+        if(playerexppercent<i*4)
+        {
+            if(playerexppercent-((i-1)*4)>=2) // 2%의 경우에 연하게
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+                cout << "#";
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+            }
+            else cout << " ";
+        }
+        else cout << "#";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << "]";
 }
 
 void homeselectmenu(Player *p)
 {
+    bool command = false;
     int key;
     point = 1;
     while(!command)
@@ -213,6 +351,7 @@ void homeselectmenu(Player *p)
                     if(point==1)
                     {
                         command = true;
+                        point = 1;
                         movemenu(p);
                     }
                     if(point==2)
@@ -277,9 +416,11 @@ void attack(Player *p, mob *m)
 
 void fightmenu(mob *m, Player *p)
 {
+    system("cls");
     mobhppercent = (double)m->hp/m->maxhp * 100;
     playerhppercent = (double)p->hp/p->maxhp * 100;
     playermppercent = (double)p->mp/p->maxmp * 100;
+    playerexppercent = (double)p->exp/p->LVUPexp * 100;
 
     for(int i=t-5; i<t; i++)
     {
@@ -336,7 +477,26 @@ void fightmenu(mob *m, Player *p)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     cout << "\n\n";
     cout << "레벨 : " << p->level << " (" << p->exp << ")" << "   ";
-    cout << "골드 : " << p->gold;
+    cout << "골드 : " << p->gold << '\n';
+
+    cout << "[";
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); // levelbar
+    for(int i=1; i<=25; i++)
+    {
+        if(playerexppercent<i*4)
+        {
+            if(playerexppercent-((i-1)*4)>=2) // 2%의 경우에 연하게
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+                cout << "#";
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+            }
+            else cout << " ";
+        }
+        else cout << "#";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << "]";
 }
 
 void fightselectmenu(mob *m, Player *p)
@@ -382,21 +542,130 @@ void fightselectmenu(mob *m, Player *p)
         }
     }
     killtrigger = false;
+    fight(p);
+    readymenu(p);
 }
 
 void fight(Player *p)
 {
     system("cls");
     mob m;
-    m.Slime();
-    // 몬스터 소환 코드(비어있음)
-    fightmenu(&m, p);
-    fightselectmenu(&m, p);
-    system("cls");
-    m.Snake();
-    // 몬스터 소환 코드(비어있음)
-    fightmenu(&m, p);
-    fightselectmenu(&m, p);
+
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    for(int i=0; i<10; i++) //playerhpbar
+    {
+        if(i*10<playerhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+        cout << "■";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << '\n';
+    for(int i=0; i<10; i++) //playermpbar
+    {
+        if(i*10<playermppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+        cout << "■";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+    cout << '\n';
+    cout << p->name << '\n';
+    cout << "HP : " << p->hp << " / " << p->maxhp << '\n';
+    cout << '\n';
+    for(int i=1; i<=4; i++)
+    {
+        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        if(i==1) cout << "탐험한다";
+        if(i==2) cout << "돌아간다";
+        if(i==3) cout << "-";
+        if(i==4) cout << "-";
+        cout << "   ";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << "\n\n";
+    cout << "레벨 : " << p->level << " (" << p->exp << ")" << "   ";
+    cout << "골드 : " << p->gold << '\n';
+
+    cout << "[";
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); // levelbar
+    for(int i=1; i<=25; i++)
+    {
+        if(playerexppercent<i*4)
+        {
+            if(playerexppercent-((i-1)*4)>=2) // 2%의 경우에 진하게
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+                cout << "#";
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+            }
+            else cout << " ";
+        }
+        else cout << "#";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << "]";
+}
+
+void readymenu(Player *p)
+{
+    bool command = false;
+    int key;
+    point = 1;
+    while(!command)
+    {
+        if(kbhit())
+        {
+            key=getch();
+            {
+                if(key==224) // 방향키
+                {
+                    key=getch();
+                    {
+                        if(key==75) // 왼쪽
+                        {
+                            if(point>1)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==77) // 오른쪽
+                        {
+                            if(point<4)
+                            {
+                                point++;
+                            }
+                        }
+                    }
+                }
+                if(key==13) // enter키
+                {
+                    if(point==1)
+                    {
+                        command = true;
+                        summonmob(p);
+                    }
+                    if(point==2)
+                    {
+                        Log[t] = p->name + "(이)는 탐험을 그만두고 돌아갔다.";
+                        t++;
+                        command = true;
+                        point = 1;
+                    }
+                }
+                system("cls");
+                fight(p);
+            }
+        }
+    }
     home(p);
 }
 
