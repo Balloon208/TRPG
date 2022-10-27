@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string>
 #include <windows.h>
+#include <vector>
 #include <conio.h>
 
 using namespace std;
@@ -15,7 +16,7 @@ int stage = 9;
 string worldmap[10] = {
 "-",
 "시작의 숲 (권장 레벨 LV1 이상)",
-"케이브 동굴 (권장 레벨 LV3 이상)",
+"케이브 동굴 (권장 레벨 LV5 이상)",
 "수상한 공터 (권장 레벨 LV10 이상)",
 "저주받은 땅 (권장 레벨 LV15 이상)",
 "-",
@@ -42,6 +43,8 @@ class Player
         int level;
         int exp;
         int LVUPexp;
+        int weaponlevel;
+        int armorlevel;
 
         void profile() // 프로필 파일 만들 예정
         {
@@ -53,10 +56,13 @@ class Player
             this->damage = 10;
             this->defence = 5;
             this->speed = 5;
-            this->gold = 0;
+            this->gold = 10000;
             this->level = 1;
             this->exp = 0;
             this->LVUPexp = 50;
+
+            this->weaponlevel = 1;
+            this->armorlevel = 1;
         }
 
         void heal()
@@ -71,14 +77,17 @@ class Player
         {
             this->exp -= this->LVUPexp;
             this->level++;
-            this->LVUPexp*=1.1;
+            this->LVUPexp*=1.3;
             Log[t] = "레벨이 상승 하였습니다!" + to_string(this->level-1) + "->" + to_string(this->level);
             t++;
 
             this->maxhp+=10;
             this->maxmp+=5;
             this->damage+=1;
+            this->defence+=1;
             this->speed+=1;
+
+            if(this->LVUPexp<this->exp) this->LVUP();
         }
 };
 
@@ -94,12 +103,13 @@ class mob
         int exp;
         int gold;
 
-        void Slime()
+        //시작의 숲
+        void MiniSlime()
         {
-            this->name = "슬라임";
+            this->name = "미니 슬라임";
             this->maxhp = 50;
             this->hp = maxhp;
-            this->damage = 5;
+            this->damage = 4;
             this->defence = 3;
             this->speed = 5;
             this->exp = 5;
@@ -112,11 +122,77 @@ class mob
             this->name = "뱀";
             this->maxhp = 75;
             this->hp = maxhp;
-            this->damage = 8;
+            this->damage = 6;
             this->defence = 3;
             this->speed = 10;
             this->exp = 8;
             this->gold = 15;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void Slime()
+        {
+            this->name = "슬라임";
+            this->maxhp = 100;
+            this->hp = maxhp;
+            this->damage = 9;
+            this->defence = 3;
+            this->speed = 3;
+            this->exp = 15;
+            this->gold = 25;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        // 케이브 케이브
+        void RockSlime()
+        {
+            this->name = "돌 슬라임";
+            this->maxhp = 100;
+            this->hp = maxhp;
+            this->damage = 5;
+            this->defence = 20;
+            this->speed = 1;
+            this->exp = 25;
+            this->gold = 30;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void Bat()
+        {
+            this->name = "박쥐";
+            this->maxhp = 120;
+            this->hp = maxhp;
+            this->damage = 15;
+            this->defence = 3;
+            this->speed = 12;
+            this->exp = 30;
+            this->gold = 35;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void MiniGolem()
+        {
+            this->name = "미니 골렘";
+            this->maxhp = 200;
+            this->hp = maxhp;
+            this->damage = 10;
+            this->defence = 10;
+            this->speed = 1;
+            this->exp = 70;
+            this->gold = 55;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void Golem()
+        {
+            this->name = "골렘";
+            this->maxhp = 500;
+            this->hp = maxhp;
+            this->damage = 30;
+            this->defence = 15;
+            this->speed = 1;
+            this->exp = 500;
+            this->gold = 300;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -155,15 +231,27 @@ void fightmenu(mob *m, Player *p);
 void fightselectmenu(mob *m, Player *p);
 void home(Player *p);
 void readymenu(Player *p);
+void weaponforge(Player *p, bool visit);
 
 void summonmob(Player *p)
 {
     mob m;
     if(where==1)
     {
-        int n = rand()%2+1;
-        if(n==1) m.Slime();
+        int n = rand()%3+1;
+        if(n==1) m.MiniSlime();
         if(n==2) m.Snake();
+        if(n==3) m.Slime();
+        fightmenu(&m, p);
+        fightselectmenu(&m, p);
+    }
+    if(where==2)
+    {
+        int n = rand()%100+1;
+        if(n<=40) m.RockSlime();
+        else if(n<=80) m.Bat();
+        else if(n<=95) m.MiniGolem();
+        else if(n<=100) m.Golem();
         fightmenu(&m, p);
         fightselectmenu(&m, p);
     }
@@ -221,16 +309,13 @@ void movemenu(Player *p)
                 }
                 if(key==13) // enter키
                 {
-                    if(point==1)
-                    {
-                        command = true;
-                        where = point;
-                        Log[t] = "당신은 " + worldmap[point] + "(으)로 여정을 떠났다.";
-                        t++;
-                        point = 1;
-                        fight(p);
-                        readymenu(p);
-                    }
+                    command = true;
+                    where = point;
+                    Log[t] = "당신은 " + worldmap[point] + "(으)로 여정을 떠났다.";
+                    t++;
+                    point = 1;
+                    fight(p);
+                    readymenu(p);
                 }
                 if(key==27) //esc
                 {
@@ -285,8 +370,8 @@ void homemenu(Player *p)
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         if(i==1) cout << "이동";
         if(i==2) cout << "휴식";
-        if(i==3) cout << "-";
-        if(i==4) cout << "-";
+        if(i==3) cout << "무기강화";
+        if(i==4) cout << "방어구강화";
         cout << "   ";
     }
 
@@ -358,6 +443,10 @@ void homeselectmenu(Player *p)
                     {
                         p->heal();
                     }
+                    if(point==3)
+                    {
+                        weaponforge(p, false);
+                    }
                 }
             system("cls");
             homemenu(p);
@@ -376,7 +465,7 @@ void home(Player *p)
 
 void pattack(Player *p, mob *m)
 {
-    int damage = rand() % 3 + p->damage;
+    int damage = rand() % 3 + p->damage / (1+(m->defence*0.1));
     Log[t] = m->name + "에게 " + to_string(damage) + " 데미지를 입혔습니다!";
     m->hp-=damage;
     t++;
@@ -389,8 +478,8 @@ void pattack(Player *p, mob *m)
 
 void mattack(Player *p, mob *m)
 {
-    int damage = rand() % 3 + m->damage;
-    Log[t] = m->name + "이 공격하여 " + to_string(damage) + " 데미지를 입었습니다!";
+    int damage = rand() % 3 + m->damage / (1+(p->defence*0.1));;
+    Log[t] = m->name + "이(가) 공격하여 " + to_string(damage) + " 데미지를 입었습니다!";
     p->hp-=damage;
     t++;
     if(p->hp<=0)
@@ -667,6 +756,73 @@ void readymenu(Player *p)
         }
     }
     home(p);
+}
+
+void Forge(Player *p, int protect, int chance) // status 증가는 적용안됨, 가끔 강제종료됨
+{
+    int k = rand()%10000 + 1;
+    if(chance*100 >= k) // 성공
+    {
+        Log[t] = "장비 강화에 성공 하였다! (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel+1) + ")";
+        t++;
+        p->weaponlevel++;
+    }
+    else
+    {
+        int down;
+        if(!protect) down = rand()%(p->weaponlevel/4<=0?1:p->weaponlevel/4 + 1);
+        else down = rand()%(p->weaponlevel/6<=0?1:p->weaponlevel/6 + 1);
+        Log[t] = "장비 강화에 실패하였다... (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel-down) + ")";
+        t++;
+        p->weaponlevel-=down;
+    }
+}
+
+void weaponforge(Player *p, bool visit)
+{
+    int key;
+    int chance;
+    system("cls");
+
+    if(!visit)
+    {
+        Log[t] = "당신은 무기강화소에 들렀다.";
+        t++;
+    }
+
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+
+    // 90 80 70 60 50 45 40 35 30 25 20 20 20 20 20 10 10 10 10 5
+    if(p->weaponlevel<=5) chance = 100 - p->weaponlevel*10;
+    else if(p->weaponlevel<=10) chance = 50 - ((p->weaponlevel-5)*5);
+    else if(p->weaponlevel<=15) chance = 20;
+    else if(p->weaponlevel<=19) chance = 10;
+    else chance = 5;
+
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    cout << "무기 강화 (현재 : " << p->weaponlevel << ")" << " 확률 : " << chance << "\n\n";
+
+    cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << p->weaponlevel*1000 << "\n\n";
+    cout << "보호강화(+15 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << p->weaponlevel*10000 << "\n\n";
+    cout << "강화를 하고 싶지 않다면 'Esc' 키를 누르세요.\n\n";
+
+    key=getch();
+    if(key==224) // 방향키로 종료 방지
+    {
+        getch();
+        weaponforge(p, true);
+    }
+    else if(key=='o' || key=='O') Forge(p, 0, chance);
+    else if(key=='p' || key=='P') Forge(p, 1, chance);
+    else if(key==27) home(p);
+    else weaponforge(p, true);
+
 }
 
 int main()
