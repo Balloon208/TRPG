@@ -188,7 +188,7 @@ class mob
             this->name = "골렘";
             this->maxhp = 500;
             this->hp = maxhp;
-            this->damage = 30;
+            this->damage = 25;
             this->defence = 15;
             this->speed = 1;
             this->exp = 500;
