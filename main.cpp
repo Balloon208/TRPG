@@ -58,7 +58,7 @@ class Player
             this->damage = 10;
             this->defence = 5;
             this->speed = 5;
-            this->gold = 0;
+            this->gold = 10000000;
             this->level = 1;
             this->exp = 0;
             this->LVUPexp = 50;
@@ -115,7 +115,7 @@ class mob
             this->defence = 3;
             this->speed = 5;
             this->exp = 5;
-            this->gold = 30;
+            this->gold = 65;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -128,7 +128,7 @@ class mob
             this->defence = 3;
             this->speed = 10;
             this->exp = 8;
-            this->gold = 50;
+            this->gold = 105;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -141,7 +141,7 @@ class mob
             this->defence = 3;
             this->speed = 3;
             this->exp = 15;
-            this->gold = 120;
+            this->gold = 150;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -153,8 +153,8 @@ class mob
             this->damage = 50;
             this->defence = 20;
             this->speed = 5;
-            this->exp = 1500;
-            this->gold = 3500;
+            this->exp = 1850;
+            this->gold = 12500;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -168,7 +168,7 @@ class mob
             this->defence = 20;
             this->speed = 1;
             this->exp = 25;
-            this->gold = 150;
+            this->gold = 250;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -181,7 +181,7 @@ class mob
             this->defence = 3;
             this->speed = 12;
             this->exp = 30;
-            this->gold = 220;
+            this->gold = 370;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -194,7 +194,7 @@ class mob
             this->defence = 10;
             this->speed = 1;
             this->exp = 70;
-            this->gold = 350;
+            this->gold = 550;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -207,11 +207,76 @@ class mob
             this->defence = 15;
             this->speed = 1;
             this->exp = 300;
-            this->gold = 850;
+            this->gold = 1320;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
-
+        // 서늘한 공터
+        void killerdog()
+        {
+            this->name = "사냥개";
+            this->maxhp = 200;
+            this->hp = maxhp;
+            this->damage = 30;
+            this->defence = 3;
+            this->speed = 15;
+            this->exp = 150;
+            this->gold = 820;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void hunter()
+        {
+            this->name = "사냥꾼";
+            this->maxhp = 300;
+            this->hp = maxhp;
+            this->damage = 20;
+            this->defence = 5;
+            this->speed = 10;
+            this->exp = 190;
+            this->gold = 1060;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void shadower()
+        {
+            this->name = "암살자";
+            this->maxhp = 120;
+            this->hp = maxhp;
+            this->damage = 60;
+            this->defence = 1;
+            this->speed = 20;
+            this->exp = 70;
+            this->gold = 1825;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void badknight()
+        {
+            this->name = "타락한 기사";
+            this->maxhp = 600;
+            this->hp = maxhp;
+            this->damage = 30;
+            this->defence = 5;
+            this->speed = 10;
+            this->exp = 300;
+            this->gold = 2650;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void nohead()
+        {
+            this->name = "(BOSS)듀라한";
+            this->maxhp = 5000;
+            this->hp = maxhp;
+            this->damage = 100;
+            this->defence = 1;
+            this->speed = 20;
+            this->exp = 10000;
+            this->gold = 45000;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
         void Mobdeath(Player *p)
         {
             killtrigger = true;
@@ -268,6 +333,17 @@ void summonmob(Player *p)
         else if(n<=80) m.Bat();
         else if(n<=95) m.MiniGolem();
         else if(n<=100) m.Golem();
+        fightmenu(&m, p);
+        fightselectmenu(&m, p);
+    }
+    if(where==3)
+    {
+        int n = rand()%100+1;
+        if(n<=30) m.killerdog();
+        else if(n<=50) m.hunter();
+        else if(n<=70) m.shadower();
+        else if(n<=99) m.badknight();
+        else if(n<=100) m.nohead();
         fightmenu(&m, p);
         fightselectmenu(&m, p);
     }
@@ -787,23 +863,22 @@ void readymenu(Player *p)
 
 void Forge(Player *p, int protect, int chance, string mode, int upmoney) // status 증가는 적용안됨, 가끔 강제종료됨
 {
-    if(p->level==20)
-    {
-        Log[t] = "최대 강화 상태입니다. 강화를 취소합니다.";
-        t++;
-        return;
-    }
-
     if(p->gold < upmoney)
     {
         Log[t] = "골드가 부족합니다. (" + to_string(p->gold) + "/" + to_string(upmoney) + ")";
         t++;
         return;
     }
-    p->gold-=upmoney;
     int k = rand()%10000 + 1;
     if(mode=="weapon")
     {
+        if(p->weaponlevel==20)
+        {
+            Log[t] = "최대 강화 상태입니다. 강화를 취소합니다.";
+            t++;
+            return;
+        }
+        p->gold-=upmoney;
         if(chance*100 >= k) // 성공
         {
             Log[t] = "장비 강화에 성공 하였다! (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel+1) + ")";
@@ -827,12 +902,21 @@ void Forge(Player *p, int protect, int chance, string mode, int upmoney) // stat
     }
     if(mode=="armor")
     {
+        if(p->weaponlevel==15)
+        {
+            Log[t] = "최대 강화 상태입니다. 강화를 취소합니다.";
+            t++;
+            return;
+        }
+        p->gold-=upmoney;
         if(chance*100 >= k) // 성공
         {
             Log[t] = "방어구 강화에 성공 하였다! (" + to_string(p->armorlevel) + " -> " + to_string(p->armorlevel+1) + ")";
             t++;
             p->armorlevel++;
             p->defence+=forgeadd[p->armorlevel];
+            p->maxhp+=forgeadd[p->armorlevel]*10;
+            p->hp+=forgeadd[p->armorlevel]*10;
         }
         else
         {
@@ -844,6 +928,8 @@ void Forge(Player *p, int protect, int chance, string mode, int upmoney) // stat
             for(int i=p->armorlevel; i>p->armorlevel-down; i--)
             {
                 p->defence-=forgeadd[i];
+                p->maxhp-=forgeadd[p->armorlevel]*10;
+                p->hp-=forgeadd[p->armorlevel]*10;
             }
             p->armorlevel-=down;
         }
@@ -868,11 +954,11 @@ void weaponforge(Player *p, bool visit)
         else cout << Log[i] << '\n';
     }
 
-    // 90 80 70 60 50 45 40 35 30 25 20 20 20 20 20 10 10 10 10 5
+    // 90 80 70 60 50 45 40 35 30 25 20 20 20 20 20 10 10 10 5 0
     if(p->weaponlevel<=5) chance = 100 - p->weaponlevel*10;
     else if(p->weaponlevel<=10) chance = 50 - ((p->weaponlevel-5)*5);
     else if(p->weaponlevel<=15) chance = 20;
-    else if(p->weaponlevel<=19) chance = 10;
+    else if(p->weaponlevel<=18) chance = 10;
     else chance = 5;
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
@@ -915,17 +1001,17 @@ void armorforge(Player *p, bool visit)
         else cout << Log[i] << '\n';
     }
 
-    // 80 60 40 20 20 20 15 15 15 10 10 10 10 5 5
-    if(p->armorlevel<=3) chance = 100 - p->armorlevel*20;
-    else if(p->armorlevel<=6) chance = 20;
-    else if(p->armorlevel<=9) chance = 15;
+    // 80 70 60 50 30 30 20 20 15 15 15 10 10 5 0
+    if(p->armorlevel<=4) chance = 80 - p->armorlevel*10;
+    else if(p->armorlevel<=6) chance = 30;
+    else if(p->armorlevel<=8) chance = 20;
+    else if(p->armorlevel<=11) chance = 15;
     else if(p->armorlevel<=13) chance = 10;
-    else if(p->armorlevel<=15) chance = 5;
     else chance = 5;
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
 
-    cout << "방어구 강화 (현재 : " << p->armorlevel << ")" << " 확률 : " << chance << "  방어력:" << p->defence <<"\n\n";
+    cout << "방어구 강화 (현재 : " << p->armorlevel << ")" << " 확률 : " << chance << "  방어력:" << p->defence << "  최대 체력:" << p->maxhp << "\n\n";
 
     cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << p->armorlevel*2000 << "\n\n";
     cout << "보호강화(+10 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << p->armorlevel*20000 << "\n\n";
