@@ -48,25 +48,6 @@ class Player
         int weaponlevel;
         int armorlevel;
 
-        void profile() // 프로필 파일 만들 예정
-        {
-            this->name = "넴넴";
-            this->maxhp = 100;
-            this->hp = 100;
-            this->maxmp = 50;
-            this->mp = 50;
-            this->damage = 10;
-            this->defence = 5;
-            this->speed = 5;
-            this->gold = 10000000;
-            this->level = 1;
-            this->exp = 0;
-            this->LVUPexp = 50;
-
-            this->weaponlevel = 0;
-            this->armorlevel = 0;
-        }
-
         void heal()
         {
             this->hp=this->maxhp;
@@ -291,20 +272,6 @@ class mob
         }
 };
 
-/* 추후 클래스 공부를 더 한 이후에 이용할 예정
-class slime
-{
-    public:
-        string name = "슬라임";
-        int maxhp = 50;
-        int damage = 5;
-        int defence = 3;
-        int speed = 5;
-        int exp = 5;
-        int level = 1;
-};
-*/
-
 void fight(Player *p);
 void fightmenu(mob *m, Player *p);
 void fightselectmenu(mob *m, Player *p);
@@ -312,6 +279,241 @@ void home(Player *p);
 void readymenu(Player *p);
 void weaponforge(Player *p, bool visit);
 void armorforge(Player *p, bool visit);
+void Save(Player *p);
+
+void Login(Player *p)
+{
+    int n;
+    string name;
+
+    FILE* fp = fopen("playerinfom.txt","r");
+    fscanf(fp,"register:%d", &n);
+    fclose(fp);
+
+    cout << n;
+
+    if(n!=2)
+    {
+        cout << "신규 가입을 위하여 이름을 입력하세요 : ";
+        cin >> name;
+
+        char wname[200];
+        strcpy(wname, name.c_str());
+        /*
+        fout <<
+        "register:" << 2 << '\n' <<
+        "name:" << name << '\n' <<
+        "maxhp:" << 100 << '\n' <<
+        "hp" << 100 << '\n' <<
+        "maxmp:" << 50 << '\n' <<
+        "mp:" << 50 << '\n' <<
+        "damage:" << 10 << '\n' <<
+        "defence:" << 5 << '\n' <<
+        "speed:" << 5 << '\n' <<
+        "gold:" << 0 << '\n' <<
+        "level:" << 1 << '\n' <<
+        "exp:" << 0 << '\n' <<
+        "LVUPexp:" << 50 << '\n' <<
+        "weaponlevel:" << 0 << '\n' <<
+        "armorlevel:" << 0 << '\n';
+        */
+
+        FILE* fp = fopen("playerinfom.txt","w");
+        fprintf(fp,"register:%d\n", 2);
+        fprintf(fp,"%s\n", wname);
+        fprintf(fp,"maxhp:%d\n", 100);
+        fprintf(fp,"hp:%d\n", 100);
+        fprintf(fp,"maxmp:%d\n", 50);
+        fprintf(fp,"mp:%d\n", 50);
+        fprintf(fp,"damage:%d\n", 10);
+        fprintf(fp,"defence:%d\n", 5);
+        fprintf(fp,"speed:%d\n", 5);
+        fprintf(fp,"gold:%d\n", 0);
+        fprintf(fp,"level:%d\n", 1);
+        fprintf(fp,"exp:%d\n", 0);
+        fprintf(fp,"LVUPexp:%d\n", 50);
+        fprintf(fp,"weaponlevel:%d\n", 0);
+        fprintf(fp,"armorlevel:%d\n", 0);
+
+
+        fclose(fp);
+
+        p->name = name;
+        p->maxhp = 100;
+        p->hp = 100;
+        p->maxmp = 50;
+        p->mp = 50;
+        p->damage = 10;
+        p->defence = 5;
+        p->speed = 5;
+        p->gold = 0;
+        p->level = 1;
+        p->exp = 0;
+        p->LVUPexp = 50;
+
+        p->weaponlevel = 0;
+        p->armorlevel = 0;
+    }
+}
+
+void Save(Player *p)
+{
+    /*
+    ofstream fout;
+    fout.open("playerinfom.txt");
+
+    fout <<
+    2 << '\n' <<
+    p->name << '\n' <<
+    p->maxhp << '\n' <<
+    p->hp << '\n' <<
+    p->maxmp << '\n' <<
+    p->mp << '\n' <<
+    p->damage << '\n' <<
+    p->defence << '\n' <<
+    p->speed << '\n' <<
+    p->gold << '\n' <<
+    p->level << '\n' <<
+    p->exp << '\n' <<
+    p->LVUPexp << '\n' <<
+    p->weaponlevel << '\n' <<
+    p->armorlevel << '\n';
+
+    */
+
+    char wname[200];
+    strcpy(wname, p->name.c_str());
+
+    FILE* fp = fopen("playerinfom.txt","w");
+    fprintf(fp,"register:%d\n", 2);
+    fprintf(fp,"%s\n", wname);
+    fprintf(fp,"maxhp:%d\n", p->maxhp);
+    fprintf(fp,"hp:%d\n", p->hp);
+    fprintf(fp,"maxmp:%d\n", p->maxmp);
+    fprintf(fp,"mp:%d\n", p->mp);
+    fprintf(fp,"damage:%d\n", p->damage);
+    fprintf(fp,"defence:%d\n", p->defence);
+    fprintf(fp,"speed:%d\n", p->speed);
+    fprintf(fp,"gold:%d\n", p->gold);
+    fprintf(fp,"level:%d\n", p->level);
+    fprintf(fp,"exp:%d\n", p->exp);
+    fprintf(fp,"LVUPexp:%d\n", p->LVUPexp);
+    fprintf(fp,"weaponlevel:%d\n", p->weaponlevel);
+    fprintf(fp,"armorlevel:%d\n", p->armorlevel);
+    fclose(fp);
+}
+
+void Load(Player *p)
+{
+    /*
+    ifstream fin;
+    fin.open("playerinfom.txt");
+
+    string name;
+    int trash, maxhp, hp, maxmp, mp, damage, defence, speed, gold, level, exp, LVUPexp, weaponlevel, armorlevel;
+
+    char buffer[50];
+
+    for(int i=0; i<15; i++)
+    {
+        fin >> buffer;
+        fin.getline(buffer, 50);
+        if(i==0)trash = stoi(buffer);
+        if(i==1)name = buffer;
+        if(i==2)maxhp = stoi(buffer);
+        if(i==3)hp = stoi(buffer);
+        if(i==4)maxmp = stoi(buffer);
+        if(i==5)mp = stoi(buffer);
+        if(i==6)damage = stoi(buffer);
+        if(i==7)defence = stoi(buffer);
+        if(i==8)speed = stoi(buffer);
+        if(i==9)gold = stoi(buffer);
+        if(i==10)level = stoi(buffer);
+        if(i==11)exp = stoi(buffer);
+        if(i==12)LVUPexp = stoi(buffer);
+        if(i==13)weaponlevel = stoi(buffer);
+        if(i==14)armorlevel = stoi(buffer);
+    }
+    */
+
+    /*
+    fin >>
+    trash >>
+    name >>
+    maxhp >>
+    hp >>
+    maxmp >>
+    mp >>
+    damage >>
+    defence >>
+    speed >>
+    gold >>
+    level >>
+    exp >>
+    LVUPexp >>
+    weaponlevel >>
+    armorlevel;
+
+
+    p->name = name;
+    p->maxhp = maxhp;
+    p->hp = hp;
+    p->maxmp = maxmp;
+    p->mp = mp;
+    p->damage = damage;
+    p->defence = defence;
+    p->speed = speed;
+    p->gold = gold;
+    p->level = level;
+    p->exp = exp;
+    p->LVUPexp = LVUPexp;
+    p->weaponlevel = weaponlevel;
+    p->armorlevel = armorlevel;
+
+    fin.close();
+    */
+
+    int trash;
+    char wname[200];
+
+    FILE* fp = fopen("playerinfom.txt","r");
+    fscanf(fp,"register:%d\n", &trash);
+    fscanf(fp,"%s\n", wname);
+    p->name = wname;
+    fscanf(fp,"maxhp:%d\n", &p->maxhp);
+    fscanf(fp,"hp:%d\n", &p->hp);
+    fscanf(fp,"maxmp:%d\n", &p->maxmp);
+    fscanf(fp,"mp:%d\n", &p->mp);
+    fscanf(fp,"damage:%d\n", &p->damage);
+    fscanf(fp,"defence:%d\n", &p->defence);
+    fscanf(fp,"speed:%d\n", &p->speed);
+    fscanf(fp,"gold:%d\n", &p->gold);
+    fscanf(fp,"level:%d\n", &p->level);
+    fscanf(fp,"exp:%d\n", &p->exp);
+    fscanf(fp,"LVUPexp:%d\n", &p->LVUPexp);
+    fscanf(fp,"weaponlevel:%d\n", &p->weaponlevel);
+    fscanf(fp,"armorlevel:%d\n", &p->armorlevel);
+    fclose(fp);
+
+    cout <<
+    trash << '\n' <<
+    p->name << '\n' <<
+    p->maxhp << '\n' <<
+    p->hp << '\n' <<
+    p->maxmp << '\n' <<
+    p->mp << '\n' <<
+    p->damage << '\n' <<
+    p->defence << '\n' <<
+    p->speed << '\n' <<
+    p->gold << '\n' <<
+    p->level << '\n' <<
+    p->exp << '\n' <<
+    p->LVUPexp << '\n' <<
+    p->weaponlevel << '\n' <<
+    p->armorlevel << '\n';
+    Sleep(1000);
+
+}
 
 void summonmob(Player *p)
 {
@@ -534,6 +736,7 @@ void homeselectmenu(Player *p)
                     if(point==2)
                     {
                         p->heal();
+                        Save(p);
                     }
                     if(point==3)
                     {
@@ -554,6 +757,7 @@ void homeselectmenu(Player *p)
 
 void home(Player *p)
 {
+    Save(p);
     system("cls");
     homemenu(p);
     homeselectmenu(p);
@@ -719,6 +923,7 @@ void fightselectmenu(mob *m, Player *p)
                     if(point==1)
                     {
                         attack(p,m);
+                        Save(p);
                     }
                     if(point==4)
                     {
@@ -740,6 +945,7 @@ void fightselectmenu(mob *m, Player *p)
 
 void fight(Player *p)
 {
+    Save(p);
     system("cls");
     mob m;
 
@@ -934,6 +1140,7 @@ void Forge(Player *p, int protect, int chance, string mode, int upmoney) // stat
             p->armorlevel-=down;
         }
     }
+    Save(p);
 }
 
 void weaponforge(Player *p, bool visit)
@@ -954,11 +1161,11 @@ void weaponforge(Player *p, bool visit)
         else cout << Log[i] << '\n';
     }
 
-    // 90 80 70 60 50 45 40 35 30 25 20 20 20 20 20 10 10 10 5 0
+    // 90 80 70 60 50 45 40 35 30 25 20 20 20 20 20 10 10 10 10 5
     if(p->weaponlevel<=5) chance = 100 - p->weaponlevel*10;
     else if(p->weaponlevel<=10) chance = 50 - ((p->weaponlevel-5)*5);
     else if(p->weaponlevel<=15) chance = 20;
-    else if(p->weaponlevel<=18) chance = 10;
+    else if(p->weaponlevel<=19) chance = 10;
     else chance = 5;
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
@@ -1027,13 +1234,13 @@ void armorforge(Player *p, bool visit)
     else if(key=='p' || key=='P') Forge(p, 1, chance, "armor", p->armorlevel*20000);
     else if(key==27) return;
     else armorforge(p, true);
-
 }
 
 int main()
 {
     srand(GetTickCount());
     Player p;
-    p.profile();
+    Login(&p);
+    Load(&p);
     home(&p);
 }
