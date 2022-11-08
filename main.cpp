@@ -17,12 +17,12 @@ bool killtrigger = false;
 int stage = 9;
 string worldmap[10] = {
 "-",
+"무기 강화소",
+"방어구 강화소",
 "시작의 숲 (권장 레벨 LV1 이상)",
 "케이브 동굴 (권장 레벨 LV5 이상)",
-"수상한 공터 (권장 레벨 LV10 이상)",
-"저주받은 땅 (권장 레벨 LV15 이상)",
-"-",
-"-",
+"수상한 공터 (권장 레벨 LV12 이상)",
+"저주받은 땅 (권장 레벨 LV20 이상)",
 "-",
 "-",
 "-",
@@ -96,7 +96,7 @@ class mob
             this->defence = 3;
             this->speed = 5;
             this->exp = 5;
-            this->gold = 65;
+            this->gold = 80;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -109,7 +109,7 @@ class mob
             this->defence = 3;
             this->speed = 10;
             this->exp = 8;
-            this->gold = 105;
+            this->gold = 130;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -122,7 +122,7 @@ class mob
             this->defence = 3;
             this->speed = 3;
             this->exp = 15;
-            this->gold = 150;
+            this->gold = 200;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -133,9 +133,9 @@ class mob
             this->hp = maxhp;
             this->damage = 50;
             this->defence = 20;
-            this->speed = 5;
-            this->exp = 1850;
-            this->gold = 12500;
+            this->speed = 22;
+            this->exp = 2650;
+            this->gold = 45000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -149,7 +149,7 @@ class mob
             this->defence = 20;
             this->speed = 1;
             this->exp = 25;
-            this->gold = 250;
+            this->gold = 300;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -161,8 +161,8 @@ class mob
             this->damage = 15;
             this->defence = 3;
             this->speed = 12;
-            this->exp = 30;
-            this->gold = 370;
+            this->exp = 35;
+            this->gold = 430;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -174,8 +174,8 @@ class mob
             this->damage = 10;
             this->defence = 10;
             this->speed = 1;
-            this->exp = 70;
-            this->gold = 550;
+            this->exp = 60;
+            this->gold = 700;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -187,8 +187,8 @@ class mob
             this->damage = 25;
             this->defence = 15;
             this->speed = 1;
-            this->exp = 300;
-            this->gold = 1320;
+            this->exp = 450;
+            this->gold = 4320;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -200,9 +200,9 @@ class mob
             this->hp = maxhp;
             this->damage = 30;
             this->defence = 3;
-            this->speed = 15;
+            this->speed = 22;
             this->exp = 150;
-            this->gold = 820;
+            this->gold = 1080;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -213,9 +213,9 @@ class mob
             this->hp = maxhp;
             this->damage = 20;
             this->defence = 5;
-            this->speed = 10;
+            this->speed = 15;
             this->exp = 190;
-            this->gold = 1060;
+            this->gold = 1450;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -226,9 +226,9 @@ class mob
             this->hp = maxhp;
             this->damage = 60;
             this->defence = 1;
-            this->speed = 20;
-            this->exp = 70;
-            this->gold = 1825;
+            this->speed = 30;
+            this->exp = 80;
+            this->gold = 2700;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -239,9 +239,9 @@ class mob
             this->hp = maxhp;
             this->damage = 30;
             this->defence = 5;
-            this->speed = 10;
-            this->exp = 300;
-            this->gold = 2650;
+            this->speed = 20;
+            this->exp = 380;
+            this->gold = 3750;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -252,9 +252,9 @@ class mob
             this->hp = maxhp;
             this->damage = 100;
             this->defence = 1;
-            this->speed = 20;
-            this->exp = 10000;
-            this->gold = 45000;
+            this->speed = 40;
+            this->exp = 12000;
+            this->gold = 110000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -281,6 +281,9 @@ void weaponforge(Player *p, bool visit);
 void armorforge(Player *p, bool visit);
 void Save(Player *p);
 
+int totalskill = 5;
+int skills[5]; // 1 = 스킬 배움, 2 = 장착 중
+
 void Login(Player *p)
 {
     int n;
@@ -289,8 +292,6 @@ void Login(Player *p)
     FILE* fp = fopen("playerinfom.txt","r");
     fscanf(fp,"register:%d", &n);
     fclose(fp);
-
-    cout << n;
 
     if(n!=2)
     {
@@ -318,7 +319,8 @@ void Login(Player *p)
         "armorlevel:" << 0 << '\n';
         */
 
-        FILE* fp = fopen("playerinfom.txt","w");
+        FILE* fp;
+        fp = fopen("playerinfom.txt","w");
         fprintf(fp,"register:%d\n", 2);
         fprintf(fp,"%s\n", wname);
         fprintf(fp,"maxhp:%d\n", 100);
@@ -334,8 +336,13 @@ void Login(Player *p)
         fprintf(fp,"LVUPexp:%d\n", 50);
         fprintf(fp,"weaponlevel:%d\n", 0);
         fprintf(fp,"armorlevel:%d\n", 0);
+        fclose(fp);
 
-
+        fp = fopen("playerskills.txt","w");
+        for(int i=0; i<totalskill; i++)
+        {
+            fprintf(fp,"%d ", 0);
+        }
         fclose(fp);
 
         p->name = name;
@@ -384,7 +391,8 @@ void Save(Player *p)
     char wname[200];
     strcpy(wname, p->name.c_str());
 
-    FILE* fp = fopen("playerinfom.txt","w");
+    FILE* fp;
+    fp = fopen("playerinfom.txt","w");
     fprintf(fp,"register:%d\n", 2);
     fprintf(fp,"%s\n", wname);
     fprintf(fp,"maxhp:%d\n", p->maxhp);
@@ -400,6 +408,13 @@ void Save(Player *p)
     fprintf(fp,"LVUPexp:%d\n", p->LVUPexp);
     fprintf(fp,"weaponlevel:%d\n", p->weaponlevel);
     fprintf(fp,"armorlevel:%d\n", p->armorlevel);
+    fclose(fp);
+
+    fp = fopen("playerskills.txt","w");
+    for(int i=0; i<totalskill; i++)
+    {
+        fprintf(fp,"%d ", skills[i]);
+    }
     fclose(fp);
 }
 
@@ -476,7 +491,8 @@ void Load(Player *p)
     int trash;
     char wname[200];
 
-    FILE* fp = fopen("playerinfom.txt","r");
+    FILE* fp;
+    fp = fopen("playerinfom.txt","r");
     fscanf(fp,"register:%d\n", &trash);
     fscanf(fp,"%s\n", wname);
     p->name = wname;
@@ -495,6 +511,14 @@ void Load(Player *p)
     fscanf(fp,"armorlevel:%d\n", &p->armorlevel);
     fclose(fp);
 
+    fp = fopen("playerskills.txt","r");
+    for(int i=0; i<totalskill; i++)
+    {
+        fscanf(fp,"%d ", &skills[i]);
+    }
+    fclose(fp);
+
+    /*
     cout <<
     trash << '\n' <<
     p->name << '\n' <<
@@ -512,13 +536,13 @@ void Load(Player *p)
     p->weaponlevel << '\n' <<
     p->armorlevel << '\n';
     Sleep(1000);
-
+    */
 }
 
 void summonmob(Player *p)
 {
     mob m;
-    if(where==1)
+    if(where==3)
     {
         int n = rand()%100+1;
         if(n<=40) m.MiniSlime();
@@ -528,7 +552,7 @@ void summonmob(Player *p)
         fightmenu(&m, p);
         fightselectmenu(&m, p);
     }
-    if(where==2)
+    if(where==4)
     {
         int n = rand()%100+1;
         if(n<=40) m.RockSlime();
@@ -538,13 +562,13 @@ void summonmob(Player *p)
         fightmenu(&m, p);
         fightselectmenu(&m, p);
     }
-    if(where==3)
+    if(where==5)
     {
         int n = rand()%100+1;
         if(n<=30) m.killerdog();
         else if(n<=50) m.hunter();
         else if(n<=70) m.shadower();
-        else if(n<=99) m.badknight();
+        else if(n<=97) m.badknight();
         else if(n<=100) m.nohead();
         fightmenu(&m, p);
         fightselectmenu(&m, p);
@@ -605,9 +629,19 @@ void movemenu(Player *p)
                 {
                     command = true;
                     where = point;
-                    Log[t] = "당신은 " + worldmap[point] + "(으)로 여정을 떠났다.";
-                    t++;
                     point = 1;
+                    if(where==1)
+                    {
+                        weaponforge(p, false);
+                        break;
+                    }
+                    if(where==2)
+                    {
+                        armorforge(p, false);
+                        break;
+                    }
+                    Log[t] = "당신은 " + worldmap[where] + "(으)로 여정을 떠났다.";
+                    t++;
                     fight(p);
                     readymenu(p);
                 }
@@ -664,8 +698,8 @@ void homemenu(Player *p)
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         if(i==1) cout << "이동";
         if(i==2) cout << "휴식";
-        if(i==3) cout << "무기강화";
-        if(i==4) cout << "방어구강화";
+        if(i==3) cout << "스킬설정";
+        if(i==4) cout << "상점";
         cout << "   ";
     }
 
@@ -730,7 +764,7 @@ void homeselectmenu(Player *p)
                     if(point==1)
                     {
                         command = true;
-                        point = 1;
+                        point = 3;
                         movemenu(p);
                     }
                     if(point==2)
@@ -738,14 +772,10 @@ void homeselectmenu(Player *p)
                         p->heal();
                         Save(p);
                     }
-                    if(point==3)
+                    /*if(point==3)
                     {
-                        weaponforge(p, false);
-                    }
-                    if(point==4)
-                    {
-                        armorforge(p, false);
-                    }
+                        p->skillset();
+                    }*/
                 }
             system("cls");
             homemenu(p);
@@ -1108,7 +1138,7 @@ void Forge(Player *p, int protect, int chance, string mode, int upmoney) // stat
     }
     if(mode=="armor")
     {
-        if(p->weaponlevel==15)
+        if(p->armorlevel==15)
         {
             Log[t] = "최대 강화 상태입니다. 강화를 취소합니다.";
             t++;
@@ -1141,6 +1171,8 @@ void Forge(Player *p, int protect, int chance, string mode, int upmoney) // stat
         }
     }
     Save(p);
+    if(mode=="weapon") weaponforge(p, true);
+    if(mode=="armor") armorforge(p, true);
 }
 
 void weaponforge(Player *p, bool visit)
@@ -1175,6 +1207,7 @@ void weaponforge(Player *p, bool visit)
     cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << p->weaponlevel*1000 << "\n\n";
     cout << "보호강화(+15 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << p->weaponlevel*10000 << "\n\n";
     cout << "강화를 하고 싶지 않다면 'Esc' 키를 누르세요.\n\n";
+    cout << "보유 골드 : " << p->gold << "\n\n";
 
     key=getch();
     if(key==224) // 방향키로 종료 방지
@@ -1214,7 +1247,7 @@ void armorforge(Player *p, bool visit)
     else if(p->armorlevel<=8) chance = 20;
     else if(p->armorlevel<=11) chance = 15;
     else if(p->armorlevel<=13) chance = 10;
-    else chance = 5;
+    else chance = 100;
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
 
@@ -1223,6 +1256,7 @@ void armorforge(Player *p, bool visit)
     cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << p->armorlevel*2000 << "\n\n";
     cout << "보호강화(+10 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << p->armorlevel*20000 << "\n\n";
     cout << "강화를 하고 싶지 않다면 'Esc' 키를 누르세요.\n\n";
+    cout << "보유 골드 : " << p->gold << "\n\n";
 
     key=getch();
     if(key==224) // 방향키로 종료 방지
@@ -1244,3 +1278,23 @@ int main()
     Load(&p);
     home(&p);
 }
+
+/*
+
+아이디어 노트
+
+-------------------------스킬에 관하여-----------------------
+
+방안은 총 2가지이다
+
+1. 선택형 스킬
+player에 bool skill[n] = true / false (playerinfom.txt에 기록되어야함. 획득 경로는 상점..? / 특수 조건..? / 레벨)
+
+
+2. 성장형 스킬
+
+1의 장점 : 재밌어지고 다양한 경우의 수(공략법) 존재
+1의 단점 : 매우 구현이 힘들어지고, 밸런스를 맞추기 힘들다.
+2의 장점 : 구현이 적당한 난이도, 밸런스 맞추기 매우 쉽다.
+2의 단점 : 스킬의 흥미도가 과연 있을까...
+*/
