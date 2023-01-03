@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include <stdlib.h>
 #include <string>
 #include <windows.h>
@@ -13,8 +14,11 @@ int forgeadd[21]={0,1,1,2,3,4,6,9,13,19,28,41,60,88,129,189,277,416,605,882,1298
 int point=1;
 int where = 0;
 int t=0; // 턴이 지난 횟수
+int totalskill = 3;
+int usingskill;
 bool killtrigger = false;
 int stage = 9;
+
 string worldmap[10] = {
 "-",
 "무기 강화소",
@@ -27,6 +31,8 @@ string worldmap[10] = {
 "-",
 "-",
 };
+
+pair<string, pair<int,int>> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
 
 string Log[100000];
 
@@ -47,6 +53,8 @@ class Player
         int LVUPexp;
         int weaponlevel;
         int armorlevel;
+        int skill[6];
+
 
         void heal()
         {
@@ -69,6 +77,19 @@ class Player
             this->damage+=1;
             this->defence+=1;
             this->speed+=1;
+
+            if(this->level==3 && skills[2].second.second==0)
+            {
+                Log[t] = "크로스컷을 습득 하였습니다!";
+                t++;
+                skills[2].second.second=1;
+            }
+            if(this->level==10  && skills[2].second.second==0)
+            {
+                Log[t] = "힐링을 습득 하였습니다!";
+                t++;
+                skills[3].second.second=2;
+            }
 
             if(this->LVUPexp<this->exp) this->LVUP();
         }
@@ -273,16 +294,13 @@ class mob
 };
 
 void fight(Player *p);
-void fightmenu(mob *m, Player *p);
+void fightmenu(mob *m, Player *p, bool skillmode);
 void fightselectmenu(mob *m, Player *p);
 void home(Player *p);
 void readymenu(Player *p);
 void weaponforge(Player *p, bool visit);
 void armorforge(Player *p, bool visit);
 void Save(Player *p);
-
-int totalskill = 5;
-int skills[5]; // 1 = 스킬 배움, 2 = 장착 중
 
 void Login(Player *p)
 {
@@ -339,10 +357,13 @@ void Login(Player *p)
         fclose(fp);
 
         fp = fopen("playerskills.txt","w");
-        for(int i=0; i<totalskill; i++)
-        {
-            fprintf(fp,"%d ", 0);
-        }
+
+        // 스킬 설정 옵션 (skill setting), name, Mana, Learned(1 = 스킬 배움, 2 = 장착 중)
+        fprintf(fp, "방어 0 1\n");
+        fprintf(fp, "크로스컷 40 0\n");
+        fprintf(fp, "힐링 70 0\n");
+        fprintf(fp, "1, 0, 0, 0");
+
         fclose(fp);
 
         p->name = name;
@@ -360,6 +381,11 @@ void Login(Player *p)
 
         p->weaponlevel = 0;
         p->armorlevel = 0;
+
+        p->skill[1]=1;
+        p->skill[2]=0;
+        p->skill[3]=0;
+        p->skill[4]=0;
     }
 }
 
@@ -411,10 +437,13 @@ void Save(Player *p)
     fclose(fp);
 
     fp = fopen("playerskills.txt","w");
-    for(int i=0; i<totalskill; i++)
+    for(int i=1; i<=totalskill; i++)
     {
-        fprintf(fp,"%d ", skills[i]);
+        char skillname[1000];
+
+        fprintf(fp,"%s %d %d\n", skills[i].first.c_str(), skills[i].second.first, skills[i].second.second);
     }
+    fprintf(fp,"%d %d %d %d", p->skill[1], p->skill[2], p->skill[3] ,p->skill[4]);
     fclose(fp);
 }
 
@@ -512,14 +541,16 @@ void Load(Player *p)
     fclose(fp);
 
     fp = fopen("playerskills.txt","r");
-    for(int i=0; i<totalskill; i++)
+    for(int i=1; i<=totalskill; i++)
     {
-        fscanf(fp,"%d ", &skills[i]);
+        char skillnames[10000];
+        fscanf(fp,"%s %d %d\n", skillnames, &skills[i].second.first, &skills[i].second.second);
+        skills[i].first = skillnames;
     }
+    fscanf(fp,"%d %d %d %d", &p->skill[1], &p->skill[2], &p->skill[3] ,&p->skill[4]);
     fclose(fp);
 
     /*
-    cout <<
     trash << '\n' <<
     p->name << '\n' <<
     p->maxhp << '\n' <<
@@ -539,6 +570,116 @@ void Load(Player *p)
     */
 }
 
+void skillset(Player *p)
+{
+    system("cls");
+    bool command=false;
+
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    for(int i=1; i<4; i++)
+    {
+        p->skill[i]=0;
+    }
+    usingskill=1;
+
+    for(int i=1; i<=totalskill; i++)
+    {
+        if(i==point) cout << ">";
+
+        if(skills[i].second.second==1)
+        {
+            cout << "    " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+        }
+        else if(skills[i].second.second==2)
+        {
+            p->skill[usingskill]=i;
+            usingskill++;
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        }
+        else
+        {
+            usingskill--;
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        }
+    }
+
+    Save(p);
+
+    while(!command)
+    {
+        int key;
+        if(kbhit())
+        {
+            key=getch();
+            {
+                if(key==224) // 방향키
+                {
+                    key=getch();
+                    {
+                        if(key==72) // 위쪽
+                        {
+                            if(point>1)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==80) // 아래쪽
+                        {
+                            if(point<totalskill)
+                            {
+                                point++;
+                            }
+                        }
+                    }
+                }
+                if(key==13) // enter키
+                {
+                    command = true;
+                    if(usingskill<5)
+                    {
+                        if(skills[point].second.second==1)
+                        {
+                            Log[t] = skills[point].first + " 스킬을 장착하였습니다.";
+                            t++;
+                            skills[point].second.second=2;
+                        }
+                        else if(skills[point].second.second==2)
+                        {
+                            Log[t] = skills[point].first + " 스킬을 해제하였습니다.";
+                            t++;
+                            skills[point].second.second=1;
+                        }
+                    }
+                    else
+                    {
+                        Log[t] = "스킬 슬롯이 가득 찼습니다.";
+                        t++;
+                    }
+                }
+                if(key==27) //esc
+                {
+                    point = 1;
+                    break;
+                }
+            }
+            skillset(p);
+        }
+    }
+    command = false;
+    home(p);
+}
+
 void summonmob(Player *p)
 {
     mob m;
@@ -549,7 +690,7 @@ void summonmob(Player *p)
         else if(n<=70) m.Snake();
         else if(n<=98) m.Slime();
         else if(n<=100) m.Oak();
-        fightmenu(&m, p);
+        fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
     if(where==4)
@@ -559,7 +700,7 @@ void summonmob(Player *p)
         else if(n<=80) m.Bat();
         else if(n<=95) m.MiniGolem();
         else if(n<=100) m.Golem();
-        fightmenu(&m, p);
+        fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
     if(where==5)
@@ -570,7 +711,7 @@ void summonmob(Player *p)
         else if(n<=70) m.shadower();
         else if(n<=97) m.badknight();
         else if(n<=100) m.nohead();
-        fightmenu(&m, p);
+        fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
 }
@@ -772,10 +913,12 @@ void homeselectmenu(Player *p)
                         p->heal();
                         Save(p);
                     }
-                    /*if(point==3)
+                    if(point==3)
                     {
-                        p->skillset();
-                    }*/
+                        command = true;
+                        point=0;
+                        skillset(p);
+                    }
                 }
             system("cls");
             homemenu(p);
@@ -833,7 +976,36 @@ void attack(Player *p, mob *m)
     }
 }
 
-void fightmenu(mob *m, Player *p)
+void skillattack(Player *p, mob *m, int skillnum)
+{
+    int damage = rand() % 3 + p->damage / (1+(m->defence*0.1));
+    if(skillnum == 2)
+    {
+        if(skills[skillnum].second.first <= p->mp)
+        {
+            p->mp-=skills[skillnum].second.first;
+            for(int i=0; i<2; i++)
+            {
+                Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+                t++;
+                m->hp-=damage;
+                if(m->hp<=0)
+                {
+                    m->Mobdeath(p);
+                    return;
+                }
+            }
+            mattack(p, m);
+        }
+        else
+        {
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            t++;
+        }
+    }
+}
+
+void fightmenu(mob *m, Player *p, bool skillmode)
 {
     system("cls");
     mobhppercent = (double)m->hp/m->maxhp * 100;
@@ -883,17 +1055,32 @@ void fightmenu(mob *m, Player *p)
     cout << p->name << '\n';
     cout << "HP : " << p->hp << " / " << p->maxhp << '\n';
     cout << '\n';
-    for(int i=1; i<=4; i++)
+
+    if(skillmode==false)
     {
-        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
-        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        if(i==1) cout << "공격";
-        if(i==2) cout << "스킬";
-        if(i==3) cout << "아이템";
-        if(i==4) cout << "도망";
-        cout << "   ";
+        for(int i=1; i<=4; i++)
+        {
+            if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+            else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            if(i==1) cout << "공격";
+            if(i==2) cout << "스킬";
+            if(i==3) cout << "아이템";
+            if(i==4) cout << "도망";
+            cout << "   ";
+        }
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    else
+    {
+        for(int i=1; i<=4; i++)
+        {
+            if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+            else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            cout << skills[p->skill[i]].first << "(" << skills[p->skill[i]].second.first << ")";
+            cout << "   ";
+        }
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    }
     cout << "\n\n";
     cout << "레벨 : " << p->level << " (" << p->exp << ")" << "   ";
     cout << "골드 : " << p->gold << '\n';
@@ -920,6 +1107,7 @@ void fightmenu(mob *m, Player *p)
 
 void fightselectmenu(mob *m, Player *p)
 {
+    bool skillmode = false;
     int key;
     point = 1;
     while(!killtrigger)
@@ -950,21 +1138,37 @@ void fightselectmenu(mob *m, Player *p)
                 }
                 if(key==13) // enter키
                 {
-                    if(point==1)
+                    if(skillmode)
                     {
-                        attack(p,m);
-                        Save(p);
+                        skillattack(p, m, p->skill[point]);
                     }
-                    if(point==4)
+                    else
                     {
-                        Log[t] = "당신은 " + m->name + "(으)로부터 도망쳤다!";
-                        t++;
-                        point = 1;
-                        return;
+                        if(point==1)
+                        {
+                            attack(p,m);
+                            Save(p);
+                        }
+                        if(point==2)
+                        {
+                            skillmode = true;
+                            point = 1;
+                        }
+                        if(point==4)
+                        {
+                            Log[t] = "당신은 " + m->name + "(으)로부터 도망쳤다!";
+                            t++;
+                            point = 1;
+                            return;
+                        }
                     }
                 }
+                if(key==27 && skillmode) //esc
+                {
+                    skillmode = !skillmode;
+                }
             system("cls");
-            fightmenu(m, p);
+            fightmenu(m, p, skillmode);
             }
         }
     }
@@ -1241,13 +1445,11 @@ void armorforge(Player *p, bool visit)
         else cout << Log[i] << '\n';
     }
 
-    // 80 70 60 50 30 30 20 20 15 15 15 10 10 5 0
-    if(p->armorlevel<=4) chance = 80 - p->armorlevel*10;
+    // 100 90 80 70 60 50 40 30 20 10 10 10 10 10 5 0
+    if(p->armorlevel<=10) chance = 100 - p->armorlevel*10;
     else if(p->armorlevel<=6) chance = 30;
-    else if(p->armorlevel<=8) chance = 20;
-    else if(p->armorlevel<=11) chance = 15;
     else if(p->armorlevel<=13) chance = 10;
-    else chance = 100;
+    else chance = 5;
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
 
