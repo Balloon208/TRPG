@@ -84,11 +84,11 @@ class Player
                 t++;
                 skills[2].second.second=1;
             }
-            if(this->level==10  && skills[2].second.second==0)
+            if(this->level==10  && skills[3].second.second==0)
             {
                 Log[t] = "힐링을 습득 하였습니다!";
                 t++;
-                skills[3].second.second=2;
+                skills[3].second.second=1;
             }
 
             if(this->LVUPexp<this->exp) this->LVUP();
@@ -916,7 +916,7 @@ void homeselectmenu(Player *p)
                     if(point==3)
                     {
                         command = true;
-                        point=0;
+                        point=1;
                         skillset(p);
                     }
                 }
