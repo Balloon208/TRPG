@@ -77,6 +77,8 @@ class Player
             this->damage+=1;
             this->defence+=1;
             this->speed+=1;
+            this->hp=this->maxhp;
+            this->mp=this->maxmp;
 
             if(this->level==3 && skills[2].second.second==0)
             {
@@ -938,7 +940,7 @@ void home(Player *p)
 
 void pattack(Player *p, mob *m)
 {
-    int damage = rand() % 3 + p->damage / (1+(m->defence*0.1));
+    int damage = (rand() % p->damage + p->damage) / (1+(m->defence*0.1));
     Log[t] = m->name + "에게 " + to_string(damage) + " 데미지를 입혔습니다!";
     m->hp-=damage;
     t++;
@@ -951,7 +953,7 @@ void pattack(Player *p, mob *m)
 
 void mattack(Player *p, mob *m)
 {
-    int damage = rand() % 3 + m->damage / (1+(p->defence*0.1));;
+    int damage = (rand() % m->damage + m->damage) / (1+(p->defence*0.1));
     Log[t] = m->name + "이(가) 공격하여 " + to_string(damage) + " 데미지를 입었습니다!";
     p->hp-=damage;
     t++;
@@ -974,18 +976,21 @@ void attack(Player *p, mob *m)
         mattack(p, m);
         pattack(p, m);
     }
+    int mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% 회복
+    p->mp += mphealing;
 }
 
 void skillattack(Player *p, mob *m, int skillnum)
 {
-    int damage = rand() % 3 + p->damage / (1+(m->defence*0.1));
-    if(skillnum == 2)
+    int damage;
+    if(skillnum == 2) // 크로스컷
     {
         if(skills[skillnum].second.first <= p->mp)
         {
             p->mp-=skills[skillnum].second.first;
             for(int i=0; i<2; i++)
             {
+                damage = (rand() % p->damage + p->damage) / (1+(m->defence*0.1));
                 Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
@@ -996,6 +1001,22 @@ void skillattack(Player *p, mob *m, int skillnum)
                 }
             }
             mattack(p, m);
+        }
+        else
+        {
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            t++;
+        }
+    }
+    if(skillnum == 3) // 힐링
+    {
+        if(skills[skillnum].second.first <= p->mp)
+        {
+            p->mp-=skills[skillnum].second.first;
+            int healing = min(p->maxhp, p->hp+(p->maxhp/5)) - p->hp; // hp 20% 회복
+            p->hp += healing;
+            Log[t] = skills[skillnum].first + "을 사용하여 " + to_string(healing) + " 체력을 회복하였습니다!";
+            t++;
         }
         else
         {
