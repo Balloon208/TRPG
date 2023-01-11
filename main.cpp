@@ -14,7 +14,7 @@ int forgeadd[21]={0,1,1,2,3,4,6,9,13,19,28,41,60,88,129,189,277,416,605,882,1298
 int point=1;
 int where = 0;
 int t=0; // 턴이 지난 횟수
-int totalskill = 3;
+int totalskill = 5;
 int usingskill;
 bool killtrigger = false;
 int stage = 9;
@@ -247,7 +247,7 @@ class mob
             this->name = "암살자";
             this->maxhp = 120;
             this->hp = maxhp;
-            this->damage = 60;
+            this->damage = 100;
             this->defence = 1;
             this->speed = 30;
             this->exp = 80;
@@ -292,6 +292,23 @@ class mob
             p->exp+=this->exp;
             t++;
             if(p->LVUPexp<=p->exp) p->LVUP();
+            if(this->name == "(BOSS)오크")
+            {
+                int getskill = rand() % 100;
+                if(getskill < 50 && skills[4].second.second == 0)
+                {
+                    Log[t] = this->name + " 를 죽여 분쇄 를 습득하였습니다!";
+                    t++;
+                    skills[4].second.second = 1;
+                }
+                getskill = rand() % 100;
+                if(getskill < 10 && skills[5].second.second == 0)
+                {
+                    Log[t] = this->name + " 를 죽여 거인의일격 을 습득하였습니다!";
+                    t++;
+                    skills[5].second.second = 1;
+                }
+            }
         }
 };
 
@@ -362,8 +379,10 @@ void Login(Player *p)
 
         // 스킬 설정 옵션 (skill setting), name, Mana, Learned(1 = 스킬 배움, 2 = 장착 중)
         fprintf(fp, "방어 0 1\n");
-        fprintf(fp, "크로스컷 40 0\n");
-        fprintf(fp, "힐링 70 0\n");
+        fprintf(fp, "크로스컷 30 0\n");
+        fprintf(fp, "힐링 60 0\n");
+        fprintf(fp, "분쇄 50 0\n");
+        fprintf(fp, "거인의일격 100 0\n");
         fprintf(fp, "1, 0, 0, 0");
 
         fclose(fp);
@@ -648,7 +667,7 @@ void skillset(Player *p)
                 if(key==13) // enter키
                 {
                     command = true;
-                    if(usingskill<5)
+                    if(usingskill<5 || skills[point].second.second==2)
                     {
                         if(skills[point].second.second==1)
                         {
@@ -983,6 +1002,21 @@ void attack(Player *p, mob *m)
 void skillattack(Player *p, mob *m, int skillnum)
 {
     int damage;
+    if(skillnum == 1)
+    {
+        int temp = p->hp;
+        Log[t] = skills[skillnum].first + "를 사용하여 공격을 막아 일부를 마나로 변환합니다.";
+        p->defence*=2;
+        t++;
+        mattack(p, m);
+        p->defence/=2;
+
+        int mphealing = (temp - p->hp) / 2; // 잃은 hp의 50%만큼 mp 회복
+        p->mp = min(p->maxmp, p->mp+mphealing);
+
+        mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% 회복
+        p->mp += mphealing;
+    }
     if(skillnum == 2) // 크로스컷
     {
         if(skills[skillnum].second.first <= p->mp)
@@ -1013,10 +1047,57 @@ void skillattack(Player *p, mob *m, int skillnum)
         if(skills[skillnum].second.first <= p->mp)
         {
             p->mp-=skills[skillnum].second.first;
-            int healing = min(p->maxhp, p->hp+(p->maxhp/5)) - p->hp; // hp 20% 회복
+            int healing = min(p->maxhp, p->hp+(p->maxhp/10)) - p->hp; // hp 10% 회복
             p->hp += healing;
             Log[t] = skills[skillnum].first + "을 사용하여 " + to_string(healing) + " 체력을 회복하였습니다!";
             t++;
+        }
+        else
+        {
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            t++;
+        }
+    }
+    if(skillnum == 4) // 분쇄
+    {
+        if(skills[skillnum].second.first <= p->mp)
+        {
+            p->mp-=skills[skillnum].second.first;
+            for(int i=0; i<3; i++)
+            {
+                damage = (rand() % (p->damage * 2))  / (1+(m->defence*0.1));
+                Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+                t++;
+                m->hp-=damage;
+                if(m->hp<=0)
+                {
+                    m->Mobdeath(p);
+                    return;
+                }
+            }
+            mattack(p, m);
+        }
+        else
+        {
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            t++;
+        }
+    }
+    if(skillnum == 5) // 거인의일격
+    {
+        if(skills[skillnum].second.first <= p->mp)
+        {
+            p->mp-=skills[skillnum].second.first;
+            damage = (rand() % (p->damage*2) + p->damage*2);
+            Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+            t++;
+            m->hp-=damage;
+            if(m->hp<=0)
+            {
+                m->Mobdeath(p);
+                return;
+            }
+            mattack(p, m);
         }
         else
         {
@@ -1162,6 +1243,7 @@ void fightselectmenu(mob *m, Player *p)
                     if(skillmode)
                     {
                         skillattack(p, m, p->skill[point]);
+                        if(killtrigger) point = 1;
                     }
                     else
                     {
