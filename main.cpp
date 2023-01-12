@@ -10,24 +10,24 @@ using namespace std;
 
 double mobhppercent, playerhppercent, playermppercent, playerexppercent;
 
-int forgeadd[21]={0,1,1,2,3,4,6,9,13,19,28,41,60,88,129,189,277,416,605,882,1298};
+int forgeadd[21]={0,1,2,3,4,5,5,5,5,5,5,7,7,7,7,7,10,15,20,25,30};
 int point=1;
 int where = 0;
 int t=0; // 턴이 지난 횟수
-int totalskill = 5;
+int totalskill = 6;
 int usingskill;
 bool killtrigger = false;
 int stage = 9;
 
 string worldmap[10] = {
 "-",
+"전직소",
 "무기 강화소",
 "방어구 강화소",
 "시작의 숲 (권장 레벨 LV1 이상)",
 "케이브 동굴 (권장 레벨 LV5 이상)",
 "수상한 공터 (권장 레벨 LV12 이상)",
 "저주받은 땅 (권장 레벨 LV20 이상)",
-"-",
 "-",
 "-",
 };
@@ -91,6 +91,12 @@ class Player
                 Log[t] = "힐링을 습득 하였습니다!";
                 t++;
                 skills[3].second.second=1;
+            }
+            if(this->level==15  && skills[4].second.second==0)
+            {
+                Log[t] = "급소찌르기를 습득 하였습니다!";
+                t++;
+                skills[4].second.second=1;
             }
 
             if(this->LVUPexp<this->exp) this->LVUP();
@@ -157,8 +163,8 @@ class mob
             this->damage = 50;
             this->defence = 20;
             this->speed = 22;
-            this->exp = 2650;
-            this->gold = 45000;
+            this->exp = 450;
+            this->gold = 5000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -168,10 +174,10 @@ class mob
             this->name = "돌 슬라임";
             this->maxhp = 100;
             this->hp = maxhp;
-            this->damage = 5;
-            this->defence = 20;
+            this->damage = 7;
+            this->defence = 25;
             this->speed = 1;
-            this->exp = 25;
+            this->exp = 20;
             this->gold = 300;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
@@ -182,9 +188,9 @@ class mob
             this->maxhp = 120;
             this->hp = maxhp;
             this->damage = 15;
-            this->defence = 3;
+            this->defence = 5;
             this->speed = 12;
-            this->exp = 35;
+            this->exp = 30;
             this->gold = 430;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
@@ -195,10 +201,10 @@ class mob
             this->maxhp = 200;
             this->hp = maxhp;
             this->damage = 10;
-            this->defence = 10;
+            this->defence = 15;
             this->speed = 1;
-            this->exp = 60;
-            this->gold = 700;
+            this->exp = 45;
+            this->gold = 600;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -208,10 +214,10 @@ class mob
             this->maxhp = 500;
             this->hp = maxhp;
             this->damage = 25;
-            this->defence = 15;
+            this->defence = 25;
             this->speed = 1;
-            this->exp = 450;
-            this->gold = 4320;
+            this->exp = 230;
+            this->gold = 2000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -222,10 +228,10 @@ class mob
             this->maxhp = 200;
             this->hp = maxhp;
             this->damage = 30;
-            this->defence = 3;
+            this->defence = 10;
             this->speed = 22;
-            this->exp = 150;
-            this->gold = 1080;
+            this->exp = 100;
+            this->gold = 800;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -235,10 +241,10 @@ class mob
             this->maxhp = 300;
             this->hp = maxhp;
             this->damage = 20;
-            this->defence = 5;
+            this->defence = 10;
             this->speed = 15;
-            this->exp = 190;
-            this->gold = 1450;
+            this->exp = 90;
+            this->gold = 740;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -250,8 +256,8 @@ class mob
             this->damage = 100;
             this->defence = 1;
             this->speed = 30;
-            this->exp = 80;
-            this->gold = 2700;
+            this->exp = 50;
+            this->gold = 1300;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -261,10 +267,10 @@ class mob
             this->maxhp = 600;
             this->hp = maxhp;
             this->damage = 30;
-            this->defence = 5;
+            this->defence = 15;
             this->speed = 20;
-            this->exp = 380;
-            this->gold = 3750;
+            this->exp = 200;
+            this->gold = 1750;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -276,11 +282,79 @@ class mob
             this->damage = 100;
             this->defence = 1;
             this->speed = 40;
-            this->exp = 12000;
-            this->gold = 110000;
+            this->exp = 2500;
+            this->gold = 22000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
+
+        // 저주받은 땅
+        void zombie()
+        {
+            this->name = "좀비";
+            this->maxhp = 1000;
+            this->hp = maxhp;
+            this->damage = 80;
+            this->defence = 30;
+            this->speed = 40;
+            this->exp = 440;
+            this->gold = 2500;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void skeleton()
+        {
+            this->name = "스켈레톤";
+            this->maxhp = 777;
+            this->hp = maxhp;
+            this->damage = 150;
+            this->defence = 20;
+            this->speed = 50;
+            this->exp = 380;
+            this->gold = 2800;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void tankzombie()
+        {
+            this->name = "탱크 좀비";
+            this->maxhp = 1000;
+            this->hp = maxhp;
+            this->damage = 100;
+            this->defence = 200;
+            this->speed = 1;
+            this->exp = 420;
+            this->gold = 3000;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void darkknight()
+        {
+            this->name = "칠흑의 기사";
+            this->maxhp = 1500;
+            this->hp = maxhp;
+            this->damage = 130;
+            this->defence = 50;
+            this->speed = 35;
+            this->exp = 510;
+            this->gold = 3830;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+        void demonite()
+        {
+            this->name = "(BOSS)마왕 간부 데모나이트";
+            this->maxhp = 5000;
+            this->hp = maxhp;
+            this->damage = 500;
+            this->defence = 120;
+            this->speed = 20;
+            this->exp = 12000;
+            this->gold = 75000;
+            Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
+            t++;
+        }
+
         void Mobdeath(Player *p)
         {
             killtrigger = true;
@@ -295,18 +369,18 @@ class mob
             if(this->name == "(BOSS)오크")
             {
                 int getskill = rand() % 100;
-                if(getskill < 50 && skills[4].second.second == 0)
+                if(getskill < 50 && skills[5].second.second == 0)
                 {
                     Log[t] = this->name + " 를 죽여 분쇄 를 습득하였습니다!";
                     t++;
-                    skills[4].second.second = 1;
+                    skills[5].second.second = 1;
                 }
                 getskill = rand() % 100;
-                if(getskill < 10 && skills[5].second.second == 0)
+                if(getskill < 20 && skills[6].second.second == 0)
                 {
                     Log[t] = this->name + " 를 죽여 거인의일격 을 습득하였습니다!";
                     t++;
-                    skills[5].second.second = 1;
+                    skills[6].second.second = 1;
                 }
             }
         }
@@ -381,9 +455,10 @@ void Login(Player *p)
         fprintf(fp, "방어 0 1\n");
         fprintf(fp, "크로스컷 30 0\n");
         fprintf(fp, "힐링 60 0\n");
+        fprintf(fp, "급소찌르기 20 0\n");
         fprintf(fp, "분쇄 50 0\n");
         fprintf(fp, "거인의일격 100 0\n");
-        fprintf(fp, "1, 0, 0, 0");
+        fprintf(fp, "0, 0, 0, 0");
 
         fclose(fp);
 
@@ -628,7 +703,6 @@ void skillset(Player *p)
         }
         else
         {
-            usingskill--;
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
             cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
@@ -667,7 +741,7 @@ void skillset(Player *p)
                 if(key==13) // enter키
                 {
                     command = true;
-                    if(usingskill<5 || skills[point].second.second==2)
+                    if(usingskill<=4 || skills[point].second.second==2)
                     {
                         if(skills[point].second.second==1)
                         {
@@ -701,10 +775,11 @@ void skillset(Player *p)
     home(p);
 }
 
+// 몬스터 소환 확률
 void summonmob(Player *p)
 {
     mob m;
-    if(where==3)
+    if(where==4)
     {
         int n = rand()%100+1;
         if(n<=40) m.MiniSlime();
@@ -714,7 +789,7 @@ void summonmob(Player *p)
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if(where==4)
+    if(where==5)
     {
         int n = rand()%100+1;
         if(n<=40) m.RockSlime();
@@ -724,7 +799,7 @@ void summonmob(Player *p)
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if(where==5)
+    if(where==6)
     {
         int n = rand()%100+1;
         if(n<=30) m.killerdog();
@@ -732,6 +807,17 @@ void summonmob(Player *p)
         else if(n<=70) m.shadower();
         else if(n<=97) m.badknight();
         else if(n<=100) m.nohead();
+        fightmenu(&m, p, false);
+        fightselectmenu(&m, p);
+    }
+    if(where==7)
+    {
+        int n = rand()%100+1;
+        if(n<=35) m.zombie();
+        else if(n<=70) m.skeleton();
+        else if(n<=90) m.tankzombie();
+        else if(n<=97) m.darkknight();
+        else if(n<=100) m.demonite();
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
@@ -792,12 +878,12 @@ void movemenu(Player *p)
                     command = true;
                     where = point;
                     point = 1;
-                    if(where==1)
+                    if(where==2)
                     {
                         weaponforge(p, false);
                         break;
                     }
-                    if(where==2)
+                    if(where==3)
                     {
                         armorforge(p, false);
                         break;
@@ -1004,18 +1090,34 @@ void skillattack(Player *p, mob *m, int skillnum)
     int damage;
     if(skillnum == 1)
     {
+        int success = rand() % 4;
         int temp = p->hp;
-        Log[t] = skills[skillnum].first + "를 사용하여 공격을 막아 일부를 마나로 변환합니다.";
-        p->defence*=2;
-        t++;
-        mattack(p, m);
-        p->defence/=2;
 
-        int mphealing = (temp - p->hp) / 2; // 잃은 hp의 50%만큼 mp 회복
-        p->mp = min(p->maxmp, p->mp+mphealing);
+        if(success>0)
+        {
+            Log[t] = skills[skillnum].first + "를 사용하여 공격을 막아 일부를 마나로 변환합니다.";
+            p->defence*=2;
+            t++;
+            mattack(p, m);
+            p->defence/=2;
 
-        mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% 회복
-        p->mp += mphealing;
+            int mphealing = (temp - p->hp) / 2; // 잃은 hp의 50%만큼 mp 회복
+            p->mp = min(p->maxmp, p->mp+mphealing);
+
+            mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% 회복
+            p->mp += mphealing;
+        }
+        else
+        {
+            Log[t] = skills[skillnum].first + "를 사용하였으나 막는 것을 실패하였다!";
+            t++;
+            p->defence/=2;
+            mattack(p, m);
+            p->defence*=2;
+            int mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% 회복
+            p->mp += mphealing;
+        }
+
     }
     if(skillnum == 2) // 크로스컷
     {
@@ -1024,7 +1126,7 @@ void skillattack(Player *p, mob *m, int skillnum)
             p->mp-=skills[skillnum].second.first;
             for(int i=0; i<2; i++)
             {
-                damage = (rand() % p->damage + p->damage) / (1+(m->defence*0.1));
+                damage = (rand() % (p->damage*2) + p->damage) / (1+(m->defence*0.1));
                 Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
@@ -1047,7 +1149,7 @@ void skillattack(Player *p, mob *m, int skillnum)
         if(skills[skillnum].second.first <= p->mp)
         {
             p->mp-=skills[skillnum].second.first;
-            int healing = min(p->maxhp, p->hp+(p->maxhp/10)) - p->hp; // hp 10% 회복
+            int healing = min(p->maxhp, p->hp+(p->maxhp/8)) - p->hp; // hp 약 12.5% 회복
             p->hp += healing;
             Log[t] = skills[skillnum].first + "을 사용하여 " + to_string(healing) + " 체력을 회복하였습니다!";
             t++;
@@ -1058,14 +1160,36 @@ void skillattack(Player *p, mob *m, int skillnum)
             t++;
         }
     }
-    if(skillnum == 4) // 분쇄
+    if(skillnum == 4) // 급소찌르기
+    {
+        if(skills[skillnum].second.first <= p->mp)
+        {
+            p->mp-=skills[skillnum].second.first;
+            damage = (rand() % p->damage) + p->damage;
+            Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+            t++;
+            m->hp-=damage;
+            if(m->hp<=0)
+            {
+                m->Mobdeath(p);
+                return;
+            }
+            mattack(p, m);
+        }
+        else
+        {
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            t++;
+        }
+    }
+    if(skillnum == 5) // 분쇄
     {
         if(skills[skillnum].second.first <= p->mp)
         {
             p->mp-=skills[skillnum].second.first;
             for(int i=0; i<3; i++)
             {
-                damage = (rand() % (p->damage * 2))  / (1+(m->defence*0.1));
+                damage = (rand() % (p->damage * 3)) / (1+(m->defence*0.1));
                 Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
@@ -1083,12 +1207,12 @@ void skillattack(Player *p, mob *m, int skillnum)
             t++;
         }
     }
-    if(skillnum == 5) // 거인의일격
+    if(skillnum == 6) // 거인의일격
     {
         if(skills[skillnum].second.first <= p->mp)
         {
             p->mp-=skills[skillnum].second.first;
-            damage = (rand() % (p->damage*2) + p->damage*2);
+            damage = (rand() % (p->damage*4) + p->damage*5);
             Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp-=damage;
@@ -1269,6 +1393,7 @@ void fightselectmenu(mob *m, Player *p)
                 if(key==27 && skillmode) //esc
                 {
                     skillmode = !skillmode;
+                    point = 2;
                 }
             system("cls");
             fightmenu(m, p, skillmode);
@@ -1445,7 +1570,7 @@ void Forge(Player *p, int protect, int chance, string mode, int upmoney) // stat
     }
     if(mode=="armor")
     {
-        if(p->armorlevel==15)
+        if(p->armorlevel==20)
         {
             Log[t] = "최대 강화 상태입니다. 강화를 취소합니다.";
             t++;
@@ -1500,11 +1625,15 @@ void weaponforge(Player *p, bool visit)
         else cout << Log[i] << '\n';
     }
 
-    // 90 80 70 60 50 45 40 35 30 25 20 20 20 20 20 10 10 10 10 5
-    if(p->weaponlevel<=5) chance = 100 - p->weaponlevel*10;
-    else if(p->weaponlevel<=10) chance = 50 - ((p->weaponlevel-5)*5);
-    else if(p->weaponlevel<=15) chance = 20;
-    else if(p->weaponlevel<=19) chance = 10;
+    // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
+    if(p->weaponlevel<=4) chance = 100 - p->weaponlevel*5;
+    else if(p->weaponlevel<=6) chance = 70;
+    else if(p->weaponlevel<=8) chance = 60;
+    else if(p->weaponlevel<=11) chance = 50;
+    else if(p->weaponlevel<=14) chance = 40;
+    else if(p->weaponlevel<=16) chance = 30;
+    else if(p->weaponlevel==17) chance = 20;
+    else if(p->weaponlevel==18) chance = 10;
     else chance = 5;
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
@@ -1548,10 +1677,15 @@ void armorforge(Player *p, bool visit)
         else cout << Log[i] << '\n';
     }
 
-    // 100 90 80 70 60 50 40 30 20 10 10 10 10 10 5 0
-    if(p->armorlevel<=10) chance = 100 - p->armorlevel*10;
-    else if(p->armorlevel<=6) chance = 30;
-    else if(p->armorlevel<=13) chance = 10;
+    // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
+    if(p->armorlevel<=4) chance = 100 - p->armorlevel*5;
+    else if(p->armorlevel<=6) chance = 70;
+    else if(p->armorlevel<=8) chance = 60;
+    else if(p->armorlevel<=11) chance = 50;
+    else if(p->armorlevel<=14) chance = 40;
+    else if(p->armorlevel<=16) chance = 30;
+    else if(p->armorlevel==17) chance = 20;
+    else if(p->armorlevel==18) chance = 10;
     else chance = 5;
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
