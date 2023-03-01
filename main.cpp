@@ -16,6 +16,7 @@ int point=1;
 int where = 0;
 int t=0; // 턴이 지난 횟수
 int totalskill = 6;
+int totalitem = 3;
 int usingskill;
 bool killtrigger = false;
 int stage = 9;
@@ -26,7 +27,7 @@ string worldmap[10] = {
 "무기 강화소",
 "방어구 강화소",
 "시작의 숲 (권장 레벨 LV1 이상)",
-"케이브 동굴 (권장 레벨 LV5 이상)",
+"케이브 동굴 (권장 레벨 LV7 이상)",
 "수상한 공터 (권장 레벨 LV12 이상)",
 "저주받은 땅 (권장 레벨 LV20 이상)",
 "-",
@@ -34,6 +35,7 @@ string worldmap[10] = {
 };
 
 pair<string, pair<int,int>> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
+pair<string, pair<int,int>> itemlist[500]; // 아이템 이름, 구매가, 판매가
 
 string Log[100000];
 
@@ -55,7 +57,7 @@ class Player
         int weaponlevel;
         int armorlevel;
         int skill[6];
-
+        pair<int,int> playeritemlist[500]; // 수량, 강화(무기가 아니라면 -1)
 
         void heal()
         {
@@ -165,14 +167,14 @@ class mob
         void Oak()
         {
             this->name = "[BOSS](LV15) 오크";
-            this->maxhp = 1500;
+            this->maxhp = 10000;
             this->hp = maxhp;
             this->damage = 50;
-            this->defence = 20;
+            this->defence = 30;
             this->speed = 22;
             this->level = 15;
-            this->exp = 450;
-            this->gold = 5000;
+            this->exp = 2450;
+            this->gold = 7000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -182,7 +184,7 @@ class mob
             this->name = "(LV4) 돌 슬라임";
             this->maxhp = 100;
             this->hp = maxhp;
-            this->damage = 7;
+            this->damage = 15;
             this->defence = 25;
             this->speed = 1;
             this->level = 4;
@@ -196,7 +198,7 @@ class mob
             this->name = "(LV6) 박쥐";
             this->maxhp = 120;
             this->hp = maxhp;
-            this->damage = 15;
+            this->damage = 20;
             this->defence = 5;
             this->speed = 12;
             this->level = 6;
@@ -210,7 +212,7 @@ class mob
             this->name = "(LV8) 미니 골렘";
             this->maxhp = 200;
             this->hp = maxhp;
-            this->damage = 10;
+            this->damage = 25;
             this->defence = 15;
             this->speed = 1;
             this->level = 8;
@@ -224,7 +226,7 @@ class mob
             this->name = "(LV13) 골렘";
             this->maxhp = 500;
             this->hp = maxhp;
-            this->damage = 25;
+            this->damage = 35;
             this->defence = 25;
             this->speed = 1;
             this->level = 13;
@@ -239,7 +241,7 @@ class mob
             this->name = "(LV10) 사냥개";
             this->maxhp = 200;
             this->hp = maxhp;
-            this->damage = 30;
+            this->damage = 40;
             this->defence = 10;
             this->speed = 22;
             this->level = 10;
@@ -253,8 +255,8 @@ class mob
             this->name = "(LV10) 사냥꾼";
             this->maxhp = 300;
             this->hp = maxhp;
-            this->damage = 20;
-            this->defence = 10;
+            this->damage = 30;
+            this->defence = 15;
             this->speed = 15;
             this->level = 10;
             this->exp = 90;
@@ -267,7 +269,7 @@ class mob
             this->name = "(LV11) 암살자";
             this->maxhp = 120;
             this->hp = maxhp;
-            this->damage = 100;
+            this->damage = 150;
             this->defence = 1;
             this->speed = 30;
             this->level = 11;
@@ -281,7 +283,7 @@ class mob
             this->name = "(LV13) 타락한 기사";
             this->maxhp = 600;
             this->hp = maxhp;
-            this->damage = 30;
+            this->damage = 50;
             this->defence = 15;
             this->speed = 20;
             this->level = 13;
@@ -293,14 +295,14 @@ class mob
         void nohead()
         {
             this->name = "[BOSS](LV22) 듀라한";
-            this->maxhp = 5000;
+            this->maxhp = 22222;
             this->hp = maxhp;
-            this->damage = 100;
+            this->damage = 222;
             this->defence = 1;
             this->speed = 40;
             this->level = 22;
-            this->exp = 2500;
-            this->gold = 22000;
+            this->exp = 7500;
+            this->gold = 33000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
             t++;
         }
@@ -414,10 +416,13 @@ void fight(Player *p);
 void fightmenu(mob *m, Player *p, bool skillmode);
 void fightselectmenu(mob *m, Player *p);
 void home(Player *p);
+void movemenu(Player *p);
 void readymenu(Player *p);
 void weaponforge(Player *p, bool visit);
 void armorforge(Player *p, bool visit);
 void Save(Player *p);
+void skillset(Player *p);
+void shop(Player *p);
 
 void Login(Player *p)
 {
@@ -483,6 +488,22 @@ void Login(Player *p)
         fprintf(fp, "분쇄 50 0\n");
         fprintf(fp, "거인의일격 100 0\n");
         fprintf(fp, "0, 0, 0, 0");
+
+        fclose(fp);
+
+        fp = fopen("itemDB.txt","w");
+
+        fprintf(fp, "소형포션 300 200\n");
+        fprintf(fp, "중형포션 1000 700\n");
+        fprintf(fp, "대형포션 2000 1500\n");
+
+        fclose(fp);
+
+        fp = fopen("playeritem.txt","w");
+
+        fprintf(fp, "소형포션 0 -1\n");
+        fprintf(fp, "중형포션 0 -1\n");
+        fprintf(fp, "대형포션 0 -1\n");
 
         fclose(fp);
 
@@ -559,11 +580,16 @@ void Save(Player *p)
     fp = fopen("playerskills.txt","w");
     for(int i=1; i<=totalskill; i++)
     {
-        char skillname[1000];
-
         fprintf(fp,"%s %d %d\n", skills[i].first.c_str(), skills[i].second.first, skills[i].second.second);
     }
     fprintf(fp,"%d %d %d %d", p->skill[1], p->skill[2], p->skill[3] ,p->skill[4]);
+    fclose(fp);
+
+    fp = fopen("playeritem.txt","w");
+    for(int i=1; i<=totalitem; i++)
+    {
+        fprintf(fp,"%s %d %d\n", itemlist[i].first, p->playeritemlist[i].first, p->playeritemlist[i].second);
+    }
     fclose(fp);
 }
 
@@ -670,6 +696,23 @@ void Load(Player *p)
     fscanf(fp,"%d %d %d %d", &p->skill[1], &p->skill[2], &p->skill[3] ,&p->skill[4]);
     fclose(fp);
 
+    fp = fopen("itemDB.txt","r");
+    for(int i=1; i<=totalitem; i++)
+    {
+        char itemnames[10000];
+        fscanf(fp,"%s %d %d\n", itemnames, &itemlist[i].second.first, &itemlist[i].second.second);
+        itemlist[i].first = itemnames;
+    }
+    fclose(fp);
+
+    fp = fopen("playeritem.txt","r");
+    for(int i=1; i<=totalitem; i++)
+    {
+        char trash[10000];
+        fscanf(fp,"%s %d %d\n", trash, &p->playeritemlist[i].first, &p->playeritemlist[i].second);
+    }
+    fclose(fp);
+
     /*
     trash << '\n' <<
     p->name << '\n' <<
@@ -690,114 +733,7 @@ void Load(Player *p)
     */
 }
 
-void skillset(Player *p)
-{
-    system("cls");
-    bool command=false;
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
-
-    for(int i=1; i<4; i++)
-    {
-        p->skill[i]=0;
-    }
-    usingskill=1;
-
-    for(int i=1; i<=totalskill; i++)
-    {
-        if(i==point) cout << ">";
-
-        if(skills[i].second.second==1)
-        {
-            cout << "    " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
-        }
-        else if(skills[i].second.second==2)
-        {
-            p->skill[usingskill]=i;
-            usingskill++;
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        }
-        else
-        {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        }
-    }
-
-    Save(p);
-
-    while(!command)
-    {
-        int key;
-        if(kbhit())
-        {
-            key=getch();
-            {
-                if(key==224) // 방향키
-                {
-                    key=getch();
-                    {
-                        if(key==72) // 위쪽
-                        {
-                            if(point>1)
-                            {
-                                point--;
-                            }
-                        }
-                        if(key==80) // 아래쪽
-                        {
-                            if(point<totalskill)
-                            {
-                                point++;
-                            }
-                        }
-                    }
-                }
-                if(key==13) // enter키
-                {
-                    command = true;
-                    if(usingskill<=4 || skills[point].second.second==2)
-                    {
-                        if(skills[point].second.second==1)
-                        {
-                            Log[t] = skills[point].first + " 스킬을 장착하였습니다.";
-                            t++;
-                            skills[point].second.second=2;
-                        }
-                        else if(skills[point].second.second==2)
-                        {
-                            Log[t] = skills[point].first + " 스킬을 해제하였습니다.";
-                            t++;
-                            skills[point].second.second=1;
-                        }
-                    }
-                    else if(skills[point].second.second==1)
-                    {
-                        Log[t] = "스킬 슬롯이 가득 찼습니다.";
-                        t++;
-                    }
-                }
-                if(key==27) //esc
-                {
-                    point = 1;
-                    break;
-                }
-            }
-            skillset(p);
-        }
-    }
-    command = false;
-    home(p);
-}
 
 // 몬스터 소환 확률
 void summonmob(Player *p)
@@ -845,89 +781,6 @@ void summonmob(Player *p)
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-}
-
-void movemenu(Player *p)
-{
-    bool command = false;
-
-    system("cls");
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
-
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
-
-    cout << "이동할 곳을 선택해 주세요.\n\n";
-
-    for(int i=point-1; i<=point+1; i++)
-    {
-        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
-        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        cout << worldmap[i] << '\n';
-    }
-
-    while(!command)
-    {
-        int key;
-        if(kbhit())
-        {
-            key=getch();
-            {
-                if(key==224) // 방향키
-                {
-                    key=getch();
-                    {
-                        if(key==72) // 위쪽
-                        {
-                            if(point>1)
-                            {
-                                point--;
-                            }
-                        }
-                        if(key==80) // 아래쪽
-                        {
-                            if(point<stage-1)
-                            {
-                                point++;
-                            }
-                        }
-                    }
-                }
-                if(key==13) // enter키
-                {
-                    command = true;
-                    where = point;
-                    point = 1;
-                    if(where==2)
-                    {
-                        weaponforge(p, false);
-                        break;
-                    }
-                    if(where==3)
-                    {
-                        armorforge(p, false);
-                        break;
-                    }
-                    Log[t] = "당신은 " + worldmap[where] + "(으)로 여정을 떠났다.";
-                    t++;
-                    fight(p);
-                    readymenu(p);
-                }
-                if(key==27) //esc
-                {
-                    point = 1;
-                    break;
-                }
-            }
-            movemenu(p);
-        }
-    }
-    command=false;
-    home(p);
 }
 
 void homemenu(Player *p)
@@ -1050,6 +903,12 @@ void homeselectmenu(Player *p)
                         point=1;
                         skillset(p);
                     }
+                    if(point==4)
+                    {
+                        command = true;
+                        point=1;
+                        shop(p);
+                    }
                 }
             system("cls");
             homemenu(p);
@@ -1057,6 +916,268 @@ void homeselectmenu(Player *p)
         }
     }
     command = false;
+}
+
+void movemenu(Player *p)
+{
+    bool command = false;
+
+    system("cls");
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    cout << "이동할 곳을 선택해 주세요.\n\n";
+
+    for(int i=point-1; i<=point+1; i++)
+    {
+        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        cout << worldmap[i] << '\n';
+    }
+
+    while(!command)
+    {
+        int key;
+        if(kbhit())
+        {
+            key=getch();
+            {
+                if(key==224) // 방향키
+                {
+                    key=getch();
+                    {
+                        if(key==72) // 위쪽
+                        {
+                            if(point>1)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==80) // 아래쪽
+                        {
+                            if(point<stage-1)
+                            {
+                                point++;
+                            }
+                        }
+                    }
+                }
+                if(key==13) // enter키
+                {
+                    command = true;
+                    where = point;
+                    point = 1;
+                    if(where==2)
+                    {
+                        weaponforge(p, false);
+                        break;
+                    }
+                    if(where==3)
+                    {
+                        armorforge(p, false);
+                        break;
+                    }
+                    Log[t] = "당신은 " + worldmap[where] + "(으)로 여정을 떠났다.";
+                    t++;
+                    fight(p);
+                    readymenu(p);
+                }
+                if(key==27) //esc
+                {
+                    point = 1;
+                    break;
+                }
+            }
+            movemenu(p);
+        }
+    }
+    command=false;
+    home(p);
+}
+
+void skillset(Player *p)
+{
+    system("cls");
+    bool command=false;
+
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    for(int i=1; i<4; i++)
+    {
+        p->skill[i]=0;
+    }
+    usingskill=1;
+
+    for(int i=1; i<=totalskill; i++)
+    {
+        if(i==point) cout << ">";
+
+        if(skills[i].second.second==1)
+        {
+            cout << "    " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+        }
+        else if(skills[i].second.second==2)
+        {
+            p->skill[usingskill]=i;
+            usingskill++;
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        }
+        else
+        {
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        }
+    }
+
+    Save(p);
+
+    while(!command)
+    {
+        int key;
+        if(kbhit())
+        {
+            key=getch();
+            {
+                if(key==224) // 방향키
+                {
+                    key=getch();
+                    {
+                        if(key==72) // 위쪽
+                        {
+                            if(point>1)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==80) // 아래쪽
+                        {
+                            if(point<totalskill)
+                            {
+                                point++;
+                            }
+                        }
+                    }
+                }
+                if(key==13) // enter키
+                {
+                    command = true;
+                    if(usingskill<=4 || skills[point].second.second==2)
+                    {
+                        if(skills[point].second.second==1)
+                        {
+                            Log[t] = skills[point].first + " 스킬을 장착하였습니다.";
+                            t++;
+                            skills[point].second.second=2;
+                        }
+                        else if(skills[point].second.second==2)
+                        {
+                            Log[t] = skills[point].first + " 스킬을 해제하였습니다.";
+                            t++;
+                            skills[point].second.second=1;
+                        }
+                    }
+                    else if(skills[point].second.second==1)
+                    {
+                        Log[t] = "스킬 슬롯이 가득 찼습니다.";
+                        t++;
+                    }
+                }
+                if(key==27) //esc
+                {
+                    point = 1;
+                    break;
+                }
+            }
+            skillset(p);
+        }
+    }
+    command = false;
+    home(p);
+}
+
+void shop(Player *p)
+{
+    system("cls");
+    bool command=false;
+
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    for(int i=1; i<=totalitem; i++)
+    {
+        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        cout << itemlist[i].first << " : BUY " << itemlist[i].second.first << " / SELL " << itemlist[i].second.second << " / 보유 개수 : (" << p->playeritemlist[i].first << ")" <<'\n';
+    }
+
+    while(!command)
+    {
+        int key;
+        if(kbhit())
+        {
+            key=getch();
+            {
+                if(key==224) // 방향키
+                {
+                    key=getch();
+                    {
+                        if(key==72) // 위쪽
+                        {
+                            if(point>0)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==80) // 아래쪽
+                        {
+                            if(point<totalitem)
+                            {
+                                point++;
+                            }
+                        }
+                    }
+                }
+                if(key==66 || key==98) // B 키
+                {
+                    if(p->gold >= itemlist[point].second.first)
+                    {
+                        p->gold-=itemlist[point].second.first;
+                        p->playeritemlist[point].first++;
+                        Log[t] = itemlist[point].first + "를 구매하였다.";
+                        t++;
+                    }
+                }
+                if(key==27) //esc
+                {
+                    point = 1;
+                    break;
+                }
+            }
+            shop(p);
+        }
+    }
+    command=false;
+    home(p);
 }
 
 void home(Player *p)
@@ -1750,30 +1871,3 @@ int main()
     Load(&p);
     home(&p);
 }
-
-/*
-
-아이디어 노트
-
--------------------------스킬에 관하여-----------------------
-
-방안은 총 2가지이다
-
-1. 선택형 스킬
-player에 bool skill[n] = true / false (playerinfom.txt에 기록되어야함. 획득 경로는 상점..? / 특수 조건..? / 레벨)
-
-
-2. 성장형 스킬
-
-1의 장점 : 재밌어지고 다양한 경우의 수(공략법) 존재
-1의 단점 : 매우 구현이 힘들어지고, 밸런스를 맞추기 힘들다.
-2의 장점 : 구현이 적당한 난이도, 밸런스 맞추기 매우 쉽다.
-2의 단점 : 스킬의 흥미도가 과연 있을까...
-
-2 체택
-
-구현 방법 : playerskills 에 스킬 획득 여부 확인 (0 : 없음 / 1 : 스킬 가짐 / 2 : 스킬 장착중)
-          : playerinfom 에 스킬 장착 여부 확인 (스킬 코드 이용, 0 = 미장착)
-          : useskill 함수로 스킬 사용. (skillnum을 if문으로 분리하여 실행)
-
-*/
