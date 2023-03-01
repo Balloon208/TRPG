@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <stdlib.h>
 #include <string>
+#include <cmath>
 #include <windows.h>
 #include <vector>
 #include <conio.h>
@@ -66,19 +67,21 @@ class Player
 
         void LVUP()
         {
+            this->maxhp+=(10+(level/2)-1);
+            this->maxmp+=(5+(level/2)-1);
+            this->damage+=(1+int(level/4));
+            this->defence+=(1+int(level/4));
+            this->speed+=1;
+            this->hp=this->maxhp;
+            this->mp=this->maxmp;
+
+
             this->exp -= this->LVUPexp;
             this->level++;
             this->LVUPexp*=1.3;
             Log[t] = "레벨이 상승 하였습니다!" + to_string(this->level-1) + "->" + to_string(this->level);
             t++;
 
-            this->maxhp+=10;
-            this->maxmp+=5;
-            this->damage+=1;
-            this->defence+=1;
-            this->speed+=1;
-            this->hp=this->maxhp;
-            this->mp=this->maxmp;
 
             if(this->level==3 && skills[2].second.second==0)
             {
@@ -112,18 +115,20 @@ class mob
         int damage;
         int defence;
         int speed;
+        int level;
         int exp;
         int gold;
 
         //시작의 숲
         void MiniSlime()
         {
-            this->name = "미니 슬라임";
+            this->name = "(LV1) 미니 슬라임";
             this->maxhp = 50;
             this->hp = maxhp;
             this->damage = 4;
             this->defence = 3;
             this->speed = 5;
+            this->level = 1;
             this->exp = 5;
             this->gold = 80;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -131,12 +136,13 @@ class mob
         }
         void Snake()
         {
-            this->name = "뱀";
+            this->name = "(LV2) 뱀";
             this->maxhp = 75;
             this->hp = maxhp;
             this->damage = 6;
             this->defence = 3;
             this->speed = 10;
+            this->level = 2;
             this->exp = 8;
             this->gold = 130;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -144,12 +150,13 @@ class mob
         }
         void Slime()
         {
-            this->name = "슬라임";
+            this->name = "(LV3) 슬라임";
             this->maxhp = 100;
             this->hp = maxhp;
             this->damage = 9;
             this->defence = 3;
             this->speed = 3;
+            this->level = 3;
             this->exp = 15;
             this->gold = 200;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -157,12 +164,13 @@ class mob
         }
         void Oak()
         {
-            this->name = "(BOSS)오크";
+            this->name = "[BOSS](LV15) 오크";
             this->maxhp = 1500;
             this->hp = maxhp;
             this->damage = 50;
             this->defence = 20;
             this->speed = 22;
+            this->level = 15;
             this->exp = 450;
             this->gold = 5000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -171,12 +179,13 @@ class mob
         // 케이브 케이브
         void RockSlime()
         {
-            this->name = "돌 슬라임";
+            this->name = "(LV4) 돌 슬라임";
             this->maxhp = 100;
             this->hp = maxhp;
             this->damage = 7;
             this->defence = 25;
             this->speed = 1;
+            this->level = 4;
             this->exp = 20;
             this->gold = 300;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -184,12 +193,13 @@ class mob
         }
         void Bat()
         {
-            this->name = "박쥐";
+            this->name = "(LV6) 박쥐";
             this->maxhp = 120;
             this->hp = maxhp;
             this->damage = 15;
             this->defence = 5;
             this->speed = 12;
+            this->level = 6;
             this->exp = 30;
             this->gold = 430;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -197,12 +207,13 @@ class mob
         }
         void MiniGolem()
         {
-            this->name = "미니 골렘";
+            this->name = "(LV8) 미니 골렘";
             this->maxhp = 200;
             this->hp = maxhp;
             this->damage = 10;
             this->defence = 15;
             this->speed = 1;
+            this->level = 8;
             this->exp = 45;
             this->gold = 600;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -210,12 +221,13 @@ class mob
         }
         void Golem()
         {
-            this->name = "골렘";
+            this->name = "(LV13) 골렘";
             this->maxhp = 500;
             this->hp = maxhp;
             this->damage = 25;
             this->defence = 25;
             this->speed = 1;
+            this->level = 13;
             this->exp = 230;
             this->gold = 2000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -224,12 +236,13 @@ class mob
         // 서늘한 공터
         void killerdog()
         {
-            this->name = "사냥개";
+            this->name = "(LV10) 사냥개";
             this->maxhp = 200;
             this->hp = maxhp;
             this->damage = 30;
             this->defence = 10;
             this->speed = 22;
+            this->level = 10;
             this->exp = 100;
             this->gold = 800;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -237,12 +250,13 @@ class mob
         }
         void hunter()
         {
-            this->name = "사냥꾼";
+            this->name = "(LV10) 사냥꾼";
             this->maxhp = 300;
             this->hp = maxhp;
             this->damage = 20;
             this->defence = 10;
             this->speed = 15;
+            this->level = 10;
             this->exp = 90;
             this->gold = 740;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -250,12 +264,13 @@ class mob
         }
         void shadower()
         {
-            this->name = "암살자";
+            this->name = "(LV11) 암살자";
             this->maxhp = 120;
             this->hp = maxhp;
             this->damage = 100;
             this->defence = 1;
             this->speed = 30;
+            this->level = 11;
             this->exp = 50;
             this->gold = 1300;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -263,12 +278,13 @@ class mob
         }
         void badknight()
         {
-            this->name = "타락한 기사";
+            this->name = "(LV13) 타락한 기사";
             this->maxhp = 600;
             this->hp = maxhp;
             this->damage = 30;
             this->defence = 15;
             this->speed = 20;
+            this->level = 13;
             this->exp = 200;
             this->gold = 1750;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -276,12 +292,13 @@ class mob
         }
         void nohead()
         {
-            this->name = "(BOSS)듀라한";
+            this->name = "[BOSS](LV22) 듀라한";
             this->maxhp = 5000;
             this->hp = maxhp;
             this->damage = 100;
             this->defence = 1;
             this->speed = 40;
+            this->level = 22;
             this->exp = 2500;
             this->gold = 22000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -291,12 +308,13 @@ class mob
         // 저주받은 땅
         void zombie()
         {
-            this->name = "좀비";
+            this->name = "(LV15) 좀비";
             this->maxhp = 1000;
             this->hp = maxhp;
             this->damage = 80;
             this->defence = 30;
             this->speed = 40;
+            this->level = 15;
             this->exp = 440;
             this->gold = 2500;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -304,12 +322,13 @@ class mob
         }
         void skeleton()
         {
-            this->name = "스켈레톤";
+            this->name = "(LV17) 스켈레톤";
             this->maxhp = 777;
             this->hp = maxhp;
             this->damage = 150;
             this->defence = 20;
             this->speed = 50;
+            this->level = 17;
             this->exp = 380;
             this->gold = 2800;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -317,12 +336,13 @@ class mob
         }
         void tankzombie()
         {
-            this->name = "탱크 좀비";
+            this->name = "(LV18) 탱크 좀비";
             this->maxhp = 1000;
             this->hp = maxhp;
             this->damage = 100;
             this->defence = 200;
             this->speed = 1;
+            this->level = 18;
             this->exp = 420;
             this->gold = 3000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -330,12 +350,13 @@ class mob
         }
         void darkknight()
         {
-            this->name = "칠흑의 기사";
+            this->name = "(LV20) 칠흑의 기사";
             this->maxhp = 1500;
             this->hp = maxhp;
             this->damage = 130;
             this->defence = 50;
             this->speed = 35;
+            this->level = 20;
             this->exp = 510;
             this->gold = 3830;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -343,12 +364,13 @@ class mob
         }
         void demonite()
         {
-            this->name = "(BOSS)마왕 간부 데모나이트";
+            this->name = "[BOSS](LV40) 마왕 간부 데모나이트";
             this->maxhp = 5000;
             this->hp = maxhp;
             this->damage = 500;
             this->defence = 120;
             this->speed = 20;
+            this->level = 40;
             this->exp = 12000;
             this->gold = 75000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?";
@@ -366,9 +388,11 @@ class mob
             p->exp+=this->exp;
             t++;
             if(p->LVUPexp<=p->exp) p->LVUP();
-            if(this->name == "(BOSS)오크")
+            if(this->name == "[BOSS](LV15) 오크")
             {
                 int getskill = rand() % 100;
+                cout << getskill;
+                Sleep(500);
                 if(getskill < 50 && skills[5].second.second == 0)
                 {
                     Log[t] = this->name + " 를 죽여 분쇄 를 습득하였습니다!";
@@ -756,7 +780,7 @@ void skillset(Player *p)
                             skills[point].second.second=1;
                         }
                     }
-                    else
+                    else if(skills[point].second.second==1)
                     {
                         Log[t] = "스킬 슬롯이 가득 찼습니다.";
                         t++;
@@ -1045,7 +1069,10 @@ void home(Player *p)
 
 void pattack(Player *p, mob *m)
 {
-    int damage = (rand() % p->damage + p->damage) / (1+(m->defence*0.1));
+    double multiple = double((p->level - m->level)*5 + 100)/100;
+    if(multiple>1.3) multiple=1.3;
+    if(multiple < 0) multiple=0;
+    int damage = round((rand() % p->damage + p->damage) / (1+(m->defence*0.1)) * multiple);
     Log[t] = m->name + "에게 " + to_string(damage) + " 데미지를 입혔습니다!";
     m->hp-=damage;
     t++;
@@ -1058,7 +1085,10 @@ void pattack(Player *p, mob *m)
 
 void mattack(Player *p, mob *m)
 {
-    int damage = (rand() % m->damage + m->damage) / (1+(p->defence*0.1));
+    double multiple = double((m->level - p->level)*5 + 100)/100;
+    if(multiple>1.3) multiple=1.3;
+    if(multiple < 0) multiple=0;
+    int damage = round((rand() % m->damage + m->damage) / (1+(p->defence*0.1)) * multiple);
     Log[t] = m->name + "이(가) 공격하여 " + to_string(damage) + " 데미지를 입었습니다!";
     p->hp-=damage;
     t++;
@@ -1088,6 +1118,9 @@ void attack(Player *p, mob *m)
 void skillattack(Player *p, mob *m, int skillnum)
 {
     int damage;
+    double multiple = double((p->level - m->level)*5 + 100)/100;
+    if(multiple>1.3) multiple=1.3;
+
     if(skillnum == 1)
     {
         int success = rand() % 4;
@@ -1126,7 +1159,7 @@ void skillattack(Player *p, mob *m, int skillnum)
             p->mp-=skills[skillnum].second.first;
             for(int i=0; i<2; i++)
             {
-                damage = (rand() % (p->damage*2) + p->damage) / (1+(m->defence*0.1));
+                damage = (rand() % (p->damage*2) + p->damage) / (1+(m->defence*0.1)) * multiple;
                 Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
@@ -1165,7 +1198,7 @@ void skillattack(Player *p, mob *m, int skillnum)
         if(skills[skillnum].second.first <= p->mp)
         {
             p->mp-=skills[skillnum].second.first;
-            damage = (rand() % p->damage) + p->damage;
+            damage = (rand() % p->damage) + p->damage * multiple;
             Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp-=damage;
@@ -1189,7 +1222,7 @@ void skillattack(Player *p, mob *m, int skillnum)
             p->mp-=skills[skillnum].second.first;
             for(int i=0; i<3; i++)
             {
-                damage = (rand() % (p->damage * 3)) / (1+(m->defence*0.1));
+                damage = (rand() % (p->damage * 3)) / (1+(m->defence*0.1)) * multiple;
                 Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
@@ -1212,7 +1245,7 @@ void skillattack(Player *p, mob *m, int skillnum)
         if(skills[skillnum].second.first <= p->mp)
         {
             p->mp-=skills[skillnum].second.first;
-            damage = (rand() % (p->damage*4) + p->damage*5);
+            damage = (rand() % (p->damage*4) + p->damage*5) / (1+(m->defence*0.1)) * (multiple*3);
             Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp-=damage;
