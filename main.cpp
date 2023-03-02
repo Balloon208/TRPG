@@ -412,17 +412,28 @@ class mob
         }
 };
 
-void fight(Player *p);
-void fightmenu(mob *m, Player *p, bool skillmode);
-void fightselectmenu(mob *m, Player *p);
-void home(Player *p);
-void movemenu(Player *p);
-void readymenu(Player *p);
-void weaponforge(Player *p, bool visit);
-void armorforge(Player *p, bool visit);
-void Save(Player *p);
-void skillset(Player *p);
-void shop(Player *p);
+void Login(Player *p); // 첫 로그인 시 실행되는 함수
+void Save(Player *p); // 게임 진행 상황을 저장하는 함수
+void Load(Player *p); // 이전에 진행한 게임을 불러오는 함수
+void home(Player *p); // 마을
+void homemenu(Player *p); // 마을 인터페이스
+void homeselectmenu(Player *p); // 마을에서 선택
+void movemenu(Player *p); // 이동할 곳 선택
+void skillset(Player *p); // 스킬 장착 및 해제
+void shop(Player *p); // 상점
+void pattack(Player *p, mob *m); // Player 공격
+void mattack(Player *p, mob *m); // Mob 공격
+void attack(Player *p, mob *m); // 전투 진행 함수
+void skillattack(Player *p, mob *m, int skillnum); // 스킬 공격(항상 선공)
+void fight(Player *p); // 탐험 인터페이스
+void readymenu(Player *p); // 탐험에서의 선택
+void summonmob(Player *p); // 몹 소환 및 확률
+void fightmenu(mob *m, Player *p, bool skillmode); // 전투 인터페이스
+void fightselectmenu(mob *m, Player *p); // 전투 중 선택
+void Forge(Player *p, int protect, int chance, string mode, int upmoney); // 강화가 진행되는 함수
+void weaponforge(Player *p, bool visit); // 무기강화소 (확률 및 돈 조정)
+void armorforge(Player *p, bool visit); // 방어구강화소 (확률 및 돈 조정)
+
 
 void Login(Player *p)
 {
@@ -586,9 +597,12 @@ void Save(Player *p)
     fclose(fp);
 
     fp = fopen("playeritem.txt","w");
+
+    char itemnames[10001];
     for(int i=1; i<=totalitem; i++)
     {
-        fprintf(fp,"%s %d %d\n", itemlist[i].first, p->playeritemlist[i].first, p->playeritemlist[i].second);
+        strcpy(itemnames, itemlist[i].first.c_str());
+        fprintf(fp,"%s %d %d\n", itemnames, p->playeritemlist[i].first, p->playeritemlist[i].second);
     }
     fclose(fp);
 }
@@ -733,54 +747,12 @@ void Load(Player *p)
     */
 }
 
-
-
-// 몬스터 소환 확률
-void summonmob(Player *p)
+void home(Player *p)
 {
-    mob m;
-    if(where==4)
-    {
-        int n = rand()%100+1;
-        if(n<=40) m.MiniSlime();
-        else if(n<=70) m.Snake();
-        else if(n<=98) m.Slime();
-        else if(n<=100) m.Oak();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
-    }
-    if(where==5)
-    {
-        int n = rand()%100+1;
-        if(n<=40) m.RockSlime();
-        else if(n<=80) m.Bat();
-        else if(n<=95) m.MiniGolem();
-        else if(n<=100) m.Golem();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
-    }
-    if(where==6)
-    {
-        int n = rand()%100+1;
-        if(n<=30) m.killerdog();
-        else if(n<=50) m.hunter();
-        else if(n<=70) m.shadower();
-        else if(n<=97) m.badknight();
-        else if(n<=100) m.nohead();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
-    }
-    if(where==7)
-    {
-        int n = rand()%100+1;
-        if(n<=35) m.zombie();
-        else if(n<=70) m.skeleton();
-        else if(n<=90) m.tankzombie();
-        else if(n<=97) m.darkknight();
-        else if(n<=100) m.demonite();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
-    }
+    Save(p);
+    system("cls");
+    homemenu(p);
+    homeselectmenu(p);
 }
 
 void homemenu(Player *p)
@@ -1180,14 +1152,6 @@ void shop(Player *p)
     home(p);
 }
 
-void home(Player *p)
-{
-    Save(p);
-    system("cls");
-    homemenu(p);
-    homeselectmenu(p);
-}
-
 void pattack(Player *p, mob *m)
 {
     double multiple = double((p->level - m->level)*5 + 100)/100;
@@ -1385,6 +1349,178 @@ void skillattack(Player *p, mob *m, int skillnum)
     }
 }
 
+void fight(Player *p)
+{
+    Save(p);
+    system("cls");
+    mob m;
+
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+    for(int i=0; i<10; i++) //playerhpbar
+    {
+        if(i*10<playerhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+        cout << "■";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << '\n';
+    for(int i=0; i<10; i++) //playermpbar
+    {
+        if(i*10<playermppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+        cout << "■";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+    cout << '\n';
+    cout << p->name << '\n';
+    cout << "HP : " << p->hp << " / " << p->maxhp << '\n';
+    cout << '\n';
+    for(int i=1; i<=4; i++)
+    {
+        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        if(i==1) cout << "탐험한다";
+        if(i==2) cout << "돌아간다";
+        if(i==3) cout << "-";
+        if(i==4) cout << "-";
+        cout << "   ";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << "\n\n";
+    cout << "레벨 : " << p->level << " (" << p->exp << ")" << "   ";
+    cout << "골드 : " << p->gold << '\n';
+
+    cout << "[";
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); // levelbar
+    for(int i=1; i<=25; i++)
+    {
+        if(playerexppercent<i*4)
+        {
+            if(playerexppercent-((i-1)*4)>=2) // 2%의 경우에 진하게
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+                cout << "#";
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
+            }
+            else cout << " ";
+        }
+        else cout << "#";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+    cout << "]";
+}
+
+void readymenu(Player *p)
+{
+    bool command = false;
+    int key;
+    point = 1;
+    while(!command)
+    {
+        if(kbhit())
+        {
+            key=getch();
+            {
+                if(key==224) // 방향키
+                {
+                    key=getch();
+                    {
+                        if(key==75) // 왼쪽
+                        {
+                            if(point>1)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==77) // 오른쪽
+                        {
+                            if(point<4)
+                            {
+                                point++;
+                            }
+                        }
+                    }
+                }
+                if(key==13) // enter키
+                {
+                    if(point==1)
+                    {
+                        command = true;
+                        summonmob(p);
+                    }
+                    if(point==2)
+                    {
+                        Log[t] = p->name + "(이)는 탐험을 그만두고 돌아갔다.";
+                        t++;
+                        command = true;
+                        point = 1;
+                    }
+                }
+                system("cls");
+                fight(p);
+            }
+        }
+    }
+    home(p);
+}
+
+// 몬스터 소환 확률
+void summonmob(Player *p)
+{
+    mob m;
+    if(where==4)
+    {
+        int n = rand()%100+1;
+        if(n<=40) m.MiniSlime();
+        else if(n<=70) m.Snake();
+        else if(n<=98) m.Slime();
+        else if(n<=100) m.Oak();
+        fightmenu(&m, p, false);
+        fightselectmenu(&m, p);
+    }
+    if(where==5)
+    {
+        int n = rand()%100+1;
+        if(n<=40) m.RockSlime();
+        else if(n<=80) m.Bat();
+        else if(n<=95) m.MiniGolem();
+        else if(n<=100) m.Golem();
+        fightmenu(&m, p, false);
+        fightselectmenu(&m, p);
+    }
+    if(where==6)
+    {
+        int n = rand()%100+1;
+        if(n<=30) m.killerdog();
+        else if(n<=50) m.hunter();
+        else if(n<=70) m.shadower();
+        else if(n<=97) m.badknight();
+        else if(n<=100) m.nohead();
+        fightmenu(&m, p, false);
+        fightselectmenu(&m, p);
+    }
+    if(where==7)
+    {
+        int n = rand()%100+1;
+        if(n<=35) m.zombie();
+        else if(n<=70) m.skeleton();
+        else if(n<=90) m.tankzombie();
+        else if(n<=97) m.darkknight();
+        else if(n<=100) m.demonite();
+        fightmenu(&m, p, false);
+        fightselectmenu(&m, p);
+    }
+}
+
 void fightmenu(mob *m, Player *p, bool skillmode)
 {
     system("cls");
@@ -1557,130 +1693,6 @@ void fightselectmenu(mob *m, Player *p)
     killtrigger = false;
     fight(p);
     readymenu(p);
-}
-
-void fight(Player *p)
-{
-    Save(p);
-    system("cls");
-    mob m;
-
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
-
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
-
-    for(int i=0; i<10; i++) //playerhpbar
-    {
-        if(i*10<playerhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "■";
-    }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-    cout << '\n';
-    for(int i=0; i<10; i++) //playermpbar
-    {
-        if(i*10<playermppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
-        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "■";
-    }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-
-    cout << '\n';
-    cout << p->name << '\n';
-    cout << "HP : " << p->hp << " / " << p->maxhp << '\n';
-    cout << '\n';
-    for(int i=1; i<=4; i++)
-    {
-        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
-        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        if(i==1) cout << "탐험한다";
-        if(i==2) cout << "돌아간다";
-        if(i==3) cout << "-";
-        if(i==4) cout << "-";
-        cout << "   ";
-    }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-    cout << "\n\n";
-    cout << "레벨 : " << p->level << " (" << p->exp << ")" << "   ";
-    cout << "골드 : " << p->gold << '\n';
-
-    cout << "[";
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); // levelbar
-    for(int i=1; i<=25; i++)
-    {
-        if(playerexppercent<i*4)
-        {
-            if(playerexppercent-((i-1)*4)>=2) // 2%의 경우에 진하게
-            {
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-                cout << "#";
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10);
-            }
-            else cout << " ";
-        }
-        else cout << "#";
-    }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-    cout << "]";
-}
-
-void readymenu(Player *p)
-{
-    bool command = false;
-    int key;
-    point = 1;
-    while(!command)
-    {
-        if(kbhit())
-        {
-            key=getch();
-            {
-                if(key==224) // 방향키
-                {
-                    key=getch();
-                    {
-                        if(key==75) // 왼쪽
-                        {
-                            if(point>1)
-                            {
-                                point--;
-                            }
-                        }
-                        if(key==77) // 오른쪽
-                        {
-                            if(point<4)
-                            {
-                                point++;
-                            }
-                        }
-                    }
-                }
-                if(key==13) // enter키
-                {
-                    if(point==1)
-                    {
-                        command = true;
-                        summonmob(p);
-                    }
-                    if(point==2)
-                    {
-                        Log[t] = p->name + "(이)는 탐험을 그만두고 돌아갔다.";
-                        t++;
-                        command = true;
-                        point = 1;
-                    }
-                }
-                system("cls");
-                fight(p);
-            }
-        }
-    }
-    home(p);
 }
 
 void Forge(Player *p, int protect, int chance, string mode, int upmoney) // status 증가는 적용안됨, 가끔 강제종료됨
