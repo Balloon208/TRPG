@@ -415,6 +415,7 @@ class mob
 void Login(Player *p); // 첫 로그인 시 실행되는 함수
 void Save(Player *p); // 게임 진행 상황을 저장하는 함수
 void Load(Player *p); // 이전에 진행한 게임을 불러오는 함수
+void showlog(); // 로그를 보여주는 함수
 void home(Player *p); // 마을
 void homemenu(Player *p); // 마을 인터페이스
 void homeselectmenu(Player *p); // 마을에서 선택
@@ -747,6 +748,17 @@ void Load(Player *p)
     */
 }
 
+void showlog()
+{
+    for(int i=t-5; i<t; i++)
+    {
+        if(i==-1) cout << "#Log Start\n";
+        else if(i<0) cout << '\n';
+        else cout << Log[i] << '\n';
+    }
+    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+}
+
 void home(Player *p)
 {
     Save(p);
@@ -761,14 +773,8 @@ void homemenu(Player *p)
     playermppercent = (double)p->mp/p->maxmp * 100;
     playerexppercent = (double)p->exp/p->LVUPexp * 100;
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
+    showlog();
 
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
     for(int i=0; i<10; i++) //playerhpbar
     {
         if(i*10<playerhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
@@ -895,14 +901,8 @@ void movemenu(Player *p)
     bool command = false;
 
     system("cls");
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
 
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+    showlog();
 
     cout << "이동할 곳을 선택해 주세요.\n\n";
 
@@ -978,13 +978,7 @@ void skillset(Player *p)
     system("cls");
     bool command=false;
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+    showlog();
 
     for(int i=1; i<4; i++)
     {
@@ -1087,13 +1081,7 @@ void shop(Player *p)
     system("cls");
     bool command=false;
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+    showlog();
 
     for(int i=1; i<=totalitem; i++)
     {
@@ -1355,14 +1343,7 @@ void fight(Player *p)
     system("cls");
     mob m;
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
-
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+    showlog();
 
     for(int i=0; i<10; i++) //playerhpbar
     {
@@ -1529,12 +1510,7 @@ void fightmenu(mob *m, Player *p, bool skillmode)
     playermppercent = (double)p->mp/p->maxmp * 100;
     playerexppercent = (double)p->exp/p->LVUPexp * 100;
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
+    showlog();
 
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
 
@@ -1784,12 +1760,7 @@ void weaponforge(Player *p, bool visit)
         t++;
     }
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
+    showlog();
 
     // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
     if(p->weaponlevel<=4) chance = 100 - p->weaponlevel*5;
@@ -1801,8 +1772,6 @@ void weaponforge(Player *p, bool visit)
     else if(p->weaponlevel==17) chance = 20;
     else if(p->weaponlevel==18) chance = 10;
     else chance = 5;
-
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
 
     cout << "무기 강화 (현재 : " << p->weaponlevel << ")" << " 확률 : " << chance << "  데미지:" << p->damage <<"\n\n";
 
@@ -1836,12 +1805,7 @@ void armorforge(Player *p, bool visit)
         t++;
     }
 
-    for(int i=t-5; i<t; i++)
-    {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
-        else cout << Log[i] << '\n';
-    }
+    showlog();
 
     // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
     if(p->armorlevel<=4) chance = 100 - p->armorlevel*5;
@@ -1853,8 +1817,6 @@ void armorforge(Player *p, bool visit)
     else if(p->armorlevel==17) chance = 20;
     else if(p->armorlevel==18) chance = 10;
     else chance = 5;
-
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
 
     cout << "방어구 강화 (현재 : " << p->armorlevel << ")" << " 확률 : " << chance << "  방어력:" << p->defence << "  최대 체력:" << p->maxhp << "\n\n";
 
