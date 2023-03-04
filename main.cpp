@@ -412,6 +412,52 @@ class mob
         }
 };
 
+class item
+{
+    public:
+        void useitem(Player *p, int num)
+        {
+            if(p->playeritemlist[num].first==0)
+            {
+                Log[t] = itemlist[num].first + "(이)가 없습니다.";
+                t++;
+            }
+            else
+            {
+                if(num==1)
+                {
+                    int healing = 100;
+                    int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
+                    Log[t] = itemlist[1].first + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다.";
+                    t++;
+
+                    p->hp+=trueheal;
+                    p->playeritemlist[1].first--;
+                }
+                if(num==2)
+                {
+                    int healing = 500;
+                    int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
+                    Log[t] = itemlist[2].first + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다.";
+                    t++;
+
+                    p->hp+=trueheal;
+                    p->playeritemlist[2].first--;
+                }
+                if(num==3)
+                {
+                    int healing = 1500;
+                    int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
+                    Log[t] = itemlist[3].first + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다.";
+                    t++;
+
+                    p->hp+=trueheal;
+                    p->playeritemlist[3].first--;
+                }
+            }
+        }
+};
+
 void Login(Player *p); // 첫 로그인 시 실행되는 함수
 void Save(Player *p); // 게임 진행 상황을 저장하는 함수
 void Load(Player *p); // 이전에 진행한 게임을 불러오는 함수
@@ -431,6 +477,8 @@ void readymenu(Player *p); // 탐험에서의 선택
 void summonmob(Player *p); // 몹 소환 및 확률
 void fightmenu(mob *m, Player *p, bool skillmode); // 전투 인터페이스
 void fightselectmenu(mob *m, Player *p); // 전투 중 선택
+void selectitem(Player *p); // 아이템 선택
+void showitem(Player *p); // 아이템 보여주기
 void Forge(Player *p, int protect, int chance, string mode, int upmoney); // 강화가 진행되는 함수
 void weaponforge(Player *p, bool visit); // 무기강화소 (확률 및 돈 조정)
 void armorforge(Player *p, bool visit); // 방어구강화소 (확률 및 돈 조정)
@@ -1081,6 +1129,8 @@ void shop(Player *p)
     system("cls");
     bool command=false;
 
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
     showlog();
 
     for(int i=1; i<=totalitem; i++)
@@ -1089,6 +1139,8 @@ void shop(Player *p)
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         cout << itemlist[i].first << " : BUY " << itemlist[i].second.first << " / SELL " << itemlist[i].second.second << " / 보유 개수 : (" << p->playeritemlist[i].first << ")" <<'\n';
     }
+
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
     while(!command)
     {
@@ -1103,7 +1155,7 @@ void shop(Player *p)
                     {
                         if(key==72) // 위쪽
                         {
-                            if(point>0)
+                            if(point>1)
                             {
                                 point--;
                             }
@@ -1125,6 +1177,25 @@ void shop(Player *p)
                         p->playeritemlist[point].first++;
                         Log[t] = itemlist[point].first + "를 구매하였다.";
                         t++;
+
+                        Save(p);
+                    }
+                    else
+                    {
+                        Log[t] = "골드가 부족합니다. (" + to_string(p->gold) + "/" + to_string(itemlist[point].second.first) + ")";
+                        t++;
+                    }
+                }
+                if(key==83 || key==115) // S 키
+                {
+                    if(p->playeritemlist[point].first > 0)
+                    {
+                        p->gold+=itemlist[point].second.second;
+                        p->playeritemlist[point].first--;
+                        Log[t] = itemlist[point].first + "를 판매하였다.";
+                        t++;
+
+                        Save(p);
                     }
                 }
                 if(key==27) //esc
@@ -1512,8 +1583,6 @@ void fightmenu(mob *m, Player *p, bool skillmode)
 
     showlog();
 
-    cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
-
     for(int i=0; i<10; i++) //mobhpbar
     {
         if(i*10<mobhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
@@ -1647,6 +1716,10 @@ void fightselectmenu(mob *m, Player *p)
                             skillmode = true;
                             point = 1;
                         }
+                        if(point==3)
+                        {
+                            selectitem(p);
+                        }
                         if(point==4)
                         {
                             Log[t] = "당신은 " + m->name + "(으)로부터 도망쳤다!";
@@ -1670,6 +1743,72 @@ void fightselectmenu(mob *m, Player *p)
     fight(p);
     readymenu(p);
 }
+
+
+void showitem(Player *p, int point)
+{
+    for(int i=1; i<=totalitem; i++)
+    {
+        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+        if(point==i) cout << "> ";
+        if(p->playeritemlist[i].first==0) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+
+        cout << itemlist[i].first << "(" << p->playeritemlist[i].first << ")\n";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+}
+
+void selectitem(Player *p)
+{
+    item item;
+    bool selected = false;
+    int key;
+    point = 1;
+
+    while(!selected)
+    {
+        system("cls");
+        showlog();
+        showitem(p, point);
+
+        while(kbhit()){}
+        key = getch();
+
+        if(key==224) // 방향키
+        {
+            key=getch();
+            {
+                if(key==72) // 위쪽
+                {
+                    if(point>1)
+                    {
+                        point--;
+                    }
+                }
+                if(key==80) // 아래쪽
+                {
+                    if(point<totalitem)
+                    {
+                        point++;
+                    }
+                }
+            }
+        }
+        if(key==13) // enter키
+        {
+            item.useitem(p, point);
+            selected = true;
+            Save(p);
+        }
+        if(key==27) //esc
+        {
+            point = 3;
+            selected = true;
+        }
+    }
+}
+
 
 void Forge(Player *p, int protect, int chance, string mode, int upmoney) // status 증가는 적용안됨, 가끔 강제종료됨
 {
