@@ -390,24 +390,86 @@ class mob
             p->exp+=this->exp;
             t++;
             if(p->LVUPexp<=p->exp) p->LVUP();
+
+            if(this->name == "(LV3) 슬라임")
+            {
+                int getnum = rand() % 100;
+                if(getnum < 10)
+                {
+                    int amount = rand() % 2 + 1;
+                    Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                    p->playeritemlist[1].first+=amount;
+                }
+            }
+            if(this -> name == "(LV6) 박쥐")
+            {
+                int getnum = rand() % 100;
+                if(getnum < 20)
+                {
+                    int amount = rand() % 3 + 1;
+                    Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                    p->playeritemlist[1].first+=amount;
+                }
+            }
+            if(this -> name == "(LV8) 미니 골렘")
+            {
+                int getnum = rand() % 100;
+                if(getnum < 10)
+                {
+                    int amount = 1;
+                    Log[t] = this->name + " 를 죽여 " + itemlist[2].first + "x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                    p->playeritemlist[2].first+=amount;
+                }
+                else if(getnum < 30)
+                {
+                    int amount = rand() % 2 + 1;
+                    Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                    p->playeritemlist[1].first+=amount;
+                }
+            }
+            if(this->name == "(LV10) 사냥꾼")
+            {
+                int getnum = rand() % 100;
+                if(getnum < 15)
+                {
+                    int amount = rand() % 2 + 1;
+                    Log[t] = this->name + " 를 죽여 중형 포션x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                    p->playeritemlist[2].first+=amount;
+                }
+            }
+            if(this->name == "(LV15) 좀비")
+            {
+                int getnum = rand() % 100;
+                if(getnum < 5)
+                {
+                    int amount = 1;
+                    Log[t] = this->name + " 를 죽여 대형 포션x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                    p->playeritemlist[3].first+=amount;
+                }
+            }
+
             if(this->name == "[BOSS](LV15) 오크")
             {
-                int getskill = rand() % 100;
-                cout << getskill;
-                Sleep(500);
-                if(getskill < 50 && skills[5].second.second == 0)
+                int getnum = rand() % 100;
+                if(getnum < 50 && skills[5].second.second == 0)
                 {
-                    Log[t] = this->name + " 를 죽여 분쇄 를 습득하였습니다!";
-                    t++;
+                    Log[t] = this->name + " 를 죽여 분쇄 를 습득하였습니다!"; t++;
                     skills[5].second.second = 1;
                 }
-                getskill = rand() % 100;
-                if(getskill < 20 && skills[6].second.second == 0)
+                getnum = rand() % 100;
+                if(getnum < 20 && skills[6].second.second == 0)
                 {
                     Log[t] = this->name + " 를 죽여 거인의일격 을 습득하였습니다!";
                     t++;
                     skills[6].second.second = 1;
                 }
+                int amount = rand() % 5 + 1;
+                Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                p->playeritemlist[1].first+=amount;
+
+                amount = rand() % 3 + 1;
+                Log[t] = this->name + " 를 죽여 " + itemlist[2].first + "x" + to_string(amount) + " 를 습득하였습니다!"; t++;
+                p->playeritemlist[2].first+=amount;
             }
         }
 };
@@ -415,12 +477,13 @@ class mob
 class item
 {
     public:
-        void useitem(Player *p, int num)
+        bool useitem(Player *p, int num)
         {
             if(p->playeritemlist[num].first==0)
             {
                 Log[t] = itemlist[num].first + "(이)가 없습니다.";
                 t++;
+                return false;
             }
             else
             {
@@ -443,6 +506,8 @@ class item
 
                     p->hp+=trueheal;
                     p->playeritemlist[2].first--;
+
+
                 }
                 if(num==3)
                 {
@@ -454,6 +519,7 @@ class item
                     p->hp+=trueheal;
                     p->playeritemlist[3].first--;
                 }
+                return true;
             }
         }
 };
@@ -477,7 +543,7 @@ void readymenu(Player *p); // 탐험에서의 선택
 void summonmob(Player *p); // 몹 소환 및 확률
 void fightmenu(mob *m, Player *p, bool skillmode); // 전투 인터페이스
 void fightselectmenu(mob *m, Player *p); // 전투 중 선택
-void selectitem(Player *p); // 아이템 선택
+bool selectitem(Player *p); // 아이템 선택
 void showitem(Player *p); // 아이템 보여주기
 void Forge(Player *p, int protect, int chance, string mode, int upmoney); // 강화가 진행되는 함수
 void weaponforge(Player *p, bool visit); // 무기강화소 (확률 및 돈 조정)
@@ -1028,7 +1094,7 @@ void skillset(Player *p)
 
     showlog();
 
-    for(int i=1; i<4; i++)
+    for(int i=1; i<=4; i++)
     {
         p->skill[i]=0;
     }
@@ -1133,6 +1199,7 @@ void shop(Player *p)
 
     showlog();
 
+    cout << "구매하기 위해선 B, 팔기 위해선 S를 눌러주세요.\n\n";
     for(int i=1; i<=totalitem; i++)
     {
         if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
@@ -1637,6 +1704,7 @@ void fightmenu(mob *m, Player *p, bool skillmode)
         {
             if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
             else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
             cout << skills[p->skill[i]].first << "(" << skills[p->skill[i]].second.first << ")";
             cout << "   ";
         }
@@ -1718,7 +1786,8 @@ void fightselectmenu(mob *m, Player *p)
                         }
                         if(point==3)
                         {
-                            selectitem(p);
+                            bool use = selectitem(p);
+                            if(use) mattack(p,m);
                         }
                         if(point==4)
                         {
@@ -1759,7 +1828,7 @@ void showitem(Player *p, int point)
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
 
-void selectitem(Player *p)
+bool selectitem(Player *p)
 {
     item item;
     bool selected = false;
@@ -1772,39 +1841,48 @@ void selectitem(Player *p)
         showlog();
         showitem(p, point);
 
-        while(kbhit()){}
-        key = getch();
-
-        if(key==224) // 방향키
+        while(1)
         {
-            key=getch();
+            if(kbhit())
             {
-                if(key==72) // 위쪽
+                key = getch();
+
+                if(key==224) // 방향키
                 {
-                    if(point>1)
+                    key=getch();
                     {
-                        point--;
+                        if(key==72) // 위쪽
+                        {
+                            if(point>1)
+                            {
+                                point--;
+                            }
+                        }
+                        if(key==80) // 아래쪽
+                        {
+                            if(point<totalitem)
+                            {
+                                point++;
+                            }
+                        }
                     }
                 }
-                if(key==80) // 아래쪽
+                if(key==13) // enter키
                 {
-                    if(point<totalitem)
-                    {
-                        point++;
-                    }
+                    bool used = item.useitem(p, point);
+                    selected = true;
+                    point = 3;
+                    Save(p);
+                    return used;
                 }
+                if(key==27) //esc
+                {
+                    point = 3;
+                    selected = true;
+                    return false;
+                }
+                break;
             }
-        }
-        if(key==13) // enter키
-        {
-            item.useitem(p, point);
-            selected = true;
-            Save(p);
-        }
-        if(key==27) //esc
-        {
-            point = 3;
-            selected = true;
         }
     }
 }
