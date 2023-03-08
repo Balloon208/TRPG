@@ -57,7 +57,7 @@ class Player
         int weaponlevel;
         int armorlevel;
         int skill[6];
-        pair<int,int> playeritemlist[500]; // 수량, 강화(무기가 아니라면 -1)
+        pair<int,int> playeritemlist[500]; // 수량, 상태(소모품 = -1)
 
         void heal()
         {
@@ -758,6 +758,7 @@ void showlog()
 
 void showplayerstatus(Player *p, string slot1, string slot2, string slot3, string slot4)
 {
+    // 각 슬롯에 해당하는 이름만 넣어주시면 됩니다. ex) showplayerstatus(p, "1", "2", "3", "4");
     for(int i=0; i<10; i++) //playerhpbar
     {
         if(i*10<playerhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
@@ -1271,7 +1272,7 @@ void skillattack(Player *p, mob *m, int skillnum)
             p->mp-=skills[skillnum].second.first;
             for(int i=0; i<3; i++)
             {
-                damage = (rand() % (p->damage * 3)) / (1+(m->defence*0.1)) * multiple;
+                damage = (rand() % (p->damage * 4)) / (1+(m->defence*0.1)) * multiple;
                 Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
