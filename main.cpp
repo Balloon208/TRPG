@@ -11,7 +11,7 @@ using namespace std;
 
 double mobhppercent, playerhppercent, playermppercent, playerexppercent;
 
-int forgeadd[21]={0,1,2,3,4,5,5,5,5,5,5,7,7,7,7,7,10,15,20,25,30};
+int forgeadd[21]={0,1,2,3,4,5,5,5,5,5,5,7,7,8,8,8,10,15,20,25,30};
 int point=1;
 int where = 0;
 int t=0; // 턴이 지난 횟수
