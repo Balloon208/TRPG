@@ -326,7 +326,7 @@ class mob
             this->defence = 20;
             this->speed = 50;
             this->level = 17;
-            this->exp = 380;
+            this->exp = 520;
             this->gold = 2800;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
@@ -340,8 +340,8 @@ class mob
             this->defence = 200;
             this->speed = 1;
             this->level = 18;
-            this->exp = 420;
-            this->gold = 3000;
+            this->exp = 700;
+            this->gold = 2500;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void darkknight()
@@ -354,7 +354,7 @@ class mob
             this->defence = 50;
             this->speed = 35;
             this->level = 20;
-            this->exp = 510;
+            this->exp = 1030;
             this->gold = 3830;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
@@ -368,7 +368,7 @@ class mob
             this->defence = 999999;
             this->speed = 20;
             this->level = 35;
-            this->exp = 12000;
+            this->exp = 25000;
             this->gold = 75000;
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
@@ -539,6 +539,8 @@ void Save(Player *p); // 게임 진행 상황을 저장하는 함수
 void Load(Player *p); // 이전에 진행한 게임을 불러오는 함수
 void showlog(); // 로그를 보여주는 함수
 void showplayerstatus(Player *p, string slot1, string slot2, string slot3, string slot4); // 플레이어 스테이터스
+void fulllog(int current, int finish); // 풀로그 보여주는 함수
+void showfulllog(); // 풀로그 인터페이스
 void home(Player *p); // 마을
 void homemenu(Player *p); // 마을 인터페이스
 void homeselectmenu(Player *p); // 마을에서 선택
@@ -749,8 +751,7 @@ void showlog()
 {
     for(int i=t-5; i<t; i++)
     {
-        if(i==-1) cout << "#Log Start\n";
-        else if(i<0) cout << '\n';
+        if(i<0) cout << '\n';
         else cout << Log[i] << '\n';
     }
     cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
@@ -758,6 +759,10 @@ void showlog()
 
 void showplayerstatus(Player *p, string slot1, string slot2, string slot3, string slot4)
 {
+    playerhppercent = (double)p->hp/p->maxhp * 100;
+    playermppercent = (double)p->mp/p->maxmp * 100;
+    playerexppercent = (double)p->exp/p->LVUPexp * 100;
+
     // 각 슬롯에 해당하는 이름만 넣어주시면 됩니다. ex) showplayerstatus(p, "1", "2", "3", "4");
     for(int i=0; i<10; i++) //playerhpbar
     {
@@ -815,6 +820,52 @@ void showplayerstatus(Player *p, string slot1, string slot2, string slot3, strin
     cout << "]";
 }
 
+void fulllog(int current, int finish)
+{
+    system("cls");
+    for(int i=current; i<=finish; i++)
+    {
+        cout << "[" << i << "]" << " " << Log[i] << '\n';
+    }
+}
+
+void showfulllog()
+{
+    int lognum=20;
+    int current = (t-lognum<=0) ? 0 : t-lognum;
+    int finish = (current<=lognum) ? t : current+lognum-1;
+    int key;
+
+    fulllog(current, finish);
+    while(1)
+    {
+        if(kbhit())
+        {
+            key=getch();
+            if(key==224) // 방향키
+            {
+                key=getch();
+                if(key==72) // 위쪽
+                {
+                    if(current-lognum<=0) current=0;
+                    else current-=lognum;
+                }
+                if(key==80) // 아래쪽
+                {
+                    if(finish+lognum>=t-1) current=t-lognum-1 > 0 ? t-lognum-1 : 0;
+                    else current+=lognum;
+                }
+            }
+            if(key==27) //esc
+            {
+                break;
+            }
+            finish = (t<=lognum) ? t : current+20;
+            fulllog(current, finish);
+        }
+    }
+}
+
 void home(Player *p)
 {
     Save(p);
@@ -825,10 +876,6 @@ void home(Player *p)
 
 void homemenu(Player *p)
 {
-    playerhppercent = (double)p->hp/p->maxhp * 100;
-    playermppercent = (double)p->mp/p->maxmp * 100;
-    playerexppercent = (double)p->exp/p->LVUPexp * 100;
-
     showlog();
     showplayerstatus(p, "이동", "휴식", "스킬설정", "상점");
 }
@@ -843,42 +890,41 @@ void homeselectmenu(Player *p)
         if(kbhit())
         {
             key=getch();
+            if(key==224) // 방향키
             {
-                if(key==224) // 방향키
+                key=getch();
+                if(key==75 && point>1) point--; // 왼쪽
+                if(key==77 && point<4) point++; // 오른쪽
+            }
+            if(key==13) // enter키
+            {
+                if(point==1)
                 {
-                    key=getch();
-                    if(key==75 && point>1) point--; // 왼쪽
-                    if(key==77 && point<4) point++; // 오른쪽
+                    command = true;
+                    point = 3;
+                    movemenu(p);
                 }
-                if(key==13) // enter키
+                if(point==2)
                 {
-                    if(point==1)
-                    {
-                        command = true;
-                        point = 3;
-                        movemenu(p);
-                    }
-                    if(point==2)
-                    {
-                        p->heal();
-                        Save(p);
-                    }
-                    if(point==3)
-                    {
-                        command = true;
-                        point=1;
-                        skillset(p);
-                    }
-                    if(point==4)
-                    {
-                        command = true;
-                        point=1;
-                        shop(p);
-                    }
+                    p->heal();
+                    Save(p);
                 }
+                if(point==3)
+                {
+                    command = true;
+                    point=1;
+                    skillset(p);
+                }
+                if(point==4)
+                {
+                    command = true;
+                    point=1;
+                    shop(p);
+                }
+            }
+            if(key==84 || key==116) showfulllog(); // k
             system("cls");
             homemenu(p);
-            }
         }
     }
     command = false;
@@ -938,6 +984,7 @@ void movemenu(Player *p)
                     point = 1;
                     break;
                 }
+                if(key==84 || key==116) showfulllog(); // k
             }
             movemenu(p);
         }
@@ -1038,6 +1085,7 @@ void skillset(Player *p)
                     point = 1;
                     break;
                 }
+                if(key==84 || key==116) showfulllog(); // k
             }
             skillset(p);
         }
@@ -1110,6 +1158,7 @@ void shop(Player *p)
                 point = 1;
                 break;
             }
+            if(key==84 || key==116) showfulllog(); // k
             shop(p);
         }
     }
@@ -1415,9 +1464,6 @@ void fightmenu(mob *m, Player *p, bool skillmode)
 {
     system("cls");
     mobhppercent = (double)m->hp/m->maxhp * 100;
-    playerhppercent = (double)p->hp/p->maxhp * 100;
-    playermppercent = (double)p->mp/p->maxmp * 100;
-    playerexppercent = (double)p->exp/p->LVUPexp * 100;
 
     showlog();
 
@@ -1507,6 +1553,7 @@ void fightselectmenu(mob *m, Player *p)
                 skillmode = !skillmode;
                 point = 2;
             }
+            if(key==84 || key==116) showfulllog(); //k
             system("cls");
             fightmenu(m, p, skillmode);
         }
@@ -1694,6 +1741,7 @@ void weaponforge(Player *p, bool visit)
     }
     else if(key=='o' || key=='O') Forge(p, 0, chance, "weapon", p->weaponlevel*1000);
     else if(key=='p' || key=='P') Forge(p, 1, chance, "weapon", p->weaponlevel*10000);
+    else if(key==84 || key==116) showfulllog(); // k
     else if(key==27) return;
     else weaponforge(p, true);
 
@@ -1739,6 +1787,7 @@ void armorforge(Player *p, bool visit)
     }
     else if(key=='o' || key=='O') Forge(p, 0, chance, "armor", p->armorlevel*2000);
     else if(key=='p' || key=='P') Forge(p, 1, chance, "armor", p->armorlevel*20000);
+    else if(key==84 || key==116) showfulllog(); // k
     else if(key==27) return;
     else armorforge(p, true);
 }
@@ -1749,5 +1798,6 @@ int main()
     Player p;
     Login(&p);
     Load(&p);
+    Log[0]="#Log Start"; t++;
     home(&p);
 }
