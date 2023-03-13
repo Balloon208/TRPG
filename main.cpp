@@ -568,7 +568,9 @@ void Login(Player *p)
     int n;
     string name;
 
-    FILE* fp = fopen("playerinfom.txt","r");
+    FILE* fp;
+
+    fp = fopen("./Save/playerinfom.txt","r");
     fscanf(fp,"register:%d", &n);
     fclose(fp);
 
@@ -580,8 +582,7 @@ void Login(Player *p)
         char wname[200];
         strcpy(wname, name.c_str());
 
-        FILE* fp;
-        fp = fopen("playerinfom.txt","w");
+        fp = fopen("./Save/playerinfom.txt","w");
         fprintf(fp,"register:%d\n", 2);
         fprintf(fp,"%s\n", wname);
         fprintf(fp,"maxhp:%d\n", 100);
@@ -599,7 +600,7 @@ void Login(Player *p)
         fprintf(fp,"armorlevel:%d\n", 0);
         fclose(fp);
 
-        fp = fopen("playerskills.txt","w");
+        fp = fopen("./Save/playerskills.txt","w");
 
         // 스킬 설정 옵션 (skill setting), name, Mana, Learned(1 = 스킬 배움, 2 = 장착 중)
         fprintf(fp, "방어 0 1\n");
@@ -620,7 +621,7 @@ void Login(Player *p)
 
         fclose(fp);
 
-        fp = fopen("playeritem.txt","w");
+        fp = fopen("./Save/playeritem.txt","w");
 
         fprintf(fp, "소형포션 0 -1\n");
         fprintf(fp, "중형포션 0 -1\n");
@@ -657,7 +658,7 @@ void Save(Player *p)
     strcpy(wname, p->name.c_str());
 
     FILE* fp;
-    fp = fopen("playerinfom.txt","w");
+    fp = fopen("./Save/playerinfom.txt","w");
     fprintf(fp,"register:%d\n", 2);
     fprintf(fp,"%s\n", wname);
     fprintf(fp,"maxhp:%d\n", p->maxhp);
@@ -675,7 +676,7 @@ void Save(Player *p)
     fprintf(fp,"armorlevel:%d\n", p->armorlevel);
     fclose(fp);
 
-    fp = fopen("playerskills.txt","w");
+    fp = fopen("./Save/playerskills.txt","w");
     for(int i=1; i<=totalskill; i++)
     {
         fprintf(fp,"%s %d %d\n", skills[i].first.c_str(), skills[i].second.first, skills[i].second.second);
@@ -683,7 +684,7 @@ void Save(Player *p)
     fprintf(fp,"%d %d %d %d", p->skill[1], p->skill[2], p->skill[3] ,p->skill[4]);
     fclose(fp);
 
-    fp = fopen("playeritem.txt","w");
+    fp = fopen("./Save/playeritem.txt","w");
 
     char itemnames[10001];
     for(int i=1; i<=totalitem; i++)
@@ -700,7 +701,7 @@ void Load(Player *p)
     char wname[200];
 
     FILE* fp;
-    fp = fopen("playerinfom.txt","r");
+    fp = fopen("./Save/playerinfom.txt","r");
     fscanf(fp,"register:%d\n", &trash);
     fscanf(fp,"%s\n", wname);
     p->name = wname;
@@ -719,7 +720,7 @@ void Load(Player *p)
     fscanf(fp,"armorlevel:%d\n", &p->armorlevel);
     fclose(fp);
 
-    fp = fopen("playerskills.txt","r");
+    fp = fopen("./Save/playerskills.txt","r");
     for(int i=1; i<=totalskill; i++)
     {
         char skillnames[10000];
@@ -738,7 +739,7 @@ void Load(Player *p)
     }
     fclose(fp);
 
-    fp = fopen("playeritem.txt","r");
+    fp = fopen("./Save/playeritem.txt","r");
     for(int i=1; i<=totalitem; i++)
     {
         char trash[10000];
