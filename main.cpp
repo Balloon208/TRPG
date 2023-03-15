@@ -6,6 +6,7 @@
 #include <windows.h>
 #include <vector>
 #include <conio.h>
+#include <tuple>
 
 using namespace std;
 
@@ -15,8 +16,8 @@ int forgeadd[21]={0,1,2,3,4,5,5,5,5,5,5,7,7,8,8,8,10,15,20,25,30};
 int point=1;
 int where = 0;
 int t=0; // 턴이 지난 횟수
-int totalskill = 6;
-int totalitem = 3;
+int totalskill = 7;
+int totalitem = 4;
 int usingskill;
 bool killtrigger = false;
 int stage = 9;
@@ -34,8 +35,8 @@ string worldmap[10] = {
 "-",
 };
 
-pair<string, pair<int,int>> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
-pair<string, pair<int,int>> itemlist[500]; // 아이템 이름, 구매가, 판매가
+tuple<string, int,int> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
+tuple<string, int, int, int> itemlist[500]; // 아이템 이름, 아이템 종류 ,구매가, 판매가
 
 string Log[100000];
 
@@ -57,13 +58,47 @@ class Player
         int weaponlevel;
         int armorlevel;
         int skill[6];
-        pair<int,int> playeritemlist[500]; // 수량, 상태(소모품 = -1)
+        pair<int,int> playeritemlist[500]; // 수량, 아이템 종류(소모품 = -1, 스킬북 = 1)
 
         void heal()
         {
             this->hp=this->maxhp;
             this->mp=this->maxmp;
             Log[t] = this->name + "(이)는 휴식을 하여 전부 회복하였다."; t++;
+        }
+
+        void LearnSkill(int num)
+        {
+            if(num==2)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+                get<2>(skills[2])=1;
+            }
+            if(num==3)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+                get<2>(skills[3])=1;
+            }
+            if(num==4)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+                get<2>(skills[4])=1;
+            }
+            if(num==5)
+            {
+                Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+                get<2>(skills[5])=1;
+            }
+            if(num==6)
+            {
+                Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+                get<2>(skills[6])=1;
+            }
+            if(num==7)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+                get<2>(skills[7])=1;
+            }
         }
 
         void LVUP()
@@ -81,20 +116,17 @@ class Player
             this->LVUPexp*=1.3;
             Log[t] = "레벨이 상승 하였습니다!" + to_string(this->level-1) + "->" + to_string(this->level); t++;
 
-            if(this->level==3 && skills[2].second.second==0)
+            if(this->level==3 && get<2>(skills[2])==0)
             {
-                Log[t] = "크로스컷을 습득 하였습니다!"; t++;
-                skills[2].second.second=1;
+                this->LearnSkill(2);
             }
-            if(this->level==10  && skills[3].second.second==0)
+            if(this->level==10  && get<2>(skills[3])==0)
             {
-                Log[t] = "힐링을 습득 하였습니다!"; t++;
-                skills[3].second.second=1;
+                this->LearnSkill(3);
             }
-            if(this->level==15  && skills[4].second.second==0)
+            if(this->level==15  && get<2>(skills[4])==0)
             {
-                Log[t] = "급소찌르기를 습득 하였습니다!"; t++;
-                skills[4].second.second=1;
+                this->LearnSkill(4);
             }
             if(this->LVUPexp<this->exp) this->LVUP();
         }
@@ -413,7 +445,7 @@ class mob
                 if(getnum < 100)
                 {
                     amount = rand() % 2 + 1;
-                    Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[1]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                     p->playeritemlist[1].first+=amount;
                 }
             }
@@ -422,7 +454,7 @@ class mob
                 if(getnum < 200)
                 {
                     amount = rand() % 3 + 1;
-                    Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[1]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                     p->playeritemlist[1].first+=amount;
                 }
             }
@@ -431,13 +463,13 @@ class mob
                 if(getnum < 100)
                 {
                     amount = 1;
-                    Log[t] = this->name + " 를 죽여 " + itemlist[2].first + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[2]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                     p->playeritemlist[2].first+=amount;
                 }
                 else if(getnum < 300)
                 {
                     amount = rand() % 2 + 1;
-                    Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[1]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                     p->playeritemlist[1].first+=amount;
                 }
             }
@@ -446,7 +478,7 @@ class mob
                 if(getnum < 150)
                 {
                     amount = rand() % 2 + 1;
-                    Log[t] = this->name + " 를 죽여 중형 포션x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[2]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                     p->playeritemlist[2].first+=amount;
                 }
             }
@@ -456,32 +488,30 @@ class mob
                 if(getnum < 5000)
                 {
                     amount = 1;
-                    Log[t] = this->name + " 를 죽여 대형 포션x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여" + get<0>(itemlist[3]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                     p->playeritemlist[3].first+=amount;
                 }
             }
 
             if(mobcode == "FB")
             {
-                if(getnum < 500 && skills[5].second.second == 0)
+                if(getnum < 500 && get<2>(skills[5]) == 0)
                 {
-                    Log[t] = this->name + " 를 죽여 분쇄 를 습득하였습니다!"; t++;
-                    skills[5].second.second = 1;
+                    p->LearnSkill(5);
                 }
                 getnum = rand() % 1000;
-                if(getnum < 200 && skills[6].second.second == 0)
+                if(getnum < 200 && get<2>(skills[6]) == 0)
                 {
-                    Log[t] = this->name + " 를 죽여 거인의일격 을 습득하였습니다!"; t++;
-                    skills[6].second.second = 1;
+                    p->LearnSkill(6);
                 }
                 if(!penaltyflag)
                 {
                     amount = rand() % 5 + 1;
-                    Log[t] = this->name + " 를 죽여 " + itemlist[1].first + "x" + to_string(amount) + " 를 힉득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[1]) + "x" + to_string(amount) + " 를 힉득하였습니다!"; t++;
                     p->playeritemlist[1].first+=amount;
 
                     amount = rand() % 3 + 1;
-                    Log[t] = this->name + " 를 죽여 " + itemlist[2].first + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                    Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[2]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                     p->playeritemlist[2].first+=amount;
                 }
             }
@@ -495,8 +525,7 @@ class item
         {
             if(p->playeritemlist[num].first==0)
             {
-                Log[t] = itemlist[num].first + "(이)가 없습니다.";
-                t++;
+                Log[t] = get<0>(itemlist[num]) + "(이)가 없습니다."; t++;
                 return false;
             }
             else
@@ -505,7 +534,7 @@ class item
                 {
                     int healing = 50;
                     int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
-                    Log[t] = itemlist[1].first + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
+                    Log[t] = get<0>(itemlist[1]) + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
 
                     p->hp+=trueheal;
                     p->playeritemlist[1].first--;
@@ -514,7 +543,7 @@ class item
                 {
                     int healing = 300;
                     int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
-                    Log[t] = itemlist[2].first + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
+                    Log[t] = get<0>(itemlist[2]) + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
 
                     p->hp+=trueheal;
                     p->playeritemlist[2].first--;
@@ -523,7 +552,7 @@ class item
                 {
                     int healing = 1000;
                     int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
-                    Log[t] = itemlist[3].first + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
+                    Log[t] = get<0>(itemlist[3]) + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
 
                     p->hp+=trueheal;
                     p->playeritemlist[3].first--;
@@ -609,15 +638,17 @@ void Login(Player *p)
         fprintf(fp, "급소찌르기 20 0\n");
         fprintf(fp, "분쇄 50 0\n");
         fprintf(fp, "거인의일격 100 0\n");
+        fprintf(fp, "퍼스트블러드 200 0\n");
         fprintf(fp, "0, 0, 0, 0");
 
         fclose(fp);
 
-        fp = fopen("itemDB.txt","w");
+        fp = fopen("./Save/itemDB.txt","w");
 
-        fprintf(fp, "소형포션 500 300\n");
-        fprintf(fp, "중형포션 2000 1500\n");
-        fprintf(fp, "대형포션 5000 3000\n");
+        fprintf(fp, "소형포션 -1 500 300\n");
+        fprintf(fp, "중형포션 -1 2000 1500\n");
+        fprintf(fp, "대형포션 -1 5000 3000\n");
+        fprintf(fp, "[Skillbook]퍼스트블러드 7 30000 0\n");
 
         fclose(fp);
 
@@ -626,6 +657,7 @@ void Login(Player *p)
         fprintf(fp, "소형포션 0 -1\n");
         fprintf(fp, "중형포션 0 -1\n");
         fprintf(fp, "대형포션 0 -1\n");
+        fprintf(fp, "대형포션 0 1\n");
 
         fclose(fp);
 
@@ -679,7 +711,7 @@ void Save(Player *p)
     fp = fopen("./Save/playerskills.txt","w");
     for(int i=1; i<=totalskill; i++)
     {
-        fprintf(fp,"%s %d %d\n", skills[i].first.c_str(), skills[i].second.first, skills[i].second.second);
+        fprintf(fp,"%s %d %d\n", get<0>(skills[i]).c_str(), get<1>(skills[i]), get<2>(skills[i]));
     }
     fprintf(fp,"%d %d %d %d", p->skill[1], p->skill[2], p->skill[3] ,p->skill[4]);
     fclose(fp);
@@ -689,8 +721,18 @@ void Save(Player *p)
     char itemnames[10001];
     for(int i=1; i<=totalitem; i++)
     {
-        strcpy(itemnames, itemlist[i].first.c_str());
+        strcpy(itemnames, get<0>(itemlist[i]).c_str());
         fprintf(fp,"%s %d %d\n", itemnames, p->playeritemlist[i].first, p->playeritemlist[i].second);
+    }
+    fclose(fp);
+
+    fp = fopen("./Save/itemDB.txt","w");
+
+    char DBitemnames[10001];
+    for(int i=1; i<=totalitem; i++)
+    {
+        strcpy(DBitemnames, get<0>(itemlist[i]).c_str());
+        fprintf(fp,"%s %d %d %d\n", DBitemnames, get<1>(itemlist[i]), get<2>(itemlist[i]), get<3>(itemlist[i]));
     }
     fclose(fp);
 }
@@ -724,18 +766,18 @@ void Load(Player *p)
     for(int i=1; i<=totalskill; i++)
     {
         char skillnames[10000];
-        fscanf(fp,"%s %d %d\n", skillnames, &skills[i].second.first, &skills[i].second.second);
-        skills[i].first = skillnames;
+        fscanf(fp,"%s %d %d\n", skillnames, &get<1>(skills[i]), &get<2>(skills[i]));
+        get<0>(skills[i]) = skillnames;
     }
     fscanf(fp,"%d %d %d %d", &p->skill[1], &p->skill[2], &p->skill[3] ,&p->skill[4]);
     fclose(fp);
 
-    fp = fopen("itemDB.txt","r");
+    fp = fopen("./Save/itemDB.txt","r");
     for(int i=1; i<=totalitem; i++)
     {
         char itemnames[10000];
-        fscanf(fp,"%s %d %d\n", itemnames, &itemlist[i].second.first, &itemlist[i].second.second);
-        itemlist[i].first = itemnames;
+        fscanf(fp,"%s %d %d %d\n", itemnames, &get<1>(itemlist[i]), &get<2>(itemlist[i]), &get<3>(itemlist[i]));
+        get<0>(itemlist[i]) = itemnames;
     }
     fclose(fp);
 
@@ -834,7 +876,7 @@ void showfulllog()
 {
     int lognum=20;
     int current = (t-lognum<=0) ? 0 : t-lognum;
-    int finish = (current<=lognum) ? t : current+lognum-1;
+    int finish = (current<=lognum) ? t-1 : current+lognum-1;
     int key;
 
     fulllog(current, finish);
@@ -861,7 +903,7 @@ void showfulllog()
             {
                 break;
             }
-            finish = (t<=lognum) ? t : current+20;
+            finish = (t<=lognum) ? t-1 : current+20;
             fulllog(current, finish);
         }
     }
@@ -1011,22 +1053,22 @@ void skillset(Player *p)
     {
         if(i==point) cout << ">";
 
-        if(skills[i].second.second==1)
+        if(get<2>(skills[i])==1)
         {
-            cout << "    " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+            cout << "    " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
         }
-        else if(skills[i].second.second==2)
+        else if(get<2>(skills[i])==2)
         {
             p->skill[usingskill]=i;
             usingskill++;
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+            cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         }
         else
         {
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-            cout << "   " << skills[i].first << "(" << skills[i].second.first << ")" << '\n';
+            cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         }
     }
@@ -1063,20 +1105,20 @@ void skillset(Player *p)
                 if(key==13) // enter키
                 {
                     command = true;
-                    if(usingskill<=4 || skills[point].second.second==2) // 스킬 최대갯수 내에 들거나, 해제를 하는 경우.
+                    if(usingskill<=4 || get<2>(skills[point])==2) // 스킬 최대갯수 내에 들거나, 해제를 하는 경우.
                     {
-                        if(skills[point].second.second==1) // 장착의 경우
+                        if(get<2>(skills[point])==1) // 장착의 경우
                         {
-                            Log[t] = skills[point].first + " 스킬을 장착하였습니다."; t++;
-                            skills[point].second.second=2;
+                            Log[t] = get<0>(skills[point]) + " 스킬을 장착하였습니다."; t++;
+                            get<2>(skills[point])=2;
                         }
-                        else if(skills[point].second.second==2) // 해제의 경우
+                        else if(get<2>(skills[point])==2) // 해제의 경우
                         {
-                            Log[t] = skills[point].first + " 스킬을 해제하였습니다."; t++;
-                            skills[point].second.second=1;
+                            Log[t] = get<0>(skills[point]) + " 스킬을 해제하였습니다."; t++;
+                            get<2>(skills[point])=1;
                         }
                     }
-                    else if(skills[point].second.second==1) // 최대갯수이며, 장착을 하는 경우
+                    else if(get<2>(skills[point])==1) // 최대갯수이며, 장착을 하는 경우
                     {
                         Log[t] = "스킬 슬롯이 가득 찼습니다."; t++;
                     }
@@ -1108,9 +1150,18 @@ void shop(Player *p)
     cout << "현재 골드 : " << p->gold << "\n\n";
     for(int i=1; i<=totalitem; i++)
     {
-        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
-        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        cout << itemlist[i].first << " : BUY " << itemlist[i].second.first << " / SELL " << itemlist[i].second.second << " / 보유 개수 : (" << p->playeritemlist[i].first << ")" <<'\n';
+        if(i==point)
+        {
+            if(get<1>(itemlist[i])==-100) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+            else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        }
+        else
+        {
+            if(get<1>(itemlist[i])==-100) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+            else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        }
+
+        cout << get<0>(itemlist[i]) << " : BUY " << get<2>(itemlist[i]) << " / SELL " << get<3>(itemlist[i]) << " / 보유 개수 : (" << p->playeritemlist[i].first << ")" <<'\n';
     }
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
@@ -1129,27 +1180,33 @@ void shop(Player *p)
                 if(key==80 && point<totalitem) point++; // 아래쪽
             }
 
-            if(key==66 || key==98) // B 키
+            if(key==66 || key==98 && get<1>(itemlist[point])!=-100) // B 키
             {
-                if(p->gold >= itemlist[point].second.first)
+                if(p->gold >= get<2>(itemlist[point]))
                 {
-                    p->gold-=itemlist[point].second.first;
+                    p->gold-=get<2>(itemlist[point]);
                     p->playeritemlist[point].first++;
-                    Log[t] = itemlist[point].first + "를 구매하였다."; t++;
+                    Log[t] = get<0>(itemlist[point]) + "를 구매하였다."; t++;
+
+                    if(get<1>(itemlist[point])>=1 && get<1>(itemlist[point])<100) // 스킬북
+                    {
+                        p->LearnSkill(get<1>(itemlist[point]));
+                        get<1>(itemlist[point])=-100;
+                    }
                     Save(p);
                 }
                 else
                 {
-                    Log[t] = "골드가 부족합니다. (" + to_string(p->gold) + "/" + to_string(itemlist[point].second.first) + ")"; t++;
+                    Log[t] = "골드가 부족합니다. (" + to_string(p->gold) + "/" + to_string(get<2>(itemlist[point])) + ")"; t++;
                 }
             }
             if(key==83 || key==115) // S 키
             {
-                if(p->playeritemlist[point].first > 0)
+                if(p->playeritemlist[point].first > 0 && !(p->playeritemlist[point].second>=1 && p->playeritemlist[point].second<100))
                 {
-                    p->gold+=itemlist[point].second.second;
+                    p->gold+=get<3>(itemlist[point]);
                     p->playeritemlist[point].first--;
-                    Log[t] = itemlist[point].first + "를 판매하였다.";
+                    Log[t] = get<0>(itemlist[point]) + "를 판매하였다.";
                     t++;
                     Save(p);
                 }
@@ -1228,7 +1285,7 @@ void skillattack(Player *p, mob *m, int skillnum)
 
         if(success>0)
         {
-            Log[t] = skills[skillnum].first + "를 사용하여 공격을 막아 피해량의 일부를 마나로 변환합니다.";
+            Log[t] = get<0>(skills[skillnum]) + "를 사용하여 공격을 막아 피해량의 일부를 마나로 변환합니다.";
             p->defence*=2;
             t++;
             mattack(p, m);
@@ -1242,7 +1299,7 @@ void skillattack(Player *p, mob *m, int skillnum)
         }
         else
         {
-            Log[t] = skills[skillnum].first + "를 사용하였으나 막는 것을 실패하였다!";
+            Log[t] = get<0>(skills[skillnum]) + "를 사용하였으나 막는 것을 실패하였다!";
             t++;
             p->defence/=2;
             mattack(p, m);
@@ -1254,13 +1311,13 @@ void skillattack(Player *p, mob *m, int skillnum)
     }
     if(skillnum == 2) // 크로스컷
     {
-        if(skills[skillnum].second.first <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp-=skills[skillnum].second.first;
+            p->mp-=get<1>(skills[skillnum]);
             for(int i=0; i<2; i++)
             {
                 damage = (rand() % (p->damage*2) + p->damage) / (1+(m->defence*0.1)) * multiple;
-                Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+                Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
                 if(m->hp<=0)
@@ -1273,33 +1330,33 @@ void skillattack(Player *p, mob *m, int skillnum)
         }
         else
         {
-            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
     if(skillnum == 3) // 힐링
     {
-        if(skills[skillnum].second.first <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp-=skills[skillnum].second.first;
+            p->mp-=get<1>(skills[skillnum]);
             int healing = min(p->maxhp, p->hp+(p->maxhp/8)) - p->hp; // hp 약 12.5% 회복
             p->hp += healing;
-            Log[t] = skills[skillnum].first + "을 사용하여 " + to_string(healing) + " 체력을 회복하였습니다!";
+            Log[t] = get<0>(skills[skillnum]) + "을 사용하여 " + to_string(healing) + " 체력을 회복하였습니다!";
             t++;
         }
         else
         {
-            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
     if(skillnum == 4) // 급소찌르기
     {
-        if(skills[skillnum].second.first <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp-=skills[skillnum].second.first;
+            p->mp-=get<1>(skills[skillnum]);
             damage = (rand() % p->damage) + p->damage * multiple;
-            Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+            Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp-=damage;
             if(m->hp<=0)
@@ -1311,19 +1368,19 @@ void skillattack(Player *p, mob *m, int skillnum)
         }
         else
         {
-            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
     if(skillnum == 5) // 분쇄
     {
-        if(skills[skillnum].second.first <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp-=skills[skillnum].second.first;
+            p->mp-=get<1>(skills[skillnum]);
             for(int i=0; i<3; i++)
             {
                 damage = (rand() % (p->damage * 4)) / (1+(m->defence*0.1)) * multiple;
-                Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+                Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
                 if(m->hp<=0)
@@ -1336,17 +1393,17 @@ void skillattack(Player *p, mob *m, int skillnum)
         }
         else
         {
-            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
     if(skillnum == 6) // 거인의일격
     {
-        if(skills[skillnum].second.first <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp-=skills[skillnum].second.first;
+            p->mp-=get<1>(skills[skillnum]);
             damage = (rand() % (p->damage*4) + p->damage*5) / (1+(m->defence*0.1)) * (multiple*3);
-            Log[t] = m->name + "에게 " + skills[skillnum].first + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+            Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp-=damage;
             if(m->hp<=0)
@@ -1358,7 +1415,29 @@ void skillattack(Player *p, mob *m, int skillnum)
         }
         else
         {
-            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(skills[p->skill[point]].second.first) + ")";
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
+            t++;
+        }
+    }
+    if(skillnum == 7) // 퍼스트블러드
+    {
+        if(get<1>(skills[skillnum]) <= p->mp)
+        {
+            p->mp-=get<1>(skills[skillnum]);
+            damage = m->hp / 10;
+            Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+            t++;
+            m->hp-=damage;
+            if(m->hp<=0)
+            {
+                m->Mobdeath(p);
+                return;
+            }
+            mattack(p, m);
+        }
+        else
+        {
+            Log[t] = "마나가 부족합니다. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
@@ -1487,7 +1566,7 @@ void fightmenu(mob *m, Player *p, bool skillmode)
         string skillarray[5];
         for(int i=1; i<=4; i++)
         {
-            skillarray[i] = skills[p->skill[i]].first + "(" + to_string(skills[p->skill[i]].second.first) + ")";
+            skillarray[i] = get<0>(skills[p->skill[i]]) + "(" + to_string(get<1>(skills[p->skill[i]])) + ")";
         }
         showplayerstatus(p, skillarray[1], skillarray[2], skillarray[3], skillarray[4]);
 
@@ -1574,7 +1653,7 @@ void showitem(Player *p, int point)
         if(point==i) cout << "> ";
         if(p->playeritemlist[i].first==0) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 
-        cout << itemlist[i].first << "(" << p->playeritemlist[i].first << ")\n";
+        cout << get<0>(itemlist[i]) << "(" << p->playeritemlist[i].first << ")\n";
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
