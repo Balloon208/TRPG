@@ -18,7 +18,7 @@ int where = 0;
 int t=0; // 턴이 지난 횟수
 int totalskill = 7;
 int totalitem = 3;
-int skillbooks = 1;
+int totalskillbooks = 1;
 int usingskill;
 bool killtrigger = false;
 int stage = 9;
@@ -720,7 +720,7 @@ void Save(Player *p)
     fp = fopen("./Save/playeritem.txt","w");
 
     char itemnames[10001];
-    for(int i=1; i<=totalitem+skillbooks; i++)
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         strcpy(itemnames, get<0>(itemlist[i]).c_str());
         fprintf(fp,"%s %d %d\n", itemnames, p->playeritemlist[i].first, p->playeritemlist[i].second);
@@ -730,7 +730,7 @@ void Save(Player *p)
     fp = fopen("./Save/itemDB.txt","w");
 
     char DBitemnames[10001];
-    for(int i=1; i<=totalitem+skillbooks; i++)
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         strcpy(DBitemnames, get<0>(itemlist[i]).c_str());
         fprintf(fp,"%s %d %d %d\n", DBitemnames, get<1>(itemlist[i]), get<2>(itemlist[i]), get<3>(itemlist[i]));
@@ -774,7 +774,7 @@ void Load(Player *p)
     fclose(fp);
 
     fp = fopen("./Save/itemDB.txt","r");
-    for(int i=1; i<=totalitem+skillbooks; i++)
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         char itemnames[10000];
         fscanf(fp,"%s %d %d %d\n", itemnames, &get<1>(itemlist[i]), &get<2>(itemlist[i]), &get<3>(itemlist[i]));
@@ -783,7 +783,7 @@ void Load(Player *p)
     fclose(fp);
 
     fp = fopen("./Save/playeritem.txt","r");
-    for(int i=1; i<=totalitem+skillbooks; i++)
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         char trash[10000];
         fscanf(fp,"%s %d %d\n", trash, &p->playeritemlist[i].first, &p->playeritemlist[i].second);
@@ -1149,7 +1149,7 @@ void shop(Player *p)
 
     cout << "구매하기 위해선 B, 팔기 위해선 S를 눌러주세요.\n\n";
     cout << "현재 골드 : " << p->gold << "\n\n";
-    for(int i=1; i<=totalitem+skillbooks; i++)
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         if(i==point)
         {
@@ -1178,7 +1178,7 @@ void shop(Player *p)
             {
                 key=getch();
                 if(key==72 && point>1) point--; // 위쪽
-                if(key==80 && point<totalitem+skillbooks) point++; // 아래쪽
+                if(key==80 && point<totalitem+totalskillbooks) point++; // 아래쪽
             }
 
             if(key==66 || key==98 && get<1>(itemlist[point])!=-100) // B 키
