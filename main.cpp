@@ -17,7 +17,8 @@ int point=1;
 int where = 0;
 int t=0; // 턴이 지난 횟수
 int totalskill = 7;
-int totalitem = 4;
+int totalitem = 3;
+int skillbooks = 1;
 int usingskill;
 bool killtrigger = false;
 int stage = 9;
@@ -657,7 +658,7 @@ void Login(Player *p)
         fprintf(fp, "소형포션 0 -1\n");
         fprintf(fp, "중형포션 0 -1\n");
         fprintf(fp, "대형포션 0 -1\n");
-        fprintf(fp, "대형포션 0 1\n");
+        fprintf(fp, "[Skillbook]퍼스트블러드 0 7\n");
 
         fclose(fp);
 
@@ -719,7 +720,7 @@ void Save(Player *p)
     fp = fopen("./Save/playeritem.txt","w");
 
     char itemnames[10001];
-    for(int i=1; i<=totalitem; i++)
+    for(int i=1; i<=totalitem+skillbooks; i++)
     {
         strcpy(itemnames, get<0>(itemlist[i]).c_str());
         fprintf(fp,"%s %d %d\n", itemnames, p->playeritemlist[i].first, p->playeritemlist[i].second);
@@ -729,7 +730,7 @@ void Save(Player *p)
     fp = fopen("./Save/itemDB.txt","w");
 
     char DBitemnames[10001];
-    for(int i=1; i<=totalitem; i++)
+    for(int i=1; i<=totalitem+skillbooks; i++)
     {
         strcpy(DBitemnames, get<0>(itemlist[i]).c_str());
         fprintf(fp,"%s %d %d %d\n", DBitemnames, get<1>(itemlist[i]), get<2>(itemlist[i]), get<3>(itemlist[i]));
@@ -773,7 +774,7 @@ void Load(Player *p)
     fclose(fp);
 
     fp = fopen("./Save/itemDB.txt","r");
-    for(int i=1; i<=totalitem; i++)
+    for(int i=1; i<=totalitem+skillbooks; i++)
     {
         char itemnames[10000];
         fscanf(fp,"%s %d %d %d\n", itemnames, &get<1>(itemlist[i]), &get<2>(itemlist[i]), &get<3>(itemlist[i]));
@@ -782,7 +783,7 @@ void Load(Player *p)
     fclose(fp);
 
     fp = fopen("./Save/playeritem.txt","r");
-    for(int i=1; i<=totalitem; i++)
+    for(int i=1; i<=totalitem+skillbooks; i++)
     {
         char trash[10000];
         fscanf(fp,"%s %d %d\n", trash, &p->playeritemlist[i].first, &p->playeritemlist[i].second);
@@ -1148,7 +1149,7 @@ void shop(Player *p)
 
     cout << "구매하기 위해선 B, 팔기 위해선 S를 눌러주세요.\n\n";
     cout << "현재 골드 : " << p->gold << "\n\n";
-    for(int i=1; i<=totalitem; i++)
+    for(int i=1; i<=totalitem+skillbooks; i++)
     {
         if(i==point)
         {
@@ -1177,7 +1178,7 @@ void shop(Player *p)
             {
                 key=getch();
                 if(key==72 && point>1) point--; // 위쪽
-                if(key==80 && point<totalitem) point++; // 아래쪽
+                if(key==80 && point<totalitem+skillbooks) point++; // 아래쪽
             }
 
             if(key==66 || key==98 && get<1>(itemlist[point])!=-100) // B 키
@@ -1424,7 +1425,7 @@ void skillattack(Player *p, mob *m, int skillnum)
         if(get<1>(skills[skillnum]) <= p->mp)
         {
             p->mp-=get<1>(skills[skillnum]);
-            damage = m->hp / 10;
+            damage = m->hp/10 + m->maxhp/20; // 남은 체력의 10% + 최대 체력의 5%
             Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp-=damage;
@@ -1646,8 +1647,11 @@ void fightselectmenu(mob *m, Player *p)
 
 void showitem(Player *p, int point)
 {
+    int showtotal = totalitem;
+
     for(int i=1; i<=totalitem; i++)
     {
+        if(get<1>(itemlist[i])>=1) continue;
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
         if(point==i) cout << "> ";
