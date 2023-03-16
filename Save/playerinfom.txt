@@ -1,0 +1,15 @@
+register:2
+tes
+maxhp:109
+hp:109
+maxmp:54
+mp:54
+damage:11
+defence:6
+speed:6
+gold:0
+level:2
+exp:64
+LVUPexp:65
+weaponlevel:0
+armorlevel:0

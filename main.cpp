@@ -733,6 +733,25 @@ void showitem(Player* p); // 아이템 보여주기
 void Forge(Player* p, int protect, int chance, string mode, int upmoney); // 강화가 진행되는 함수
 void weaponforge(Player* p, bool visit); // 무기강화소 (확률 및 돈 조정)
 void armorforge(Player* p, bool visit); // 방어구강화소 (확률 및 돈 조정)
+void death(Player* p);
+
+void death(Player* p) {
+    p->gold = 0;
+    p->heal();
+    Save(p);
+    system("cls");
+    cout << p->name << "님이 사망하여 골드를 모두 잃었습니다." << endl;
+    cout << "집으로 귀환하시겠습니까? ( 귀환하려면 스페이스 바 키를 누르세요";
+    while (1)
+    {
+        if (kbhit())
+        {
+            int key = getch();
+            if (key == 32) break; //esc
+        }
+    }
+    home(p);
+}
 
 bool Login(Player* p)
 {
@@ -1472,10 +1491,14 @@ void attack(Player* p, mob* m)
         pattack(p, m);
         if (killtrigger == true) return;
         mattack(p, m);
+        if (p->hp < 0) death(p);
     }
     else
     {
         mattack(p, m);
+        if (p->hp < 0) {
+            death(p);
+        }
         pattack(p, m);
     }
     int mphealing = min(p->maxmp, p->mp + (p->maxmp / 20)) - p->mp; // mp 5% 회복
