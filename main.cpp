@@ -36,7 +36,7 @@ string worldmap[10] = {
 "-",
 };
 
-tuple<string, int,int> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
+tuple<string, int, int> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
 tuple<string, int, int, int> itemlist[500]; // 아이템 이름, 아이템 종류 ,구매가, 판매가
 
 string Log[100000];
@@ -131,6 +131,55 @@ class Player
             }
             if(this->LVUPexp<this->exp) this->LVUP();
         }
+
+        void skilldescription(int skillnum)
+        {
+            system("cls");
+            cout << "스킬 설명\n\n";
+            cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+            cout << "스킬 이름 : " << get<0>(skills[skillnum]) << "(" << get<1>(skills[skillnum]) << ")\n\n";
+
+            if(skillnum==1)
+            {
+                cout << "이 스킬을 사용하면 몬스터에게 받는 데미지가 감소하고,\n받는 데미지 만큼 마나를 추가로 회복합니다.";
+            }
+            if(skillnum==2)
+            {
+                cout << "강한 공격을 두번 날립니다. 초심자가 가장 먼저 배우는 스킬 중 하나입니다.\n\n획득처 : 레벨 3 달성";
+            }
+            if(skillnum==3)
+            {
+                cout << "플레이어 hp의 12.5%를 즉시 회복합니다.\n포션이 없다면 해당 스킬을 사용하는 것도 좋습니다.\n\n획득처 : 레벨 10 달성";
+            }
+            if(skillnum==4)
+            {
+                cout << "상대방의 방어력을 무시하는 공격을 합니다.\n방어력이 높은 적에게 매우 효과적입니다.\n\n획득처 : 레벨 15 달성";
+            }
+            if(skillnum==5)
+            {
+                cout << "숲의 대장이 나무들을 정리할 때 사용하는 스킬입니다.\n데미지의 편차가 매우 심한편입니다.\n\n";
+                cout << "획득처 : [BOSS](LV15) 오크 처치시 일정 확률로 획득";
+            }
+            if(skillnum==6)
+            {
+                cout << "거구의 오크의 힘을 마나로 구현하여\n적에게 매우 강력한 데미지를 입힙니다.\n";
+                cout << "본인보다 약한 생명체에게 큰 데미지를 입니다.\n\n획득처 : [BOSS](LV15) 오크 처치시 일정 확률로 획득";
+            }
+            if(skillnum==7)
+            {
+                cout << "마력을 이용하여 적에게 체력 비례 데미지를 줍니다.\n";
+                cout << "상대방이 약해질수록 해당 스킬의 위력도 감소합니다.\n\n획득처 : 상점에서 구매";
+            }
+            while(1)
+            {
+                if(kbhit())
+                {
+                    int key=getch();
+                    if(key==27) break;//esc
+                }
+            }
+        }
 };
 
 class mob
@@ -146,6 +195,7 @@ class mob
         int level;
         int exp;
         int gold;
+        string desc;
 
         //시작의 숲
         void MiniSlime()
@@ -160,6 +210,7 @@ class mob
             this->level = 1;
             this->exp = 5;
             this->gold = 80;
+            this->desc = "작은 슬라임입니다. 약한 산성을 지니고 있으니 조심해야 합니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void Snake()
@@ -174,6 +225,7 @@ class mob
             this->level = 2;
             this->exp = 8;
             this->gold = 130;
+            this->desc = "흔한 뱀입니다. 초보자들을 무는 것을 좋아합니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void Slime()
@@ -188,6 +240,7 @@ class mob
             this->level = 3;
             this->exp = 15;
             this->gold = 200;
+            this->desc = "평범한 슬라임입니다. 산성을 지니고 있으니 조심해야합니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void Oak()
@@ -202,6 +255,8 @@ class mob
             this->level = 15;
             this->exp = 2450;
             this->gold = 7000;
+            this->desc = "숲의 대장을 담당하는 오크입니다.\n골고루 밸런스가 잡힌 스테이터스를 지니고 있습니다.";
+            this->desc += "\n보스 몬스터는 상당히 강하므로 조심해야합니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         // 케이브 케이브
@@ -217,6 +272,7 @@ class mob
             this->level = 4;
             this->exp = 20;
             this->gold = 300;
+            this->desc = "돌로 이루어진 슬라임입니다. 무려 '고체'의 슬라임 입니다!";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void Bat()
@@ -231,6 +287,7 @@ class mob
             this->level = 6;
             this->exp = 30;
             this->gold = 430;
+            this->desc = "미지의 실험을 통하여 공격성을 띄게 된 박쥐입니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void MiniGolem()
@@ -245,13 +302,14 @@ class mob
             this->level = 8;
             this->exp = 45;
             this->gold = 600;
+            this->desc = "단단한 몸과 높은 파괴력을 지닌 작은 골렘입니다.\n골렘이 분열하여 만들어 진 것 같습니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void Golem()
         {
             this->name = "(LV13) 골렘";
 
-            this->maxhp = 500;
+            this->maxhp = 700;
             this->mobcode = "C4";
             this->hp = maxhp;
             this->damage = 45;
@@ -260,6 +318,7 @@ class mob
             this->level = 13;
             this->exp = 230;
             this->gold = 2000;
+            this->desc = "단단한 몸과 높은 파괴력을 지닌 골렘입니다.\n상당히 정교하게 만들어 졌습니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         // 서늘한 공터
@@ -275,6 +334,7 @@ class mob
             this->level = 10;
             this->exp = 100;
             this->gold = 800;
+            this->desc = "오로지 사냥을 위하여 길들여진 개입니다.\n사냥꾼이 애용하는 강아지중 하나입니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void hunter()
@@ -289,6 +349,7 @@ class mob
             this->level = 10;
             this->exp = 90;
             this->gold = 740;
+            this->desc = "인간 사냥을 주로 하는 사냥꾼입니다.\n누군가에게 조종을 당하고 있는 듯 합니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void shadower()
@@ -303,6 +364,7 @@ class mob
             this->level = 11;
             this->exp = 50;
             this->gold = 1300;
+            this->desc = "매우 빠른 속도를 가진 몹입니다. 데미지가 매우 강합니다.\n주머니에 돈이 많이 들은 것 같습니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void badknight()
@@ -317,6 +379,8 @@ class mob
             this->level = 13;
             this->exp = 200;
             this->gold = 1750;
+            this->desc = "이 구역의 지배자의 알 수 없는 힘이 그의 주변에 감싸돕니다.\n";
+            this->desc += "그 힘을 받았음에도 불구하고, 타락화만 하였을 뿐 능력치는 그대로인거 같습니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void nohead()
@@ -331,6 +395,8 @@ class mob
             this->level = 22;
             this->exp = 7500;
             this->gold = 33000;
+            this->desc = "사념의 영혼이 모여 만들어진 그는 이 구역의 지배자로, 강력한 데미지를 지니고 있습니다.\n";
+            this->desc += "머리가 존재하지 않아 급소를 노리기 매우 쉬워 방어력은 매우 낮아 보입니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
 
@@ -347,6 +413,7 @@ class mob
             this->level = 15;
             this->exp = 440;
             this->gold = 2500;
+            this->desc = "일반적인 좀비입니다. 다행히도, 물려도 감염은 되지 않습니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void skeleton()
@@ -361,6 +428,8 @@ class mob
             this->level = 17;
             this->exp = 520;
             this->gold = 2800;
+            this->desc = "뼈로 이루어진 스켈레톤 입니다.\n모 게임과는 다르게 근접으로 공격합니다.\n";
+            this->desc += "사냥개가 이 몬스터를 좋아하는 거 같습니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void tankzombie()
@@ -375,6 +444,7 @@ class mob
             this->level = 18;
             this->exp = 700;
             this->gold = 2500;
+            this->desc = "단단한 근육을 가진 좀비의 진화종입니다. 방어력이 매우 높습니다";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void darkknight()
@@ -389,6 +459,7 @@ class mob
             this->level = 20;
             this->exp = 1030;
             this->gold = 3830;
+            this->desc = "악의에 가득찬 기운이 그에게서 느껴집니다.\n오직 당신만을 죽이려는 눈빛을 보입니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
         void demonite()
@@ -403,6 +474,8 @@ class mob
             this->level = 35;
             this->exp = 25000;
             this->gold = 75000;
+            this->desc = "마왕 간부급의 악마인 '데모나이트' 입니다.\n";
+            this->desc +="일반적인 방법으로는 공격이 통하지 않아 특별한 방법으로 처치해야 할 것 같습니다.";
             Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
         }
 
@@ -517,6 +590,42 @@ class mob
                 }
             }
         }
+
+        void mobdescription(bool showstatus = false)
+        {
+            system("cls");
+            cout << "몬스터 설명\n\n";
+            cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+            cout << "몬스터 이름 : " << this->name << "\n\n";
+
+            cout << this->desc << "\n\n";
+
+            if(showstatus==false) cout << "상세 정보 보기(S키 누르기)\n\n";
+            else cout << "상세 정보 그만 보기(S키 누르기)\n\n";
+
+            if(showstatus)
+            {
+                cout << "HP : " <<  this->hp << " / " << this->maxhp << '\n';
+                cout << "Damage : " << this->damage << '\n';
+                cout << "Defence : " << this->defence << '\n';
+                cout << "Speed : " << this->speed << '\n';
+                cout << "Dropexp : " << this->exp << '\n';
+                cout << "Dropgold : " << this->gold << '\n';
+            }
+            while(1)
+            {
+                if(kbhit())
+                {
+                    int key=getch();
+                    if(key==27) break;//esc
+                    if(key==83 || key==115) showstatus = !showstatus; // s키
+
+                    this->mobdescription(showstatus);
+                    break;
+                }
+            }
+        }
 };
 
 class item
@@ -564,7 +673,7 @@ class item
         }
 };
 
-void Login(Player *p); // 첫 로그인 시 실행되는 함수
+bool Login(Player *p); // 첫 로그인 시 실행되는 함수
 void Save(Player *p); // 게임 진행 상황을 저장하는 함수
 void Load(Player *p); // 이전에 진행한 게임을 불러오는 함수
 void showlog(); // 로그를 보여주는 함수
@@ -592,8 +701,7 @@ void Forge(Player *p, int protect, int chance, string mode, int upmoney); // 강
 void weaponforge(Player *p, bool visit); // 무기강화소 (확률 및 돈 조정)
 void armorforge(Player *p, bool visit); // 방어구강화소 (확률 및 돈 조정)
 
-
-void Login(Player *p)
+bool Login(Player *p)
 {
     int n;
     string name;
@@ -682,7 +790,9 @@ void Login(Player *p)
         p->skill[2]=0;
         p->skill[3]=0;
         p->skill[4]=0;
+        return false;
     }
+    
 }
 
 void Save(Player *p)
@@ -1124,6 +1234,10 @@ void skillset(Player *p)
                         Log[t] = "스킬 슬롯이 가득 찼습니다."; t++;
                     }
                 }
+                if(key==47 || key==63) // / or ?
+                {
+                    p->skilldescription(point);
+                }
                 if(key==27) //esc
                 {
                     point = 1;
@@ -1181,7 +1295,7 @@ void shop(Player *p)
                 if(key==80 && point<totalitem+totalskillbooks) point++; // 아래쪽
             }
 
-            if(key==66 || key==98 && get<1>(itemlist[point])!=-100) // B 키
+            if((key==66 || key==98) && get<1>(itemlist[point])!=-100) // B 키
             {
                 if(p->gold >= get<2>(itemlist[point]))
                 {
@@ -1279,7 +1393,7 @@ void skillattack(Player *p, mob *m, int skillnum)
     double multiple = double((p->level - m->level)*5 + 100)/100;
     if(multiple>1.3) multiple=1.3;
 
-    if(skillnum == 1)
+    if(skillnum == 1) // 방어
     {
         int success = rand() % 4;
         int temp = p->hp;
@@ -1380,7 +1494,7 @@ void skillattack(Player *p, mob *m, int skillnum)
             p->mp-=get<1>(skills[skillnum]);
             for(int i=0; i<3; i++)
             {
-                damage = (rand() % (p->damage * 4)) / (1+(m->defence*0.1)) * multiple;
+                damage = (rand() % (p->damage * 5)) / (1+(m->defence*0.1)) * multiple;
                 Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp-=damage;
@@ -1425,7 +1539,7 @@ void skillattack(Player *p, mob *m, int skillnum)
         if(get<1>(skills[skillnum]) <= p->mp)
         {
             p->mp-=get<1>(skills[skillnum]);
-            damage = m->hp/10 + m->maxhp/20; // 남은 체력의 10% + 최대 체력의 5%
+            damage = m->hp/8; // 남은 체력의 12.5%
             Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp-=damage;
@@ -1451,7 +1565,7 @@ void fight(Player *p)
     mob m;
 
     showlog();
-    showplayerstatus(p, "탐험한다", "돌아간다", "-", "-");
+    showplayerstatus(p, "탐험한다", "돌아간다", "", "");
 }
 
 void readymenu(Player *p)
@@ -1469,7 +1583,7 @@ void readymenu(Player *p)
                 {
                     key=getch();
                     if(key==75 && point>1) point--; // 왼쪽
-                    if(key==77 && point<4) point++; // 오른쪽
+                    if(key==77 && point<2) point++; // 오른쪽
                 }
                 if(key==13) // enter키
                 {
@@ -1629,6 +1743,14 @@ void fightselectmenu(mob *m, Player *p)
                     }
                 }
             }
+            if(key==47 || key==63) // / or ?
+            {
+                if(skillmode)
+                {
+                    if(p->skill[point]!=0) p->skilldescription(p->skill[point]);
+                }
+                else m->mobdescription();
+            }
             if(key==27 && skillmode) //esc
             {
                 skillmode = !skillmode;
@@ -1647,8 +1769,6 @@ void fightselectmenu(mob *m, Player *p)
 
 void showitem(Player *p, int point)
 {
-    int showtotal = totalitem;
-
     for(int i=1; i<=totalitem; i++)
     {
         if(get<1>(itemlist[i])>=1) continue;
@@ -1880,7 +2000,8 @@ int main()
 {
     srand(GetTickCount());
     Player p;
-    Login(&p);
+    int restart = Login(&p);
+    if(restart) return 0;
     Load(&p);
     Log[0]="#Log Start"; t++;
     home(&p);
