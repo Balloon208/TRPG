@@ -1,0 +1,15 @@
+register:2
+adsf
+maxhp:100
+hp:10
+maxmp:50
+mp:50
+damage:10
+defence:5
+speed:5
+gold:310
+level:1
+exp:19
+LVUPexp:50
+weaponlevel:0
+armorlevel:0

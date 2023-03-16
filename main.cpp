@@ -12,10 +12,10 @@ using namespace std;
 
 double mobhppercent, playerhppercent, playermppercent, playerexppercent;
 
-int forgeadd[21] = { 0,1,2,3,4,5,5,5,5,5,5,7,7,8,8,8,10,15,20,25,30 };
-int point = 1;
+int forgeadd[21]={0,1,2,3,4,5,5,5,5,5,5,7,7,8,8,8,10,15,20,25,30};
+int point=1;
 int where = 0;
-int t = 0; // í„´ì´ ì§€ë‚œ íšŸìˆ˜
+int t=0; // ÅÏÀÌ Áö³­ È½¼ö
 int totalskill = 7;
 int totalitem = 3;
 int totalskillbooks = 1;
@@ -25,800 +25,791 @@ int stage = 9;
 
 string worldmap[10] = {
 "-",
-"ì „ì§ì†Œ",
-"ë¬´ê¸° ê°•í™”ì†Œ",
-"ë°©ì–´êµ¬ ê°•í™”ì†Œ",
-"ì‹œì‘ì˜ ìˆ² (ê¶Œì¥ ë ˆë²¨ LV1 ì´ìƒ)",
-"ì¼€ì´ë¸Œ ë™êµ´ (ê¶Œì¥ ë ˆë²¨ LV7 ì´ìƒ)",
-"ìˆ˜ìƒí•œ ê³µí„° (ê¶Œì¥ ë ˆë²¨ LV12 ì´ìƒ)",
-"ì €ì£¼ë°›ì€ ë•… (ê¶Œì¥ ë ˆë²¨ LV20 ì´ìƒ)",
+"ÀüÁ÷¼Ò",
+"¹«±â °­È­¼Ò",
+"¹æ¾î±¸ °­È­¼Ò",
+"½ÃÀÛÀÇ ½£ (±ÇÀå ·¹º§ LV1 ÀÌ»ó)",
+"ÄÉÀÌºê µ¿±¼ (±ÇÀå ·¹º§ LV7 ÀÌ»ó)",
+"¼ö»óÇÑ °øÅÍ (±ÇÀå ·¹º§ LV12 ÀÌ»ó)",
+"ÀúÁÖ¹ŞÀº ¶¥ (±ÇÀå ·¹º§ LV20 ÀÌ»ó)",
 "-",
 "-",
 };
 
-tuple<string, int, int> skills[500]; // ìŠ¤í‚¬ ì´ë¦„(ë„ì–´ ì“°ê¸° X), ManaCost, Learned(1 = ìŠ¤í‚¬ ë°°ì›€, 2 = ì¥ì°© ì¤‘)
-tuple<string, int, int, int> itemlist[500]; // ì•„ì´í…œ ì´ë¦„, ì•„ì´í…œ ì¢…ë¥˜ ,êµ¬ë§¤ê°€, íŒë§¤ê°€
+tuple<string, int, int> skills[500]; // ½ºÅ³ ÀÌ¸§(¶ç¾î ¾²±â X), ManaCost, Learned(1 = ½ºÅ³ ¹è¿ò, 2 = ÀåÂø Áß)
+tuple<string, int, int, int> itemlist[500]; // ¾ÆÀÌÅÛ ÀÌ¸§, ¾ÆÀÌÅÛ Á¾·ù ,±¸¸Å°¡, ÆÇ¸Å°¡
 
 string Log[100000];
 
 class Player
 {
-public:
-    string name;
-    int maxhp;
-    int hp;
-    int maxmp;
-    int mp;
-    int damage;
-    int defence;
-    int speed;
-    int gold;
-    int level;
-    int exp;
-    int LVUPexp;
-    int weaponlevel;
-    int armorlevel;
-    int skill[6];
-    pair<int, int> playeritemlist[500]; // ìˆ˜ëŸ‰, ì•„ì´í…œ ì¢…ë¥˜(ì†Œëª¨í’ˆ = -1, ìŠ¤í‚¬ë¶ = 1)
+    public:
+        string name;
+        int maxhp;
+        int hp;
+        int maxmp;
+        int mp;
+        int damage;
+        int defence;
+        int speed;
+        int gold;
+        int level;
+        int exp;
+        int LVUPexp;
+        int weaponlevel;
+        int armorlevel;
+        int skill[6];
+        pair<int,int> playeritemlist[500]; // ¼ö·®, ¾ÆÀÌÅÛ Á¾·ù(¼Ò¸ğÇ° = -1, ½ºÅ³ºÏ = 1)
 
-    void heal()
-    {
-        this->hp = this->maxhp;
-        this->mp = this->maxmp;
-        Log[t] = this->name + "(ì´)ëŠ” íœ´ì‹ì„ í•˜ì—¬ ì „ë¶€ íšŒë³µí•˜ì˜€ë‹¤."; t++;
-    }
+        void heal()
+        {
+            this->hp=this->maxhp;
+            this->mp=this->maxmp;
+            Log[t] = this->name + "(ÀÌ)´Â ÈŞ½ÄÀ» ÇÏ¿© ÀüºÎ È¸º¹ÇÏ¿´´Ù."; t++;
+        }
 
-    void LearnSkill(int num)
-    {
-        if (num == 2)
+        void LearnSkill(int num)
         {
-            Log[t] = get<0>(skills[num]) + "ì„(ë¥¼) ìŠµë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-            get<2>(skills[2]) = 1;
-        }
-        if (num == 3)
-        {
-            Log[t] = get<0>(skills[num]) + "ì„(ë¥¼) ìŠµë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-            get<2>(skills[3]) = 1;
-        }
-        if (num == 4)
-        {
-            Log[t] = get<0>(skills[num]) + "ì„(ë¥¼) ìŠµë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-            get<2>(skills[4]) = 1;
-        }
-        if (num == 5)
-        {
-            Log[t] = "[BOSS](LV15) ì˜¤í¬ ë¥¼ ì£½ì—¬ " + get<0>(skills[num]) + "ì„(ë¥¼) ìŠµë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-            get<2>(skills[5]) = 1;
-        }
-        if (num == 6)
-        {
-            Log[t] = "[BOSS](LV15) ì˜¤í¬ ë¥¼ ì£½ì—¬ " + get<0>(skills[num]) + "ì„(ë¥¼) ìŠµë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-            get<2>(skills[6]) = 1;
-        }
-        if (num == 7)
-        {
-            Log[t] = get<0>(skills[num]) + "ì„(ë¥¼) ìŠµë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-            get<2>(skills[7]) = 1;
-        }
-    }
-
-    void LVUP()
-    {
-        this->maxhp += (10 + (level / 2) - 1);
-        this->maxmp += (5 + (level / 2) - 1);
-        this->damage += (1 + int(level / 4));
-        this->defence += (1 + int(level / 4));
-        this->speed += 1;
-        this->hp = this->maxhp;
-        this->mp = this->maxmp;
-
-        this->exp -= this->LVUPexp;
-        this->level++;
-        this->LVUPexp *= 1.3;
-        Log[t] = "ë ˆë²¨ì´ ìƒìŠ¹ í•˜ì˜€ìŠµë‹ˆë‹¤!" + to_string(this->level - 1) + "->" + to_string(this->level); t++;
-
-        if (this->level == 3 && get<2>(skills[2]) == 0)
-        {
-            this->LearnSkill(2);
-        }
-        if (this->level == 10 && get<2>(skills[3]) == 0)
-        {
-            this->LearnSkill(3);
-        }
-        if (this->level == 15 && get<2>(skills[4]) == 0)
-        {
-            this->LearnSkill(4);
-        }
-        if (this->LVUPexp < this->exp) this->LVUP();
-    }
-
-    void skilldescription(int skillnum)
-    {
-        system("cls");
-        cout << "ìŠ¤í‚¬ ì„¤ëª…\n\n";
-        cout << "ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡\n\n";
-
-        cout << "ìŠ¤í‚¬ ì´ë¦„ : " << get<0>(skills[skillnum]) << "(" << get<1>(skills[skillnum]) << ")\n\n";
-
-        if (skillnum == 1)
-        {
-            cout << "ì´ ìŠ¤í‚¬ì„ ì‚¬ìš©í•˜ë©´ ëª¬ìŠ¤í„°ì—ê²Œ ë°›ëŠ” ë°ë¯¸ì§€ê°€ ê°ì†Œí•˜ê³ ,\në°›ëŠ” ë°ë¯¸ì§€ ë§Œí¼ ë§ˆë‚˜ë¥¼ ì¶”ê°€ë¡œ íšŒë³µí•©ë‹ˆë‹¤.";
-        }
-        if (skillnum == 2)
-        {
-            cout << "ê°•í•œ ê³µê²©ì„ ë‘ë²ˆ ë‚ ë¦½ë‹ˆë‹¤. ì´ˆì‹¬ìê°€ ê°€ì¥ ë¨¼ì € ë°°ìš°ëŠ” ìŠ¤í‚¬ ì¤‘ í•˜ë‚˜ì…ë‹ˆë‹¤.\n\níšë“ì²˜ : ë ˆë²¨ 3 ë‹¬ì„±";
-        }
-        if (skillnum == 3)
-        {
-            cout << "í”Œë ˆì´ì–´ hpì˜ 12.5%ë¥¼ ì¦‰ì‹œ íšŒë³µí•©ë‹ˆë‹¤.\ní¬ì…˜ì´ ì—†ë‹¤ë©´ í•´ë‹¹ ìŠ¤í‚¬ì„ ì‚¬ìš©í•˜ëŠ” ê²ƒë„ ì¢‹ìŠµë‹ˆë‹¤.\n\níšë“ì²˜ : ë ˆë²¨ 10 ë‹¬ì„±";
-        }
-        if (skillnum == 4)
-        {
-            cout << "ìƒëŒ€ë°©ì˜ ë°©ì–´ë ¥ì„ ë¬´ì‹œí•˜ëŠ” ê³µê²©ì„ í•©ë‹ˆë‹¤.\në°©ì–´ë ¥ì´ ë†’ì€ ì ì—ê²Œ ë§¤ìš° íš¨ê³¼ì ì…ë‹ˆë‹¤.\n\níšë“ì²˜ : ë ˆë²¨ 15 ë‹¬ì„±";
-        }
-        if (skillnum == 5)
-        {
-            cout << "ìˆ²ì˜ ëŒ€ì¥ì´ ë‚˜ë¬´ë“¤ì„ ì •ë¦¬í•  ë•Œ ì‚¬ìš©í•˜ëŠ” ìŠ¤í‚¬ì…ë‹ˆë‹¤.\në°ë¯¸ì§€ì˜ í¸ì°¨ê°€ ë§¤ìš° ì‹¬í•œí¸ì…ë‹ˆë‹¤.\n\n";
-            cout << "íšë“ì²˜ : [BOSS](LV15) ì˜¤í¬ ì²˜ì¹˜ì‹œ ì¼ì • í™•ë¥ ë¡œ íšë“";
-        }
-        if (skillnum == 6)
-        {
-            cout << "ê±°êµ¬ì˜ ì˜¤í¬ì˜ í˜ì„ ë§ˆë‚˜ë¡œ êµ¬í˜„í•˜ì—¬\nì ì—ê²Œ ë§¤ìš° ê°•ë ¥í•œ ë°ë¯¸ì§€ë¥¼ ì…í™ë‹ˆë‹¤.\n";
-            cout << "ë³¸ì¸ë³´ë‹¤ ì•½í•œ ìƒëª…ì²´ì—ê²Œ í° ë°ë¯¸ì§€ë¥¼ ì…ë‹ˆë‹¤.\n\níšë“ì²˜ : [BOSS](LV15) ì˜¤í¬ ì²˜ì¹˜ì‹œ ì¼ì • í™•ë¥ ë¡œ íšë“";
-        }
-        if (skillnum == 7)
-        {
-            cout << "ë§ˆë ¥ì„ ì´ìš©í•˜ì—¬ ì ì—ê²Œ ì²´ë ¥ ë¹„ë¡€ ë°ë¯¸ì§€ë¥¼ ì¤ë‹ˆë‹¤.\n";
-            cout << "ìƒëŒ€ë°©ì´ ì•½í•´ì§ˆìˆ˜ë¡ í•´ë‹¹ ìŠ¤í‚¬ì˜ ìœ„ë ¥ë„ ê°ì†Œí•©ë‹ˆë‹¤.\n\níšë“ì²˜ : ìƒì ì—ì„œ êµ¬ë§¤";
-        }
-        while (1)
-        {
-            if (kbhit())
+            if(num==2)
             {
-                int key = getch();
-                if (key == 27) break;//esc
+                Log[t] = get<0>(skills[num]) + "À»(¸¦) ½ÀµæÇÏ¿´½À´Ï´Ù!"; t++;
+                get<2>(skills[2])=1;
+            }
+            if(num==3)
+            {
+                Log[t] = get<0>(skills[num]) + "À»(¸¦) ½ÀµæÇÏ¿´½À´Ï´Ù!"; t++;
+                get<2>(skills[3])=1;
+            }
+            if(num==4)
+            {
+                Log[t] = get<0>(skills[num]) + "À»(¸¦) ½ÀµæÇÏ¿´½À´Ï´Ù!"; t++;
+                get<2>(skills[4])=1;
+            }
+            if(num==5)
+            {
+                Log[t] = "[BOSS](LV15) ¿ÀÅ© ¸¦ Á×¿© " + get<0>(skills[num]) + "À»(¸¦) ½ÀµæÇÏ¿´½À´Ï´Ù!"; t++;
+                get<2>(skills[5])=1;
+            }
+            if(num==6)
+            {
+                Log[t] = "[BOSS](LV15) ¿ÀÅ© ¸¦ Á×¿© " + get<0>(skills[num]) + "À»(¸¦) ½ÀµæÇÏ¿´½À´Ï´Ù!"; t++;
+                get<2>(skills[6])=1;
+            }
+            if(num==7)
+            {
+                Log[t] = get<0>(skills[num]) + "À»(¸¦) ½ÀµæÇÏ¿´½À´Ï´Ù!"; t++;
+                get<2>(skills[7])=1;
             }
         }
-    }
+
+        void LVUP()
+        {
+            this->maxhp+=(10+(level/2)-1);
+            this->maxmp+=(5+(level/2)-1);
+            this->damage+=(1+int(level/4));
+            this->defence+=(1+int(level/4));
+            this->speed+=1;
+            this->hp=this->maxhp;
+            this->mp=this->maxmp;
+
+            this->exp -= this->LVUPexp;
+            this->level++;
+            this->LVUPexp*=1.3;
+            Log[t] = "·¹º§ÀÌ »ó½Â ÇÏ¿´½À´Ï´Ù!" + to_string(this->level-1) + "->" + to_string(this->level); t++;
+
+            if(this->level==3 && get<2>(skills[2])==0)
+            {
+                this->LearnSkill(2);
+            }
+            if(this->level==10  && get<2>(skills[3])==0)
+            {
+                this->LearnSkill(3);
+            }
+            if(this->level==15  && get<2>(skills[4])==0)
+            {
+                this->LearnSkill(4);
+            }
+            if(this->LVUPexp<this->exp) this->LVUP();
+        }
+
+        void skilldescription(int skillnum)
+        {
+            system("cls");
+            cout << "½ºÅ³ ¼³¸í\n\n";
+            cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ\n\n";
+
+            cout << "½ºÅ³ ÀÌ¸§ : " << get<0>(skills[skillnum]) << "(" << get<1>(skills[skillnum]) << ")\n\n";
+
+            if(skillnum==1)
+            {
+                cout << "ÀÌ ½ºÅ³À» »ç¿ëÇÏ¸é ¸ó½ºÅÍ¿¡°Ô ¹Ş´Â µ¥¹ÌÁö°¡ °¨¼ÒÇÏ°í,\n¹Ş´Â µ¥¹ÌÁö ¸¸Å­ ¸¶³ª¸¦ Ãß°¡·Î È¸º¹ÇÕ´Ï´Ù.";
+            }
+            if(skillnum==2)
+            {
+                cout << "°­ÇÑ °ø°İÀ» µÎ¹ø ³¯¸³´Ï´Ù. ÃÊ½ÉÀÚ°¡ °¡Àå ¸ÕÀú ¹è¿ì´Â ½ºÅ³ Áß ÇÏ³ªÀÔ´Ï´Ù.\n\nÈ¹µæÃ³ : ·¹º§ 3 ´Ş¼º";
+            }
+            if(skillnum==3)
+            {
+                cout << "ÇÃ·¹ÀÌ¾î hpÀÇ 12.5%¸¦ Áï½Ã È¸º¹ÇÕ´Ï´Ù.\nÆ÷¼ÇÀÌ ¾ø´Ù¸é ÇØ´ç ½ºÅ³À» »ç¿ëÇÏ´Â °Íµµ ÁÁ½À´Ï´Ù.\n\nÈ¹µæÃ³ : ·¹º§ 10 ´Ş¼º";
+            }
+            if(skillnum==4)
+            {
+                cout << "»ó´ë¹æÀÇ ¹æ¾î·ÂÀ» ¹«½ÃÇÏ´Â °ø°İÀ» ÇÕ´Ï´Ù.\n¹æ¾î·ÂÀÌ ³ôÀº Àû¿¡°Ô ¸Å¿ì È¿°úÀûÀÔ´Ï´Ù.\n\nÈ¹µæÃ³ : ·¹º§ 15 ´Ş¼º";
+            }
+            if(skillnum==5)
+            {
+                cout << "½£ÀÇ ´ëÀåÀÌ ³ª¹«µéÀ» Á¤¸®ÇÒ ¶§ »ç¿ëÇÏ´Â ½ºÅ³ÀÔ´Ï´Ù.\nµ¥¹ÌÁöÀÇ ÆíÂ÷°¡ ¸Å¿ì ½ÉÇÑÆíÀÔ´Ï´Ù.\n\n";
+                cout << "È¹µæÃ³ : [BOSS](LV15) ¿ÀÅ© Ã³Ä¡½Ã ÀÏÁ¤ È®·ü·Î È¹µæ";
+            }
+            if(skillnum==6)
+            {
+                cout << "°Å±¸ÀÇ ¿ÀÅ©ÀÇ ÈûÀ» ¸¶³ª·Î ±¸ÇöÇÏ¿©\nÀû¿¡°Ô ¸Å¿ì °­·ÂÇÑ µ¥¹ÌÁö¸¦ ÀÔÈü´Ï´Ù.\n";
+                cout << "º»ÀÎº¸´Ù ¾àÇÑ »ı¸íÃ¼¿¡°Ô Å« µ¥¹ÌÁö¸¦ ÀÔ´Ï´Ù.\n\nÈ¹µæÃ³ : [BOSS](LV15) ¿ÀÅ© Ã³Ä¡½Ã ÀÏÁ¤ È®·ü·Î È¹µæ";
+            }
+            if(skillnum==7)
+            {
+                cout << "¸¶·ÂÀ» ÀÌ¿ëÇÏ¿© Àû¿¡°Ô Ã¼·Â ºñ·Ê µ¥¹ÌÁö¸¦ Áİ´Ï´Ù.\n";
+                cout << "»ó´ë¹æÀÌ ¾àÇØÁú¼ö·Ï ÇØ´ç ½ºÅ³ÀÇ À§·Âµµ °¨¼ÒÇÕ´Ï´Ù.\n\nÈ¹µæÃ³ : »óÁ¡¿¡¼­ ±¸¸Å";
+            }
+            while(1)
+            {
+                if(kbhit())
+                {
+                    int key=getch();
+                    if(key==27) break;//esc
+                }
+            }
+        }
+        void death()
+        {
+            int beforeexp=this->exp;
+            int beforegold=this->gold;
+            this->hp=this->maxhp/10;
+            this->exp/=2;
+            this->gold/=2;
+            Log[t]="´ç½ÅÀº »ç¸ÁÇÏ¿´½À´Ï´Ù. ¸¶À»¿¡¼­ ºÎÈ°ÇÕ´Ï´Ù."; t++;
+            Log[t]="EXP(" + to_string(beforeexp) + "->" + to_string(this->exp) + ") / °ñµå(" + to_string(beforegold) + "->" + to_string(this->gold); t++;
+        }
 };
 
 class mob
 {
-public:
-    string name;
-    string mobcode;
-    int maxhp;
-    int hp;
-    int damage;
-    int defence;
-    int speed;
-    int level;
-    int exp;
-    int gold;
-    string desc;
+    public:
+        string name;
+        string mobcode;
+        int maxhp;
+        int hp;
+        int damage;
+        int defence;
+        int speed;
+        int level;
+        int exp;
+        int gold;
+        string desc;
 
-    //ì‹œì‘ì˜ ìˆ²
-    void MiniSlime()
-    {
-        this->name = "(LV1) ë¯¸ë‹ˆ ìŠ¬ë¼ì„";
-        this->mobcode = "F1";
-        this->maxhp = 50;
-        this->hp = maxhp;
-        this->damage = 4;
-        this->defence = 3;
-        this->speed = 5;
-        this->level = 1;
-        this->exp = 5;
-        this->gold = 80;
-        this->desc = "ì‘ì€ ìŠ¬ë¼ì„ì…ë‹ˆë‹¤. ì•½í•œ ì‚°ì„±ì„ ì§€ë‹ˆê³  ìˆìœ¼ë‹ˆ ì¡°ì‹¬í•´ì•¼ í•©ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void Snake()
-    {
-        this->name = "(LV2) ë±€";
-        this->mobcode = "F2";
-        this->maxhp = 75;
-        this->hp = maxhp;
-        this->damage = 6;
-        this->defence = 3;
-        this->speed = 10;
-        this->level = 2;
-        this->exp = 8;
-        this->gold = 130;
-        this->desc = "í”í•œ ë±€ì…ë‹ˆë‹¤. ì´ˆë³´ìë“¤ì„ ë¬´ëŠ” ê²ƒì„ ì¢‹ì•„í•©ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void Slime()
-    {
-        this->name = "(LV3) ìŠ¬ë¼ì„";
-        this->mobcode = "F3";
-        this->maxhp = 100;
-        this->hp = maxhp;
-        this->damage = 9;
-        this->defence = 3;
-        this->speed = 3;
-        this->level = 3;
-        this->exp = 15;
-        this->gold = 200;
-        this->desc = "í‰ë²”í•œ ìŠ¬ë¼ì„ì…ë‹ˆë‹¤. ì‚°ì„±ì„ ì§€ë‹ˆê³  ìˆìœ¼ë‹ˆ ì¡°ì‹¬í•´ì•¼í•©ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void Oak()
-    {
-        this->name = "[BOSS](LV15) ì˜¤í¬";
-        this->mobcode = "FB";
-        this->maxhp = 10000;
-        this->hp = maxhp;
-        this->damage = 50;
-        this->defence = 30;
-        this->speed = 22;
-        this->level = 15;
-        this->exp = 2450;
-        this->gold = 7000;
-        this->desc = "ìˆ²ì˜ ëŒ€ì¥ì„ ë‹´ë‹¹í•˜ëŠ” ì˜¤í¬ì…ë‹ˆë‹¤.\nê³¨ê³ ë£¨ ë°¸ëŸ°ìŠ¤ê°€ ì¡íŒ ìŠ¤í…Œì´í„°ìŠ¤ë¥¼ ì§€ë‹ˆê³  ìˆìŠµë‹ˆë‹¤.";
-        this->desc += "\në³´ìŠ¤ ëª¬ìŠ¤í„°ëŠ” ìƒë‹¹íˆ ê°•í•˜ë¯€ë¡œ ì¡°ì‹¬í•´ì•¼í•©ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    // ì¼€ì´ë¸Œ ì¼€ì´ë¸Œ
-    void RockSlime()
-    {
-        this->name = "(LV4) ëŒ ìŠ¬ë¼ì„";
-        this->mobcode = "C1";
-        this->maxhp = 100;
-        this->hp = maxhp;
-        this->damage = 15;
-        this->defence = 25;
-        this->speed = 1;
-        this->level = 4;
-        this->exp = 20;
-        this->gold = 300;
-        this->desc = "ëŒë¡œ ì´ë£¨ì–´ì§„ ìŠ¬ë¼ì„ì…ë‹ˆë‹¤. ë¬´ë ¤ 'ê³ ì²´'ì˜ ìŠ¬ë¼ì„ ì…ë‹ˆë‹¤!";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void Bat()
-    {
-        this->name = "(LV6) ë°•ì¥";
-        this->mobcode = "C2";
-        this->maxhp = 120;
-        this->hp = maxhp;
-        this->damage = 25;
-        this->defence = 5;
-        this->speed = 12;
-        this->level = 6;
-        this->exp = 30;
-        this->gold = 430;
-        this->desc = "ë¯¸ì§€ì˜ ì‹¤í—˜ì„ í†µí•˜ì—¬ ê³µê²©ì„±ì„ ë„ê²Œ ëœ ë°•ì¥ì…ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void MiniGolem()
-    {
-        this->name = "(LV8) ë¯¸ë‹ˆ ê³¨ë ˜";
-        this->mobcode = "C3";
-        this->maxhp = 200;
-        this->hp = maxhp;
-        this->damage = 30;
-        this->defence = 15;
-        this->speed = 1;
-        this->level = 8;
-        this->exp = 45;
-        this->gold = 600;
-        this->desc = "ë‹¨ë‹¨í•œ ëª¸ê³¼ ë†’ì€ íŒŒê´´ë ¥ì„ ì§€ë‹Œ ì‘ì€ ê³¨ë ˜ì…ë‹ˆë‹¤.\nê³¨ë ˜ì´ ë¶„ì—´í•˜ì—¬ ë§Œë“¤ì–´ ì§„ ê²ƒ ê°™ìŠµë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void Golem()
-    {
-        this->name = "(LV13) ê³¨ë ˜";
-
-        this->maxhp = 700;
-        this->mobcode = "C4";
-        this->hp = maxhp;
-        this->damage = 45;
-        this->defence = 25;
-        this->speed = 1;
-        this->level = 13;
-        this->exp = 230;
-        this->gold = 2000;
-        this->desc = "ë‹¨ë‹¨í•œ ëª¸ê³¼ ë†’ì€ íŒŒê´´ë ¥ì„ ì§€ë‹Œ ê³¨ë ˜ì…ë‹ˆë‹¤.\nìƒë‹¹íˆ ì •êµí•˜ê²Œ ë§Œë“¤ì–´ ì¡ŒìŠµë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    // ì„œëŠ˜í•œ ê³µí„°
-    void killerdog()
-    {
-        this->name = "(LV10) ì‚¬ëƒ¥ê°œ";
-        this->mobcode = "S1";
-        this->maxhp = 200;
-        this->hp = maxhp;
-        this->damage = 45;
-        this->defence = 10;
-        this->speed = 22;
-        this->level = 10;
-        this->exp = 100;
-        this->gold = 800;
-        this->desc = "ì˜¤ë¡œì§€ ì‚¬ëƒ¥ì„ ìœ„í•˜ì—¬ ê¸¸ë“¤ì—¬ì§„ ê°œì…ë‹ˆë‹¤.\nì‚¬ëƒ¥ê¾¼ì´ ì• ìš©í•˜ëŠ” ê°•ì•„ì§€ì¤‘ í•˜ë‚˜ì…ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void hunter()
-    {
-        this->name = "(LV10) ì‚¬ëƒ¥ê¾¼";
-        this->mobcode = "S2";
-        this->maxhp = 300;
-        this->hp = maxhp;
-        this->damage = 40;
-        this->defence = 15;
-        this->speed = 15;
-        this->level = 10;
-        this->exp = 90;
-        this->gold = 740;
-        this->desc = "ì¸ê°„ ì‚¬ëƒ¥ì„ ì£¼ë¡œ í•˜ëŠ” ì‚¬ëƒ¥ê¾¼ì…ë‹ˆë‹¤.\nëˆ„êµ°ê°€ì—ê²Œ ì¡°ì¢…ì„ ë‹¹í•˜ê³  ìˆëŠ” ë“¯ í•©ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void shadower()
-    {
-        this->name = "(LV11) ì•”ì‚´ì";
-        this->mobcode = "S3";
-        this->maxhp = 120;
-        this->hp = maxhp;
-        this->damage = 500;
-        this->defence = 1;
-        this->speed = 30;
-        this->level = 11;
-        this->exp = 50;
-        this->gold = 1300;
-        this->desc = "ë§¤ìš° ë¹ ë¥¸ ì†ë„ë¥¼ ê°€ì§„ ëª¹ì…ë‹ˆë‹¤. ë°ë¯¸ì§€ê°€ ë§¤ìš° ê°•í•©ë‹ˆë‹¤.\nì£¼ë¨¸ë‹ˆì— ëˆì´ ë§ì´ ë“¤ì€ ê²ƒ ê°™ìŠµë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void badknight()
-    {
-        this->name = "(LV13) íƒ€ë½í•œ ê¸°ì‚¬";
-        this->mobcode = "S4";
-        this->maxhp = 600;
-        this->hp = maxhp;
-        this->damage = 50;
-        this->defence = 15;
-        this->speed = 20;
-        this->level = 13;
-        this->exp = 200;
-        this->gold = 1750;
-        this->desc = "ì´ êµ¬ì—­ì˜ ì§€ë°°ìì˜ ì•Œ ìˆ˜ ì—†ëŠ” í˜ì´ ê·¸ì˜ ì£¼ë³€ì— ê°ì‹¸ë•ë‹ˆë‹¤.\n";
-        this->desc += "ê·¸ í˜ì„ ë°›ì•˜ìŒì—ë„ ë¶ˆêµ¬í•˜ê³ , íƒ€ë½í™”ë§Œ í•˜ì˜€ì„ ë¿ ëŠ¥ë ¥ì¹˜ëŠ” ê·¸ëŒ€ë¡œì¸ê±° ê°™ìŠµë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void nohead()
-    {
-        this->name = "[BOSS](LV22) ë“€ë¼í•œ";
-        this->mobcode = "SB";
-        this->maxhp = 22222;
-        this->hp = maxhp;
-        this->damage = 222;
-        this->defence = 1;
-        this->speed = 40;
-        this->level = 22;
-        this->exp = 7500;
-        this->gold = 33000;
-        this->desc = "ì‚¬ë…ì˜ ì˜í˜¼ì´ ëª¨ì—¬ ë§Œë“¤ì–´ì§„ ê·¸ëŠ” ì´ êµ¬ì—­ì˜ ì§€ë°°ìë¡œ, ê°•ë ¥í•œ ë°ë¯¸ì§€ë¥¼ ì§€ë‹ˆê³  ìˆìŠµë‹ˆë‹¤.\n";
-        this->desc += "ë¨¸ë¦¬ê°€ ì¡´ì¬í•˜ì§€ ì•Šì•„ ê¸‰ì†Œë¥¼ ë…¸ë¦¬ê¸° ë§¤ìš° ì‰¬ì›Œ ë°©ì–´ë ¥ì€ ë§¤ìš° ë‚®ì•„ ë³´ì…ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-
-    // ì €ì£¼ë°›ì€ ë•…
-    void zombie()
-    {
-        this->name = "(LV15) ì¢€ë¹„";
-        this->mobcode = "G1";
-        this->maxhp = 1000;
-        this->hp = maxhp;
-        this->damage = 80;
-        this->defence = 30;
-        this->speed = 40;
-        this->level = 15;
-        this->exp = 440;
-        this->gold = 2500;
-        this->desc = "ì¼ë°˜ì ì¸ ì¢€ë¹„ì…ë‹ˆë‹¤. ë‹¤í–‰íˆë„, ë¬¼ë ¤ë„ ê°ì—¼ì€ ë˜ì§€ ì•ŠìŠµë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void skeleton()
-    {
-        this->name = "(LV17) ìŠ¤ì¼ˆë ˆí†¤";
-        this->mobcode = "G2";
-        this->maxhp = 777;
-        this->hp = maxhp;
-        this->damage = 150;
-        this->defence = 20;
-        this->speed = 50;
-        this->level = 17;
-        this->exp = 520;
-        this->gold = 2800;
-        this->desc = "ë¼ˆë¡œ ì´ë£¨ì–´ì§„ ìŠ¤ì¼ˆë ˆí†¤ ì…ë‹ˆë‹¤.\nëª¨ ê²Œì„ê³¼ëŠ” ë‹¤ë¥´ê²Œ ê·¼ì ‘ìœ¼ë¡œ ê³µê²©í•©ë‹ˆë‹¤.\n";
-        this->desc += "ì‚¬ëƒ¥ê°œê°€ ì´ ëª¬ìŠ¤í„°ë¥¼ ì¢‹ì•„í•˜ëŠ” ê±° ê°™ìŠµë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void tankzombie()
-    {
-        this->name = "(LV18) íƒ±í¬ ì¢€ë¹„";
-        this->mobcode = "G3";
-        this->maxhp = 1000;
-        this->hp = maxhp;
-        this->damage = 100;
-        this->defence = 200;
-        this->speed = 1;
-        this->level = 18;
-        this->exp = 700;
-        this->gold = 2500;
-        this->desc = "ë‹¨ë‹¨í•œ ê·¼ìœ¡ì„ ê°€ì§„ ì¢€ë¹„ì˜ ì§„í™”ì¢…ì…ë‹ˆë‹¤. ë°©ì–´ë ¥ì´ ë§¤ìš° ë†’ìŠµë‹ˆë‹¤";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void darkknight()
-    {
-        this->name = "(LV20) ì¹ í‘ì˜ ê¸°ì‚¬";
-        this->mobcode = "G4";
-        this->maxhp = 1500;
-        this->hp = maxhp;
-        this->damage = 130;
-        this->defence = 50;
-        this->speed = 35;
-        this->level = 20;
-        this->exp = 1030;
-        this->gold = 3830;
-        this->desc = "ì•…ì˜ì— ê°€ë“ì°¬ ê¸°ìš´ì´ ê·¸ì—ê²Œì„œ ëŠê»´ì§‘ë‹ˆë‹¤.\nì˜¤ì§ ë‹¹ì‹ ë§Œì„ ì£½ì´ë ¤ëŠ” ëˆˆë¹›ì„ ë³´ì…ë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-    void demonite()
-    {
-        this->name = "[BOSS](LV35) ë§ˆì™• ê°„ë¶€ ë°ëª¨ë‚˜ì´íŠ¸";
-        this->mobcode = "GB";
-        this->maxhp = 5000;
-        this->hp = maxhp;
-        this->damage = 800;
-        this->defence = 999999;
-        this->speed = 20;
-        this->level = 35;
-        this->exp = 25000;
-        this->gold = 75000;
-        this->desc = "ë§ˆì™• ê°„ë¶€ê¸‰ì˜ ì•…ë§ˆì¸ 'ë°ëª¨ë‚˜ì´íŠ¸' ì…ë‹ˆë‹¤.\n";
-        this->desc += "ì¼ë°˜ì ì¸ ë°©ë²•ìœ¼ë¡œëŠ” ê³µê²©ì´ í†µí•˜ì§€ ì•Šì•„ íŠ¹ë³„í•œ ë°©ë²•ìœ¼ë¡œ ì²˜ì¹˜í•´ì•¼ í•  ê²ƒ ê°™ìŠµë‹ˆë‹¤.";
-        Log[t] = this->name + "(ì„)ë¥¼ ë§Œë‚¬ë‹¤. ë¬´ì—‡ì„ í• ê¹Œ?"; t++;
-    }
-
-    void Mobdeath(Player* p)
-    {
-        killtrigger = true;
-        this->hp = 0;
-        bool penaltyflag = false;
-
-        Log[t] = this->name + "(ì„)ë¥¼ ì²˜ì¹˜í–ˆë‹¤!"; t++;
-
-        // ë ˆë²¨ ì°¨ì´ê°€ ì‹¬í•˜ê²Œ ë‚˜ëŠ” ê²½ìš°, ë ˆë²¨ ì°¨ì´ì— ë”°ë¼ íŒ¨ë„í‹°ë¥¼ ë¶€ê³¼í•œë‹¤.
-        if (p->level - this->level >= 5)
+        //½ÃÀÛÀÇ ½£
+        void MiniSlime()
         {
-            double penalty = (p->level - this->level) * 2 / 5;
-            this->gold /= penalty;
-            this->exp /= penalty;
+            this->name = "(LV1) ¹Ì´Ï ½½¶óÀÓ";
+            this->mobcode = "F1";
+            this->maxhp = 50;
+            this->hp = maxhp;
+            this->damage = 4;
+            this->defence = 3;
+            this->speed = 5;
+            this->level = 1;
+            this->exp = 5;
+            this->gold = 80;
+            this->desc = "ÀÛÀº ½½¶óÀÓÀÔ´Ï´Ù. ¾àÇÑ »ê¼ºÀ» Áö´Ï°í ÀÖÀ¸´Ï Á¶½ÉÇØ¾ß ÇÕ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void Snake()
+        {
+            this->name = "(LV2) ¹ì";
+            this->mobcode = "F2";
+            this->maxhp = 75;
+            this->hp = maxhp;
+            this->damage = 6;
+            this->defence = 3;
+            this->speed = 10;
+            this->level = 2;
+            this->exp = 8;
+            this->gold = 130;
+            this->desc = "ÈçÇÑ ¹ìÀÔ´Ï´Ù. ÃÊº¸ÀÚµéÀ» ¹«´Â °ÍÀ» ÁÁ¾ÆÇÕ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void Slime()
+        {
+            this->name = "(LV3) ½½¶óÀÓ";
+            this->mobcode = "F3";
+            this->maxhp = 100;
+            this->hp = maxhp;
+            this->damage = 9;
+            this->defence = 3;
+            this->speed = 3;
+            this->level = 3;
+            this->exp = 15;
+            this->gold = 200;
+            this->desc = "Æò¹üÇÑ ½½¶óÀÓÀÔ´Ï´Ù. »ê¼ºÀ» Áö´Ï°í ÀÖÀ¸´Ï Á¶½ÉÇØ¾ßÇÕ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void Oak()
+        {
+            this->name = "[BOSS](LV15) ¿ÀÅ©";
+            this->mobcode = "FB";
+            this->maxhp = 10000;
+            this->hp = maxhp;
+            this->damage = 50;
+            this->defence = 30;
+            this->speed = 22;
+            this->level = 15;
+            this->exp = 2450;
+            this->gold = 7000;
+            this->desc = "½£ÀÇ ´ëÀåÀ» ´ã´çÇÏ´Â ¿ÀÅ©ÀÔ´Ï´Ù.\n°ñ°í·ç ¹ë·±½º°¡ ÀâÈù ½ºÅ×ÀÌÅÍ½º¸¦ Áö´Ï°í ÀÖ½À´Ï´Ù.";
+            this->desc += "\nº¸½º ¸ó½ºÅÍ´Â »ó´çÈ÷ °­ÇÏ¹Ç·Î Á¶½ÉÇØ¾ßÇÕ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        // ÄÉÀÌºê ÄÉÀÌºê
+        void RockSlime()
+        {
+            this->name = "(LV4) µ¹ ½½¶óÀÓ";
+            this->mobcode = "C1";
+            this->maxhp = 100;
+            this->hp = maxhp;
+            this->damage = 15;
+            this->defence = 25;
+            this->speed = 1;
+            this->level = 4;
+            this->exp = 20;
+            this->gold = 300;
+            this->desc = "µ¹·Î ÀÌ·ç¾îÁø ½½¶óÀÓÀÔ´Ï´Ù. ¹«·Á '°íÃ¼'ÀÇ ½½¶óÀÓ ÀÔ´Ï´Ù!";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void Bat()
+        {
+            this->name = "(LV6) ¹ÚÁã";
+            this->mobcode = "C2";
+            this->maxhp = 120;
+            this->hp = maxhp;
+            this->damage = 25;
+            this->defence = 5;
+            this->speed = 12;
+            this->level = 6;
+            this->exp = 30;
+            this->gold = 430;
+            this->desc = "¹ÌÁöÀÇ ½ÇÇèÀ» ÅëÇÏ¿© °ø°İ¼ºÀ» ¶ç°Ô µÈ ¹ÚÁãÀÔ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void MiniGolem()
+        {
+            this->name = "(LV8) ¹Ì´Ï °ñ·½";
+            this->mobcode = "C3";
+            this->maxhp = 200;
+            this->hp = maxhp;
+            this->damage = 30;
+            this->defence = 15;
+            this->speed = 1;
+            this->level = 8;
+            this->exp = 45;
+            this->gold = 600;
+            this->desc = "´Ü´ÜÇÑ ¸ö°ú ³ôÀº ÆÄ±«·ÂÀ» Áö´Ñ ÀÛÀº °ñ·½ÀÔ´Ï´Ù.\n°ñ·½ÀÌ ºĞ¿­ÇÏ¿© ¸¸µé¾î Áø °Í °°½À´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void Golem()
+        {
+            this->name = "(LV13) °ñ·½";
 
-            penaltyflag = true;
+            this->maxhp = 700;
+            this->mobcode = "C4";
+            this->hp = maxhp;
+            this->damage = 45;
+            this->defence = 25;
+            this->speed = 1;
+            this->level = 13;
+            this->exp = 230;
+            this->gold = 2000;
+            this->desc = "´Ü´ÜÇÑ ¸ö°ú ³ôÀº ÆÄ±«·ÂÀ» Áö´Ñ °ñ·½ÀÔ´Ï´Ù.\n»ó´çÈ÷ Á¤±³ÇÏ°Ô ¸¸µé¾î Á³½À´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        // ¼­´ÃÇÑ °øÅÍ
+        void killerdog()
+        {
+            this->name = "(LV10) »ç³É°³";
+            this->mobcode = "S1";
+            this->maxhp = 200;
+            this->hp = maxhp;
+            this->damage = 45;
+            this->defence = 10;
+            this->speed = 22;
+            this->level = 10;
+            this->exp = 100;
+            this->gold = 800;
+            this->desc = "¿À·ÎÁö »ç³ÉÀ» À§ÇÏ¿© ±æµé¿©Áø °³ÀÔ´Ï´Ù.\n»ç³É²ÛÀÌ ¾Ö¿ëÇÏ´Â °­¾ÆÁöÁß ÇÏ³ªÀÔ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void hunter()
+        {
+            this->name = "(LV10) »ç³É²Û";
+            this->mobcode = "S2";
+            this->maxhp = 300;
+            this->hp = maxhp;
+            this->damage = 40;
+            this->defence = 15;
+            this->speed = 15;
+            this->level = 10;
+            this->exp = 90;
+            this->gold = 740;
+            this->desc = "ÀÎ°£ »ç³ÉÀ» ÁÖ·Î ÇÏ´Â »ç³É²ÛÀÔ´Ï´Ù.\n´©±º°¡¿¡°Ô Á¶Á¾À» ´çÇÏ°í ÀÖ´Â µí ÇÕ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void shadower()
+        {
+            this->name = "(LV11) ¾Ï»ìÀÚ";
+            this->mobcode = "S3";
+            this->maxhp = 120;
+            this->hp = maxhp;
+            this->damage = 500;
+            this->defence = 1;
+            this->speed = 30;
+            this->level = 11;
+            this->exp = 50;
+            this->gold = 1300;
+            this->desc = "¸Å¿ì ºü¸¥ ¼Óµµ¸¦ °¡Áø ¸÷ÀÔ´Ï´Ù. µ¥¹ÌÁö°¡ ¸Å¿ì °­ÇÕ´Ï´Ù.\nÁÖ¸Ó´Ï¿¡ µ·ÀÌ ¸¹ÀÌ µéÀº °Í °°½À´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void badknight()
+        {
+            this->name = "(LV13) Å¸¶ôÇÑ ±â»ç";
+            this->mobcode = "S4";
+            this->maxhp = 600;
+            this->hp = maxhp;
+            this->damage = 50;
+            this->defence = 15;
+            this->speed = 20;
+            this->level = 13;
+            this->exp = 200;
+            this->gold = 1750;
+            this->desc = "ÀÌ ±¸¿ªÀÇ Áö¹èÀÚÀÇ ¾Ë ¼ö ¾ø´Â ÈûÀÌ ±×ÀÇ ÁÖº¯¿¡ °¨½Îµ½´Ï´Ù.\n";
+            this->desc += "±× ÈûÀ» ¹Ş¾ÒÀ½¿¡µµ ºÒ±¸ÇÏ°í, Å¸¶ôÈ­¸¸ ÇÏ¿´À» »Ó ´É·ÂÄ¡´Â ±×´ë·ÎÀÎ°Å °°½À´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void nohead()
+        {
+            this->name = "[BOSS](LV22) µà¶óÇÑ";
+            this->mobcode = "SB";
+            this->maxhp = 22222;
+            this->hp = maxhp;
+            this->damage = 222;
+            this->defence = 1;
+            this->speed = 40;
+            this->level = 22;
+            this->exp = 7500;
+            this->gold = 33000;
+            this->desc = "»ç³äÀÇ ¿µÈ¥ÀÌ ¸ğ¿© ¸¸µé¾îÁø ±×´Â ÀÌ ±¸¿ªÀÇ Áö¹èÀÚ·Î, °­·ÂÇÑ µ¥¹ÌÁö¸¦ Áö´Ï°í ÀÖ½À´Ï´Ù.\n";
+            this->desc += "¸Ó¸®°¡ Á¸ÀçÇÏÁö ¾Ê¾Æ ±Ş¼Ò¸¦ ³ë¸®±â ¸Å¿ì ½¬¿ö ¹æ¾î·ÂÀº ¸Å¿ì ³·¾Æ º¸ÀÔ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
         }
 
-        Log[t] = "+" + to_string(this->gold) + "G" + "   " + "+" + to_string(this->exp) + "EXP"; t++;
-        p->gold += this->gold;
-        p->exp += this->exp;
-        if (p->LVUPexp <= p->exp) p->LVUP();
-
-        // dropitem
-        this->dropitem(p, this->mobcode, penaltyflag);
-
-    }
-
-    void dropitem(Player* p, string mobcode, bool penaltyflag)
-    {
-        // ëª¹ì„ ì°¾ê¸° ìœ„í•´ì„  'mobcode = {Codename}' ìœ¼ë¡œ ì°¾ìœ¼ì„¸ìš”.
-
-        int getnum = rand() % 1000;
-        int amount;
-
-        if (mobcode == "F3" && !penaltyflag)
+        // ÀúÁÖ¹ŞÀº ¶¥
+        void zombie()
         {
-            if (getnum < 100)
+            this->name = "(LV15) Á»ºñ";
+            this->mobcode = "G1";
+            this->maxhp = 1000;
+            this->hp = maxhp;
+            this->damage = 80;
+            this->defence = 30;
+            this->speed = 40;
+            this->level = 15;
+            this->exp = 440;
+            this->gold = 2500;
+            this->desc = "ÀÏ¹İÀûÀÎ Á»ºñÀÔ´Ï´Ù. ´ÙÇàÈ÷µµ, ¹°·Áµµ °¨¿°Àº µÇÁö ¾Ê½À´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void skeleton()
+        {
+            this->name = "(LV17) ½ºÄÌ·¹Åæ";
+            this->mobcode = "G2";
+            this->maxhp = 777;
+            this->hp = maxhp;
+            this->damage = 150;
+            this->defence = 20;
+            this->speed = 50;
+            this->level = 17;
+            this->exp = 520;
+            this->gold = 2800;
+            this->desc = "»À·Î ÀÌ·ç¾îÁø ½ºÄÌ·¹Åæ ÀÔ´Ï´Ù.\n¸ğ °ÔÀÓ°ú´Â ´Ù¸£°Ô ±ÙÁ¢À¸·Î °ø°İÇÕ´Ï´Ù.\n";
+            this->desc += "»ç³É°³°¡ ÀÌ ¸ó½ºÅÍ¸¦ ÁÁ¾ÆÇÏ´Â °Å °°½À´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void tankzombie()
+        {
+            this->name = "(LV18) ÅÊÅ© Á»ºñ";
+            this->mobcode = "G3";
+            this->maxhp = 1000;
+            this->hp = maxhp;
+            this->damage = 100;
+            this->defence = 200;
+            this->speed = 1;
+            this->level = 18;
+            this->exp = 700;
+            this->gold = 2500;
+            this->desc = "´Ü´ÜÇÑ ±ÙÀ°À» °¡Áø Á»ºñÀÇ ÁøÈ­Á¾ÀÔ´Ï´Ù. ¹æ¾î·ÂÀÌ ¸Å¿ì ³ô½À´Ï´Ù";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void darkknight()
+        {
+            this->name = "(LV20) Ä¥ÈæÀÇ ±â»ç";
+            this->mobcode = "G4";
+            this->maxhp = 1500;
+            this->hp = maxhp;
+            this->damage = 130;
+            this->defence = 50;
+            this->speed = 35;
+            this->level = 20;
+            this->exp = 1030;
+            this->gold = 3830;
+            this->desc = "¾ÇÀÇ¿¡ °¡µæÂù ±â¿îÀÌ ±×¿¡°Ô¼­ ´À²¸Áı´Ï´Ù.\n¿ÀÁ÷ ´ç½Å¸¸À» Á×ÀÌ·Á´Â ´«ºûÀ» º¸ÀÔ´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+        void demonite()
+        {
+            this->name = "[BOSS](LV35) ¸¶¿Õ °£ºÎ µ¥¸ğ³ªÀÌÆ®";
+            this->mobcode = "GB";
+            this->maxhp = 5000;
+            this->hp = maxhp;
+            this->damage = 800;
+            this->defence = 999999;
+            this->speed = 20;
+            this->level = 35;
+            this->exp = 25000;
+            this->gold = 75000;
+            this->desc = "¸¶¿Õ °£ºÎ±ŞÀÇ ¾Ç¸¶ÀÎ 'µ¥¸ğ³ªÀÌÆ®' ÀÔ´Ï´Ù.\n";
+            this->desc +="ÀÏ¹İÀûÀÎ ¹æ¹ıÀ¸·Î´Â °ø°İÀÌ ÅëÇÏÁö ¾Ê¾Æ Æ¯º°ÇÑ ¹æ¹ıÀ¸·Î Ã³Ä¡ÇØ¾ß ÇÒ °Í °°½À´Ï´Ù.";
+            Log[t] = this->name + "(À»)¸¦ ¸¸³µ´Ù. ¹«¾ùÀ» ÇÒ±î?"; t++;
+        }
+
+        void Mobdeath(Player *p)
+        {
+            killtrigger = true;
+            this->hp=0;
+            bool penaltyflag = false;
+
+            Log[t] = this->name + "(À»)¸¦ Ã³Ä¡Çß´Ù!"; t++;
+
+            // ·¹º§ Â÷ÀÌ°¡ ½ÉÇÏ°Ô ³ª´Â °æ¿ì, ·¹º§ Â÷ÀÌ¿¡ µû¶ó ÆĞ³ÎÆ¼¸¦ ºÎ°úÇÑ´Ù.
+            if(p->level-this->level>=5)
             {
-                amount = rand() % 2 + 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬ " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[1].first += amount;
+                double penalty = (p->level-this->level)*2 / 5;
+                this->gold/=penalty;
+                this->exp/=penalty;
+
+                penaltyflag = true;
+            }
+
+            Log[t] = "+" + to_string(this->gold) + "G" + "   " + "+" + to_string(this->exp) + "EXP"; t++;
+            p->gold+=this->gold;
+            p->exp+=this->exp;
+            if(p->LVUPexp<=p->exp) p->LVUP();
+
+            // dropitem
+            this->dropitem(p, this->mobcode, penaltyflag);
+
+        }
+
+        void dropitem(Player *p, string mobcode, bool penaltyflag)
+        {
+            // ¸÷À» Ã£±â À§ÇØ¼± 'mobcode = {Codename}' À¸·Î Ã£À¸¼¼¿ä.
+
+            int getnum = rand() % 1000;
+            int amount;
+
+            if(mobcode == "F3" && !penaltyflag)
+            {
+                if(getnum < 100)
+                {
+                    amount = rand() % 2 + 1;
+                    Log[t] = this->name + " ¸¦ Á×¿© " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ¸¦ È¹µæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[1].first+=amount;
+                }
+            }
+            if(mobcode == "C2" && !penaltyflag)
+            {
+                if(getnum < 200)
+                {
+                    amount = rand() % 3 + 1;
+                    Log[t] = this->name + " ¸¦ Á×¿© " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ¸¦ È¹µæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[1].first+=amount;
+                }
+            }
+            if(mobcode == "C3" && !penaltyflag)
+            {
+                if(getnum < 100)
+                {
+                    amount = 1;
+                    Log[t] = this->name + " ¸¦ Á×¿© " + get<0>(itemlist[2]) + "x" + to_string(amount) + " ¸¦ È¹µæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[2].first+=amount;
+                }
+                else if(getnum < 300)
+                {
+                    amount = rand() % 2 + 1;
+                    Log[t] = this->name + " ¸¦ Á×¿© " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ¸¦ È¹µæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[1].first+=amount;
+                }
+            }
+            if(mobcode == "S2" && !penaltyflag)
+            {
+                if(getnum < 150)
+                {
+                    amount = rand() % 2 + 1;
+                    Log[t] = this->name + " ¸¦ Á×¿© " + get<0>(itemlist[2]) + "x" + to_string(amount) + " ¸¦ È¹µæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[2].first+=amount;
+                }
+            }
+            if(mobcode == "G2" || mobcode == "G3" || mobcode == "G4") return;
+            if(mobcode == "G1" && !penaltyflag)
+            {
+                if(getnum < 5000)
+                {
+                    amount = 1;
+                    Log[t] = this->name + " ¸¦ Á×¿©" + get<0>(itemlist[3]) + "x" + to_string(amount) + " ¸¦ È¹µæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[3].first+=amount;
+                }
+            }
+
+            if(mobcode == "FB")
+            {
+                if(getnum < 500 && get<2>(skills[5]) == 0)
+                {
+                    p->LearnSkill(5);
+                }
+                getnum = rand() % 1000;
+                if(getnum < 200 && get<2>(skills[6]) == 0)
+                {
+                    p->LearnSkill(6);
+                }
+                if(!penaltyflag)
+                {
+                    amount = rand() % 5 + 1;
+                    Log[t] = this->name + " ¸¦ Á×¿© " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ¸¦ ÈøµæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[1].first+=amount;
+
+                    amount = rand() % 3 + 1;
+                    Log[t] = this->name + " ¸¦ Á×¿© " + get<0>(itemlist[2]) + "x" + to_string(amount) + " ¸¦ È¹µæÇÏ¿´½À´Ï´Ù!"; t++;
+                    p->playeritemlist[2].first+=amount;
+                }
             }
         }
-        if (mobcode == "C2" && !penaltyflag)
+
+        void mobdescription(bool showstatus = false)
         {
-            if (getnum < 200)
+            system("cls");
+            cout << "¸ó½ºÅÍ ¼³¸í\n\n";
+            cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ\n\n";
+
+            cout << "¸ó½ºÅÍ ÀÌ¸§ : " << this->name << "\n\n";
+
+            cout << this->desc << "\n\n";
+
+            if(showstatus==false) cout << "»ó¼¼ Á¤º¸ º¸±â(SÅ° ´©¸£±â)\n\n";
+            else cout << "»ó¼¼ Á¤º¸ ±×¸¸ º¸±â(SÅ° ´©¸£±â)\n\n";
+
+            if(showstatus)
             {
-                amount = rand() % 3 + 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬ " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[1].first += amount;
+                cout << "HP : " <<  this->hp << " / " << this->maxhp << '\n';
+                cout << "Damage : " << this->damage << '\n';
+                cout << "Defence : " << this->defence << '\n';
+                cout << "Speed : " << this->speed << '\n';
+                cout << "Dropexp : " << this->exp << '\n';
+                cout << "Dropgold : " << this->gold << '\n';
+            }
+            while(1)
+            {
+                if(kbhit())
+                {
+                    int key=getch();
+                    if(key==27) break;//esc
+                    if(key==83 || key==115) showstatus = !showstatus; // sÅ°
+
+                    this->mobdescription(showstatus);
+                    break;
+                }
             }
         }
-        if (mobcode == "C3" && !penaltyflag)
-        {
-            if (getnum < 100)
-            {
-                amount = 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬ " + get<0>(itemlist[2]) + "x" + to_string(amount) + " ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[2].first += amount;
-            }
-            else if (getnum < 300)
-            {
-                amount = rand() % 2 + 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬ " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[1].first += amount;
-            }
-        }
-        if (mobcode == "S2" && !penaltyflag)
-        {
-            if (getnum < 150)
-            {
-                amount = rand() % 2 + 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬ " + get<0>(itemlist[2]) + "x" + to_string(amount) + " ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[2].first += amount;
-            }
-        }
-        if (mobcode == "G2" || mobcode == "G3" || mobcode == "G4") return;
-        if (mobcode == "G1" && !penaltyflag)
-        {
-            if (getnum < 5000)
-            {
-                amount = 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬" + get<0>(itemlist[3]) + "x" + to_string(amount) + " ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[3].first += amount;
-            }
-        }
-
-        if (mobcode == "FB")
-        {
-            if (getnum < 500 && get<2>(skills[5]) == 0)
-            {
-                p->LearnSkill(5);
-            }
-            getnum = rand() % 1000;
-            if (getnum < 200 && get<2>(skills[6]) == 0)
-            {
-                p->LearnSkill(6);
-            }
-            if (!penaltyflag)
-            {
-                amount = rand() % 5 + 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬ " + get<0>(itemlist[1]) + "x" + to_string(amount) + " ë¥¼ í‰ë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[1].first += amount;
-
-                amount = rand() % 3 + 1;
-                Log[t] = this->name + " ë¥¼ ì£½ì—¬ " + get<0>(itemlist[2]) + "x" + to_string(amount) + " ë¥¼ íšë“í•˜ì˜€ìŠµë‹ˆë‹¤!"; t++;
-                p->playeritemlist[2].first += amount;
-            }
-        }
-    }
-
-    void mobdescription(bool showstatus = false)
-    {
-        system("cls");
-        cout << "ëª¬ìŠ¤í„° ì„¤ëª…\n\n";
-        cout << "ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡\n\n";
-
-        cout << "ëª¬ìŠ¤í„° ì´ë¦„ : " << this->name << "\n\n";
-
-        cout << this->desc << "\n\n";
-
-        if (showstatus == false) cout << "ìƒì„¸ ì •ë³´ ë³´ê¸°(Sí‚¤ ëˆ„ë¥´ê¸°)\n\n";
-        else cout << "ìƒì„¸ ì •ë³´ ê·¸ë§Œ ë³´ê¸°(Sí‚¤ ëˆ„ë¥´ê¸°)\n\n";
-
-        if (showstatus)
-        {
-            cout << "HP : " << this->hp << " / " << this->maxhp << '\n';
-            cout << "Damage : " << this->damage << '\n';
-            cout << "Defence : " << this->defence << '\n';
-            cout << "Speed : " << this->speed << '\n';
-            cout << "Dropexp : " << this->exp << '\n';
-            cout << "Dropgold : " << this->gold << '\n';
-        }
-        while (1)
-        {
-            if (kbhit())
-            {
-                int key = getch();
-                if (key == 27) break;//esc
-                if (key == 83 || key == 115) showstatus = !showstatus; // sí‚¤
-
-                this->mobdescription(showstatus);
-                break;
-            }
-        }
-    }
 };
 
 class item
 {
-public:
-    bool useitem(Player* p, int num)
-    {
-        if (p->playeritemlist[num].first == 0)
+    public:
+        bool useitem(Player *p, int num)
         {
-            Log[t] = get<0>(itemlist[num]) + "(ì´)ê°€ ì—†ìŠµë‹ˆë‹¤."; t++;
-            return false;
-        }
-        else
-        {
-            if (num == 1)
+            if(p->playeritemlist[num].first==0)
             {
-                int healing = 50;
-                int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
-                Log[t] = get<0>(itemlist[1]) + "ì„ ì‚¬ìš©í•˜ì—¬ ì²´ë ¥ì„ " + to_string(trueheal) + "íšŒë³µí–ˆìŠµë‹ˆë‹¤."; t++;
-
-                p->hp += trueheal;
-                p->playeritemlist[1].first--;
+                Log[t] = get<0>(itemlist[num]) + "(ÀÌ)°¡ ¾ø½À´Ï´Ù."; t++;
+                return false;
             }
-            if (num == 2)
+            else
             {
-                int healing = 300;
-                int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
-                Log[t] = get<0>(itemlist[2]) + "ì„ ì‚¬ìš©í•˜ì—¬ ì²´ë ¥ì„ " + to_string(trueheal) + "íšŒë³µí–ˆìŠµë‹ˆë‹¤."; t++;
+                if(num==1)
+                {
+                    int healing = 50;
+                    int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
+                    Log[t] = get<0>(itemlist[1]) + "À» »ç¿ëÇÏ¿© Ã¼·ÂÀ» " + to_string(trueheal) + "È¸º¹Çß½À´Ï´Ù."; t++;
 
-                p->hp += trueheal;
-                p->playeritemlist[2].first--;
-            }
-            if (num == 3)
-            {
-                int healing = 1000;
-                int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
-                Log[t] = get<0>(itemlist[3]) + "ì„ ì‚¬ìš©í•˜ì—¬ ì²´ë ¥ì„ " + to_string(trueheal) + "íšŒë³µí–ˆìŠµë‹ˆë‹¤."; t++;
+                    p->hp+=trueheal;
+                    p->playeritemlist[1].first--;
+                }
+                if(num==2)
+                {
+                    int healing = 300;
+                    int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
+                    Log[t] = get<0>(itemlist[2]) + "À» »ç¿ëÇÏ¿© Ã¼·ÂÀ» " + to_string(trueheal) + "È¸º¹Çß½À´Ï´Ù."; t++;
 
-                p->hp += trueheal;
-                p->playeritemlist[3].first--;
-            }
+                    p->hp+=trueheal;
+                    p->playeritemlist[2].first--;
+                }
+                if(num==3)
+                {
+                    int healing = 1000;
+                    int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
+                    Log[t] = get<0>(itemlist[3]) + "À» »ç¿ëÇÏ¿© Ã¼·ÂÀ» " + to_string(trueheal) + "È¸º¹Çß½À´Ï´Ù."; t++;
 
-            return true;
-        }
-    }
-    void itemdescription(Player* p, int num)
-    {
-        system("cls");
-        cout << "ì•„ì´í…œ ì„¤ëª…\n\n";
-        cout << "ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡\n\n";
+                    p->hp+=trueheal;
+                    p->playeritemlist[3].first--;
+                }
 
-        cout << "ì•„ì´í…œ ì´ë¦„ : " << get<0>(itemlist[num]) << " ë³´ìœ  ê°œìˆ˜ : " << get<0>(p->playeritemlist[num]) << "\n\n";
-        if (num == 1)
-        {
-            cout << "ì‘ì€ í¬ì…˜ì…ë‹ˆë‹¤. ì‚¬ìš©ì‹œ ì²´ë ¥ì„ 50 íšŒë³µí•©ë‹ˆë‹¤.";
-        }
-        if (num == 2)
-        {
-            cout << "ì¼ë°˜ í¬ê¸°ì˜ í¬ì…˜ì…ë‹ˆë‹¤. ì‚¬ìš©ì‹œ ì²´ë ¥ì„ 300 íšŒë³µí•©ë‹ˆë‹¤.";
-        }
-        if (num == 3)
-        {
-            cout << "í° í¬ê¸°ì˜ í¬ì…˜ì…ë‹ˆë‹¤. ì‚¬ìš©ì‹œ ì²´ë ¥ì„ 1000 íšŒë³µí•©ë‹ˆë‹¤.";
-        }
-        if (num == 4)
-        {
-            cout << "í¼ìŠ¤íŠ¸ë¸”ëŸ¬ë“œë¥¼ ë°°ìš¸ìˆ˜ ìˆëŠ” ìŠ¤í‚¬ë¶ì…ë‹ˆë‹¤. êµ¬ë§¤ ì¦‰ì‹œ í¼ìŠ¤íŠ¸ë¸”ëŸ¬ë“œë¥¼ ìŠµë“í•©ë‹ˆë‹¤.\n";
-            cout << "(íŒë§¤ ë¶ˆê°€, ìµœëŒ€ ë³´ìœ  ìˆ˜ëŸ‰: 1ê°œ)";
-        }
-        while (1)
-        {
-            if (kbhit())
-            {
-                int key = getch();
-                if (key == 27) break;//esc
+                return true;
             }
         }
-    }
+        void itemdescription(Player *p, int num)
+        {
+            system("cls");
+            cout << "¾ÆÀÌÅÛ ¼³¸í\n\n";
+            cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ\n\n";
+
+            cout << "¾ÆÀÌÅÛ ÀÌ¸§ : " << get<0>(itemlist[num]) << " º¸À¯ °³¼ö : " << get<0>(p->playeritemlist[num]) << "\n\n";
+            if(num==1)
+            {
+                cout << "ÀÛÀº Æ÷¼ÇÀÔ´Ï´Ù. »ç¿ë½Ã Ã¼·ÂÀ» 50 È¸º¹ÇÕ´Ï´Ù.";
+            }
+            if(num==2)
+            {
+                cout << "ÀÏ¹İ Å©±âÀÇ Æ÷¼ÇÀÔ´Ï´Ù. »ç¿ë½Ã Ã¼·ÂÀ» 300 È¸º¹ÇÕ´Ï´Ù.";
+            }
+            if(num==3)
+            {
+                cout << "Å« Å©±âÀÇ Æ÷¼ÇÀÔ´Ï´Ù. »ç¿ë½Ã Ã¼·ÂÀ» 1000 È¸º¹ÇÕ´Ï´Ù.";
+            }
+            if(num==4)
+            {
+                cout << "ÆÛ½ºÆ®ºí·¯µå¸¦ ¹è¿ï¼ö ÀÖ´Â ½ºÅ³ºÏÀÔ´Ï´Ù. ±¸¸Å Áï½Ã ÆÛ½ºÆ®ºí·¯µå¸¦ ½ÀµæÇÕ´Ï´Ù.\n";
+                cout << "(ÆÇ¸Å ºÒ°¡, ÃÖ´ë º¸À¯ ¼ö·®: 1°³)";
+            }
+            while(1)
+            {
+                if(kbhit())
+                {
+                    int key=getch();
+                    if(key==27) break;//esc
+                }
+            }
+        }
 };
 
-bool Login(Player* p); // ì²« ë¡œê·¸ì¸ ì‹œ ì‹¤í–‰ë˜ëŠ” í•¨ìˆ˜
-void Save(Player* p); // ê²Œì„ ì§„í–‰ ìƒí™©ì„ ì €ì¥í•˜ëŠ” í•¨ìˆ˜
-void Load(Player* p); // ì´ì „ì— ì§„í–‰í•œ ê²Œì„ì„ ë¶ˆëŸ¬ì˜¤ëŠ” í•¨ìˆ˜
-void showlog(); // ë¡œê·¸ë¥¼ ë³´ì—¬ì£¼ëŠ” í•¨ìˆ˜
-void showplayerstatus(Player* p, string slot1, string slot2, string slot3, string slot4); // í”Œë ˆì´ì–´ ìŠ¤í…Œì´í„°ìŠ¤
-void fulllog(int current, int finish); // í’€ë¡œê·¸ ë³´ì—¬ì£¼ëŠ” í•¨ìˆ˜
-void showfulllog(); // í’€ë¡œê·¸ ì¸í„°í˜ì´ìŠ¤
-void home(Player* p); // ë§ˆì„
-void homemenu(Player* p); // ë§ˆì„ ì¸í„°í˜ì´ìŠ¤
-void homeselectmenu(Player* p); // ë§ˆì„ì—ì„œ ì„ íƒ
-void movemenu(Player* p); // ì´ë™í•  ê³³ ì„ íƒ
-void skillset(Player* p); // ìŠ¤í‚¬ ì¥ì°© ë° í•´ì œ
-void shop(Player* p); // ìƒì 
-void pattack(Player* p, mob* m); // Player ê³µê²©
-void mattack(Player* p, mob* m); // Mob ê³µê²©
-void attack(Player* p, mob* m); // ì „íˆ¬ ì§„í–‰ í•¨ìˆ˜
-void skillattack(Player* p, mob* m, int skillnum); // ìŠ¤í‚¬ ê³µê²©(í•­ìƒ ì„ ê³µ)
-void fight(Player* p); // íƒí—˜ ì¸í„°í˜ì´ìŠ¤
-void readymenu(Player* p); // íƒí—˜ì—ì„œì˜ ì„ íƒ
-void summonmob(Player* p); // ëª¹ ì†Œí™˜ ë° í™•ë¥ 
-void fightmenu(mob* m, Player* p, bool skillmode); // ì „íˆ¬ ì¸í„°í˜ì´ìŠ¤
-void fightselectmenu(mob* m, Player* p); // ì „íˆ¬ ì¤‘ ì„ íƒ
-bool selectitem(Player* p); // ì•„ì´í…œ ì„ íƒ
-void showitem(Player* p); // ì•„ì´í…œ ë³´ì—¬ì£¼ê¸°
-void Forge(Player* p, int protect, int chance, string mode, int upmoney); // ê°•í™”ê°€ ì§„í–‰ë˜ëŠ” í•¨ìˆ˜
-void weaponforge(Player* p, bool visit); // ë¬´ê¸°ê°•í™”ì†Œ (í™•ë¥  ë° ëˆ ì¡°ì •)
-void armorforge(Player* p, bool visit); // ë°©ì–´êµ¬ê°•í™”ì†Œ (í™•ë¥  ë° ëˆ ì¡°ì •)
-void death(Player* p);
+bool Login(Player *p); // Ã¹ ·Î±×ÀÎ ½Ã ½ÇÇàµÇ´Â ÇÔ¼ö
+void Save(Player *p); // °ÔÀÓ ÁøÇà »óÈ²À» ÀúÀåÇÏ´Â ÇÔ¼ö
+void Load(Player *p); // ÀÌÀü¿¡ ÁøÇàÇÑ °ÔÀÓÀ» ºÒ·¯¿À´Â ÇÔ¼ö
+void showlog(); // ·Î±×¸¦ º¸¿©ÁÖ´Â ÇÔ¼ö
+void showplayerstatus(Player *p, string slot1, string slot2, string slot3, string slot4); // ÇÃ·¹ÀÌ¾î ½ºÅ×ÀÌÅÍ½º
+void fulllog(int current, int finish); // Ç®·Î±× º¸¿©ÁÖ´Â ÇÔ¼ö
+void showfulllog(); // Ç®·Î±× ÀÎÅÍÆäÀÌ½º
+void home(Player *p); // ¸¶À»
+void homemenu(Player *p); // ¸¶À» ÀÎÅÍÆäÀÌ½º
+void homeselectmenu(Player *p); // ¸¶À»¿¡¼­ ¼±ÅÃ
+void movemenu(Player *p); // ÀÌµ¿ÇÒ °÷ ¼±ÅÃ
+void skillset(Player *p); // ½ºÅ³ ÀåÂø ¹× ÇØÁ¦
+void shop(Player *p); // »óÁ¡
+void pattack(Player *p, mob *m); // Player °ø°İ
+void mattack(Player *p, mob *m); // Mob °ø°İ
+void attack(Player *p, mob *m); // ÀüÅõ ÁøÇà ÇÔ¼ö
+void skillattack(Player *p, mob *m, int skillnum); // ½ºÅ³ °ø°İ(Ç×»ó ¼±°ø)
+void fight(Player *p); // Å½Çè ÀÎÅÍÆäÀÌ½º
+void readymenu(Player *p); // Å½Çè¿¡¼­ÀÇ ¼±ÅÃ
+void summonmob(Player *p); // ¸÷ ¼ÒÈ¯ ¹× È®·ü
+void fightmenu(mob *m, Player *p, bool skillmode); // ÀüÅõ ÀÎÅÍÆäÀÌ½º
+void fightselectmenu(mob *m, Player *p); // ÀüÅõ Áß ¼±ÅÃ
+bool selectitem(Player *p); // ¾ÆÀÌÅÛ ¼±ÅÃ
+void showitem(Player *p); // ¾ÆÀÌÅÛ º¸¿©ÁÖ±â
+void Forge(Player *p, int protect, int chance, string mode, int upmoney); // °­È­°¡ ÁøÇàµÇ´Â ÇÔ¼ö
+void weaponforge(Player *p, bool visit); // ¹«±â°­È­¼Ò (È®·ü ¹× µ· Á¶Á¤)
+void armorforge(Player *p, bool visit); // ¹æ¾î±¸°­È­¼Ò (È®·ü ¹× µ· Á¶Á¤)
 
-void death(Player* p) {
-    p->gold = 0;
-    p->heal();
-    Save(p);
-    system("cls");
-    cout << p->name << "ë‹˜ì´ ì‚¬ë§í•˜ì—¬ ê³¨ë“œë¥¼ ëª¨ë‘ ìƒì—ˆìŠµë‹ˆë‹¤." << endl;
-    cout << "ì§‘ìœ¼ë¡œ ê·€í™˜í•˜ì‹œê² ìŠµë‹ˆê¹Œ? ( ê·€í™˜í•˜ë ¤ë©´ ìŠ¤í˜ì´ìŠ¤ ë°” í‚¤ë¥¼ ëˆ„ë¥´ì„¸ìš” )";
-    while (1)
-    {
-        if (kbhit())
-        {
-            int key = getch();
-            if (key == 32) break; //esc
-        }
-    }
-    home(p);
-}
-
-bool Login(Player* p)
+bool Login(Player *p)
 {
     int n;
     string name;
 
     FILE* fp;
 
-    fp = fopen("./Save/playerinfom.txt", "r");
-    fscanf(fp, "register:%d", &n);
+    fp = fopen("./Save/playerinfom.txt","r");
+    fscanf(fp,"register:%d", &n);
     fclose(fp);
 
-    if (n != 2)
+    if(n!=2)
     {
-        cout << "ì‹ ê·œ ê°€ì…ì„ ìœ„í•˜ì—¬ ì´ë¦„ì„ ì…ë ¥í•˜ì„¸ìš” : ";
+        cout << "½Å±Ô °¡ÀÔÀ» À§ÇÏ¿© ÀÌ¸§À» ÀÔ·ÂÇÏ¼¼¿ä : ";
         cin >> name;
 
         char wname[200];
         strcpy(wname, name.c_str());
 
-        fp = fopen("./Save/playerinfom.txt", "w");
-        fprintf(fp, "register:%d\n", 2);
-        fprintf(fp, "%s\n", wname);
-        fprintf(fp, "maxhp:%d\n", 100);
-        fprintf(fp, "hp:%d\n", 100);
-        fprintf(fp, "maxmp:%d\n", 50);
-        fprintf(fp, "mp:%d\n", 50);
-        fprintf(fp, "damage:%d\n", 10);
-        fprintf(fp, "defence:%d\n", 5);
-        fprintf(fp, "speed:%d\n", 5);
-        fprintf(fp, "gold:%d\n", 0);
-        fprintf(fp, "level:%d\n", 1);
-        fprintf(fp, "exp:%d\n", 0);
-        fprintf(fp, "LVUPexp:%d\n", 50);
-        fprintf(fp, "weaponlevel:%d\n", 0);
-        fprintf(fp, "armorlevel:%d\n", 0);
+        fp = fopen("./Save/playerinfom.txt","w");
+        fprintf(fp,"register:%d\n", 2);
+        fprintf(fp,"%s\n", wname);
+        fprintf(fp,"maxhp:%d\n", 100);
+        fprintf(fp,"hp:%d\n", 100);
+        fprintf(fp,"maxmp:%d\n", 50);
+        fprintf(fp,"mp:%d\n", 50);
+        fprintf(fp,"damage:%d\n", 10);
+        fprintf(fp,"defence:%d\n", 5);
+        fprintf(fp,"speed:%d\n", 5);
+        fprintf(fp,"gold:%d\n", 0);
+        fprintf(fp,"level:%d\n", 1);
+        fprintf(fp,"exp:%d\n", 0);
+        fprintf(fp,"LVUPexp:%d\n", 50);
+        fprintf(fp,"weaponlevel:%d\n", 0);
+        fprintf(fp,"armorlevel:%d\n", 0);
         fclose(fp);
 
-        fp = fopen("./Save/playerskills.txt", "w");
+        fp = fopen("./Save/playerskills.txt","w");
 
-        // ìŠ¤í‚¬ ì„¤ì • ì˜µì…˜ (skill setting), name, Mana, Learned(1 = ìŠ¤í‚¬ ë°°ì›€, 2 = ì¥ì°© ì¤‘)
-        fprintf(fp, "ë°©ì–´ 0 1\n");
-        fprintf(fp, "í¬ë¡œìŠ¤ì»· 30 0\n");
-        fprintf(fp, "íë§ 60 0\n");
-        fprintf(fp, "ê¸‰ì†Œì°Œë¥´ê¸° 20 0\n");
-        fprintf(fp, "ë¶„ì‡„ 50 0\n");
-        fprintf(fp, "ê±°ì¸ì˜ì¼ê²© 100 0\n");
-        fprintf(fp, "í¼ìŠ¤íŠ¸ë¸”ëŸ¬ë“œ 200 0\n");
+        // ½ºÅ³ ¼³Á¤ ¿É¼Ç (skill setting), name, Mana, Learned(1 = ½ºÅ³ ¹è¿ò, 2 = ÀåÂø Áß)
+        fprintf(fp, "¹æ¾î 0 1\n");
+        fprintf(fp, "Å©·Î½ºÄÆ 30 0\n");
+        fprintf(fp, "Èú¸µ 60 0\n");
+        fprintf(fp, "±Ş¼ÒÂî¸£±â 20 0\n");
+        fprintf(fp, "ºĞ¼â 50 0\n");
+        fprintf(fp, "°ÅÀÎÀÇÀÏ°İ 100 0\n");
+        fprintf(fp, "ÆÛ½ºÆ®ºí·¯µå 200 0\n");
         fprintf(fp, "0, 0, 0, 0");
 
         fclose(fp);
 
-        fp = fopen("./Save/itemDB.txt", "w");
+        fp = fopen("./Save/itemDB.txt","w");
 
-        fprintf(fp, "ì†Œí˜•í¬ì…˜ -1 500 300\n");
-        fprintf(fp, "ì¤‘í˜•í¬ì…˜ -1 2000 1500\n");
-        fprintf(fp, "ëŒ€í˜•í¬ì…˜ -1 5000 3000\n");
-        fprintf(fp, "[Skillbook]í¼ìŠ¤íŠ¸ë¸”ëŸ¬ë“œ 7 30000 0\n");
+        fprintf(fp, "¼ÒÇüÆ÷¼Ç -1 500 300\n");
+        fprintf(fp, "ÁßÇüÆ÷¼Ç -1 2000 1500\n");
+        fprintf(fp, "´ëÇüÆ÷¼Ç -1 5000 3000\n");
+        fprintf(fp, "[Skillbook]ÆÛ½ºÆ®ºí·¯µå 7 30000 0\n");
 
         fclose(fp);
 
-        fp = fopen("./Save/playeritem.txt", "w");
+        fp = fopen("./Save/playeritem.txt","w");
 
-        fprintf(fp, "ì†Œí˜•í¬ì…˜ 0 -1\n");
-        fprintf(fp, "ì¤‘í˜•í¬ì…˜ 0 -1\n");
-        fprintf(fp, "ëŒ€í˜•í¬ì…˜ 0 -1\n");
-        fprintf(fp, "[Skillbook]í¼ìŠ¤íŠ¸ë¸”ëŸ¬ë“œ 0 7\n");
+        fprintf(fp, "¼ÒÇüÆ÷¼Ç 0 -1\n");
+        fprintf(fp, "ÁßÇüÆ÷¼Ç 0 -1\n");
+        fprintf(fp, "´ëÇüÆ÷¼Ç 0 -1\n");
+        fprintf(fp, "[Skillbook]ÆÛ½ºÆ®ºí·¯µå 0 7\n");
 
         fclose(fp);
 
@@ -838,64 +829,64 @@ bool Login(Player* p)
         p->weaponlevel = 0;
         p->armorlevel = 0;
 
-        p->skill[1] = 1;
-        p->skill[2] = 0;
-        p->skill[3] = 0;
-        p->skill[4] = 0;
+        p->skill[1]=1;
+        p->skill[2]=0;
+        p->skill[3]=0;
+        p->skill[4]=0;
         return false;
     }
     else
     {
-        for (int i = 1; i <= 2; i++)
+        for(int i=1; i<=2; i++)
         {
-            if (i == point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+            if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
             else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-            if (i == 1) cout << "ì´ì–´í•˜ê¸°";
-            if (i == 2) cout << "ìƒˆë¡œí•˜ê¸°";
+            if(i==1) cout << "ÀÌ¾îÇÏ±â";
+            if(i==2) cout << "»õ·ÎÇÏ±â";
             cout << "   ";
         }
-        // ë¡œê³  ë° ë²„íŠ¼ ì„ íƒ (ì´ì–´í•˜ê¸°) / (ìƒˆë¡œí•˜ê¸°)
+        // ·Î°í ¹× ¹öÆ° ¼±ÅÃ (ÀÌ¾îÇÏ±â) / (»õ·ÎÇÏ±â)
         bool command = false;
         int key;
         point = 1;
-        while (!command)
+        while(!command)
         {
-            if (kbhit())
+            if(kbhit())
             {
-                key = getch();
+                key=getch();
                 {
-                    if (key == 224) // ë°©í–¥í‚¤
+                    if(key==224) // ¹æÇâÅ°
                     {
-                        key = getch();
-                        if (key == 75 && point > 1) point--; // ì™¼ìª½
-                        if (key == 77 && point < 2) point++; // ì˜¤ë¥¸ìª½
+                        key=getch();
+                        if(key==75 && point>1) point--; // ¿ŞÂÊ
+                        if(key==77 && point<2) point++; // ¿À¸¥ÂÊ
                     }
-                    if (key == 13) // enterí‚¤
+                    if(key==13) // enterÅ°
                     {
-                        if (point == 1)
+                        if(point==1)
                         {
                             command = true;
                             return false;
                         }
-                        if (point == 2)
+                        if(point==2)
                         {
                             fp = fopen("./Save/playerinfom.txt", "w");
                             fprintf(fp, "register:%d\n", 0);
                             fclose(fp);
                             system("cls");
-                            cout << "ì´ˆê¸°í™”ê°€ ì™„ë£Œë˜ì—ˆìŠµë‹ˆë‹¤. ë‹¤ì‹œ ì‹¤í–‰í•´ ì£¼ì„¸ìš”.";
+                            cout << "ÃÊ±âÈ­°¡ ¿Ï·áµÇ¾ú½À´Ï´Ù. ´Ù½Ã ½ÇÇàÇØ ÁÖ¼¼¿ä.";
                             return true;
                         }
                     }
                     system("cls");
                 }
 
-                for (int i = 1; i <= 4; i++)
+                for(int i=1; i<=4; i++)
                 {
-                    if (i == point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+                    if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
                     else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-                    if (i == 1) cout << "ì´ì–´í•˜ê¸°";
-                    if (i == 2) cout << "ìƒˆë¡œí•˜ê¸°";
+                    if(i==1) cout << "ÀÌ¾îÇÏ±â";
+                    if(i==2) cout << "»õ·ÎÇÏ±â";
                     cout << "   ";
                 }
             }
@@ -904,142 +895,142 @@ bool Login(Player* p)
     }
 }
 
-void Save(Player* p)
+void Save(Player *p)
 {
     char wname[200];
     strcpy(wname, p->name.c_str());
 
     FILE* fp;
-    fp = fopen("./Save/playerinfom.txt", "w");
-    fprintf(fp, "register:%d\n", 2);
-    fprintf(fp, "%s\n", wname);
-    fprintf(fp, "maxhp:%d\n", p->maxhp);
-    fprintf(fp, "hp:%d\n", p->hp);
-    fprintf(fp, "maxmp:%d\n", p->maxmp);
-    fprintf(fp, "mp:%d\n", p->mp);
-    fprintf(fp, "damage:%d\n", p->damage);
-    fprintf(fp, "defence:%d\n", p->defence);
-    fprintf(fp, "speed:%d\n", p->speed);
-    fprintf(fp, "gold:%d\n", p->gold);
-    fprintf(fp, "level:%d\n", p->level);
-    fprintf(fp, "exp:%d\n", p->exp);
-    fprintf(fp, "LVUPexp:%d\n", p->LVUPexp);
-    fprintf(fp, "weaponlevel:%d\n", p->weaponlevel);
-    fprintf(fp, "armorlevel:%d\n", p->armorlevel);
+    fp = fopen("./Save/playerinfom.txt","w");
+    fprintf(fp,"register:%d\n", 2);
+    fprintf(fp,"%s\n", wname);
+    fprintf(fp,"maxhp:%d\n", p->maxhp);
+    fprintf(fp,"hp:%d\n", p->hp);
+    fprintf(fp,"maxmp:%d\n", p->maxmp);
+    fprintf(fp,"mp:%d\n", p->mp);
+    fprintf(fp,"damage:%d\n", p->damage);
+    fprintf(fp,"defence:%d\n", p->defence);
+    fprintf(fp,"speed:%d\n", p->speed);
+    fprintf(fp,"gold:%d\n", p->gold);
+    fprintf(fp,"level:%d\n", p->level);
+    fprintf(fp,"exp:%d\n", p->exp);
+    fprintf(fp,"LVUPexp:%d\n", p->LVUPexp);
+    fprintf(fp,"weaponlevel:%d\n", p->weaponlevel);
+    fprintf(fp,"armorlevel:%d\n", p->armorlevel);
     fclose(fp);
 
-    fp = fopen("./Save/playerskills.txt", "w");
-    for (int i = 1; i <= totalskill; i++)
+    fp = fopen("./Save/playerskills.txt","w");
+    for(int i=1; i<=totalskill; i++)
     {
-        fprintf(fp, "%s %d %d\n", get<0>(skills[i]).c_str(), get<1>(skills[i]), get<2>(skills[i]));
+        fprintf(fp,"%s %d %d\n", get<0>(skills[i]).c_str(), get<1>(skills[i]), get<2>(skills[i]));
     }
-    fprintf(fp, "%d %d %d %d", p->skill[1], p->skill[2], p->skill[3], p->skill[4]);
+    fprintf(fp,"%d %d %d %d", p->skill[1], p->skill[2], p->skill[3] ,p->skill[4]);
     fclose(fp);
 
-    fp = fopen("./Save/playeritem.txt", "w");
+    fp = fopen("./Save/playeritem.txt","w");
 
     char itemnames[10001];
-    for (int i = 1; i <= totalitem + totalskillbooks; i++)
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         strcpy(itemnames, get<0>(itemlist[i]).c_str());
-        fprintf(fp, "%s %d %d\n", itemnames, p->playeritemlist[i].first, p->playeritemlist[i].second);
+        fprintf(fp,"%s %d %d\n", itemnames, p->playeritemlist[i].first, p->playeritemlist[i].second);
     }
     fclose(fp);
 
-    fp = fopen("./Save/itemDB.txt", "w");
+    fp = fopen("./Save/itemDB.txt","w");
 
     char DBitemnames[10001];
-    for (int i = 1; i <= totalitem + totalskillbooks; i++)
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         strcpy(DBitemnames, get<0>(itemlist[i]).c_str());
-        fprintf(fp, "%s %d %d %d\n", DBitemnames, get<1>(itemlist[i]), get<2>(itemlist[i]), get<3>(itemlist[i]));
+        fprintf(fp,"%s %d %d %d\n", DBitemnames, get<1>(itemlist[i]), get<2>(itemlist[i]), get<3>(itemlist[i]));
     }
     fclose(fp);
 }
 
-void Load(Player* p)
+void Load(Player *p)
 {
     int trash;
     char wname[200];
 
     FILE* fp;
-    fp = fopen("./Save/playerinfom.txt", "r");
-    fscanf(fp, "register:%d\n", &trash);
-    fscanf(fp, "%s\n", wname);
+    fp = fopen("./Save/playerinfom.txt","r");
+    fscanf(fp,"register:%d\n", &trash);
+    fscanf(fp,"%s\n", wname);
     p->name = wname;
-    fscanf(fp, "maxhp:%d\n", &p->maxhp);
-    fscanf(fp, "hp:%d\n", &p->hp);
-    fscanf(fp, "maxmp:%d\n", &p->maxmp);
-    fscanf(fp, "mp:%d\n", &p->mp);
-    fscanf(fp, "damage:%d\n", &p->damage);
-    fscanf(fp, "defence:%d\n", &p->defence);
-    fscanf(fp, "speed:%d\n", &p->speed);
-    fscanf(fp, "gold:%d\n", &p->gold);
-    fscanf(fp, "level:%d\n", &p->level);
-    fscanf(fp, "exp:%d\n", &p->exp);
-    fscanf(fp, "LVUPexp:%d\n", &p->LVUPexp);
-    fscanf(fp, "weaponlevel:%d\n", &p->weaponlevel);
-    fscanf(fp, "armorlevel:%d\n", &p->armorlevel);
+    fscanf(fp,"maxhp:%d\n", &p->maxhp);
+    fscanf(fp,"hp:%d\n", &p->hp);
+    fscanf(fp,"maxmp:%d\n", &p->maxmp);
+    fscanf(fp,"mp:%d\n", &p->mp);
+    fscanf(fp,"damage:%d\n", &p->damage);
+    fscanf(fp,"defence:%d\n", &p->defence);
+    fscanf(fp,"speed:%d\n", &p->speed);
+    fscanf(fp,"gold:%d\n", &p->gold);
+    fscanf(fp,"level:%d\n", &p->level);
+    fscanf(fp,"exp:%d\n", &p->exp);
+    fscanf(fp,"LVUPexp:%d\n", &p->LVUPexp);
+    fscanf(fp,"weaponlevel:%d\n", &p->weaponlevel);
+    fscanf(fp,"armorlevel:%d\n", &p->armorlevel);
     fclose(fp);
 
-    fp = fopen("./Save/playerskills.txt", "r");
-    for (int i = 1; i <= totalskill; i++)
+    fp = fopen("./Save/playerskills.txt","r");
+    for(int i=1; i<=totalskill; i++)
     {
         char skillnames[10000];
-        fscanf(fp, "%s %d %d\n", skillnames, &get<1>(skills[i]), &get<2>(skills[i]));
+        fscanf(fp,"%s %d %d\n", skillnames, &get<1>(skills[i]), &get<2>(skills[i]));
         get<0>(skills[i]) = skillnames;
     }
-    fscanf(fp, "%d %d %d %d", &p->skill[1], &p->skill[2], &p->skill[3], &p->skill[4]);
+    fscanf(fp,"%d %d %d %d", &p->skill[1], &p->skill[2], &p->skill[3] ,&p->skill[4]);
     fclose(fp);
 
-    fp = fopen("./Save/itemDB.txt", "r");
-    for (int i = 1; i <= totalitem + totalskillbooks; i++)
+    fp = fopen("./Save/itemDB.txt","r");
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         char itemnames[10000];
-        fscanf(fp, "%s %d %d %d\n", itemnames, &get<1>(itemlist[i]), &get<2>(itemlist[i]), &get<3>(itemlist[i]));
+        fscanf(fp,"%s %d %d %d\n", itemnames, &get<1>(itemlist[i]), &get<2>(itemlist[i]), &get<3>(itemlist[i]));
         get<0>(itemlist[i]) = itemnames;
     }
     fclose(fp);
 
-    fp = fopen("./Save/playeritem.txt", "r");
-    for (int i = 1; i <= totalitem + totalskillbooks; i++)
+    fp = fopen("./Save/playeritem.txt","r");
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
         char trash[10000];
-        fscanf(fp, "%s %d %d\n", trash, &p->playeritemlist[i].first, &p->playeritemlist[i].second);
+        fscanf(fp,"%s %d %d\n", trash, &p->playeritemlist[i].first, &p->playeritemlist[i].second);
     }
     fclose(fp);
 }
 
 void showlog()
 {
-    for (int i = t - 5; i < t; i++)
+    for(int i=t-5; i<t; i++)
     {
-        if (i < 0) cout << '\n';
+        if(i<0) cout << '\n';
         else cout << Log[i] << '\n';
     }
-    cout << "ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡ã…¡\n\n";
+    cout << "¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ¤Ñ\n\n";
 }
 
-void showplayerstatus(Player* p, string slot1, string slot2, string slot3, string slot4)
+void showplayerstatus(Player *p, string slot1, string slot2, string slot3, string slot4)
 {
-    playerhppercent = (double)p->hp / p->maxhp * 100;
-    playermppercent = (double)p->mp / p->maxmp * 100;
-    playerexppercent = (double)p->exp / p->LVUPexp * 100;
+    playerhppercent = (double)p->hp/p->maxhp * 100;
+    playermppercent = (double)p->mp/p->maxmp * 100;
+    playerexppercent = (double)p->exp/p->LVUPexp * 100;
 
-    // ê° ìŠ¬ë¡¯ì— í•´ë‹¹í•˜ëŠ” ì´ë¦„ë§Œ ë„£ì–´ì£¼ì‹œë©´ ë©ë‹ˆë‹¤. ex) showplayerstatus(p, "1", "2", "3", "4");
-    for (int i = 0; i < 10; i++) //playerhpbar
+    // °¢ ½½·Ô¿¡ ÇØ´çÇÏ´Â ÀÌ¸§¸¸ ³Ö¾îÁÖ½Ã¸é µË´Ï´Ù. ex) showplayerstatus(p, "1", "2", "3", "4");
+    for(int i=0; i<10; i++) //playerhpbar
     {
-        if (i * 10 < playerhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+        if(i*10<playerhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "â– ";
+        cout << "¡á";
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     cout << '\n';
-    for (int i = 0; i < 10; i++) //playermpbar
+    for(int i=0; i<10; i++) //playermpbar
     {
-        if (i * 10 < playermppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
+        if(i*10<playermppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 1);
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "â– ";
+        cout << "¡á";
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     cout << '\n';
@@ -1047,29 +1038,29 @@ void showplayerstatus(Player* p, string slot1, string slot2, string slot3, strin
     cout << "HP : " << p->hp << " / " << p->maxhp;
     cout << "\n\n";
 
-    for (int i = 1; i <= 4; i++)
+    for(int i=1; i<=4; i++)
     {
-        if (i == point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        if (i == 1) cout << slot1;
-        if (i == 2) cout << slot2;
-        if (i == 3) cout << slot3;
-        if (i == 4) cout << slot4;
+        if(i==1) cout << slot1;
+        if(i==2) cout << slot2;
+        if(i==3) cout << slot3;
+        if(i==4) cout << slot4;
         cout << "   ";
     }
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
     cout << "\n\n";
-    cout << "ë ˆë²¨ : " << p->level << " (" << p->exp << ")" << "   ";
-    cout << "ê³¨ë“œ : " << p->gold << '\n';
+    cout << "·¹º§ : " << p->level << " (" << p->exp << ")" << "   ";
+    cout << "°ñµå : " << p->gold << '\n';
 
     cout << "[";
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 10); // levelbar
-    for (int i = 1; i <= 25; i++)
+    for(int i=1; i<=25; i++)
     {
-        if (playerexppercent < i * 4)
+        if(playerexppercent<i*4)
         {
-            if (playerexppercent - ((i - 1) * 4) >= 2) // 2%ì˜ ê²½ìš°ì— ì—°í•˜ê²Œ
+            if(playerexppercent-((i-1)*4)>=2) // 2%ÀÇ °æ¿ì¿¡ ¿¬ÇÏ°Ô
             {
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
                 cout << "#";
@@ -1086,7 +1077,7 @@ void showplayerstatus(Player* p, string slot1, string slot2, string slot3, strin
 void fulllog(int current, int finish)
 {
     system("cls");
-    for (int i = current; i <= finish; i++)
+    for(int i=current; i<=finish; i++)
     {
         cout << "[" << i << "]" << " " << Log[i] << '\n';
     }
@@ -1094,42 +1085,42 @@ void fulllog(int current, int finish)
 
 void showfulllog()
 {
-    int lognum = 20;
-    int current = (t - lognum <= 0) ? 0 : t - lognum;
-    int finish = (current <= lognum) ? t - 1 : current + lognum - 1;
+    int lognum=20;
+    int current = (t-lognum<=0) ? 0 : t-lognum;
+    int finish = (current<=lognum) ? t-1 : current+lognum-1;
     int key;
 
     fulllog(current, finish);
-    while (1)
+    while(1)
     {
-        if (kbhit())
+        if(kbhit())
         {
-            key = getch();
-            if (key == 224) // ë°©í–¥í‚¤
+            key=getch();
+            if(key==224) // ¹æÇâÅ°
             {
-                key = getch();
-                if (key == 72) // ìœ„ìª½
+                key=getch();
+                if(key==72) // À§ÂÊ
                 {
-                    if (current - lognum <= 0) current = 0;
-                    else current -= lognum;
+                    if(current-lognum<=0) current=0;
+                    else current-=lognum;
                 }
-                if (key == 80) // ì•„ë˜ìª½
+                if(key==80) // ¾Æ·¡ÂÊ
                 {
-                    if (finish + lognum >= t - 1) current = t - lognum - 1 > 0 ? t - lognum - 1 : 0;
-                    else current += lognum;
+                    if(finish+lognum>=t-1) current=t-lognum-1 > 0 ? t-lognum-1 : 0;
+                    else current+=lognum;
                 }
             }
-            if (key == 27) //esc
+            if(key==27) //esc
             {
                 break;
             }
-            finish = (t <= lognum) ? t - 1 : current + 20;
+            finish = (t<=lognum) ? t-1 : current+20;
             fulllog(current, finish);
         }
     }
 }
 
-void home(Player* p)
+void home(Player *p)
 {
     Save(p);
     system("cls");
@@ -1137,55 +1128,55 @@ void home(Player* p)
     homeselectmenu(p);
 }
 
-void homemenu(Player* p)
+void homemenu(Player *p)
 {
     showlog();
-    showplayerstatus(p, "ì´ë™", "íœ´ì‹", "ìŠ¤í‚¬ì„¤ì •", "ìƒì ");
+    showplayerstatus(p, "ÀÌµ¿", "ÈŞ½Ä", "½ºÅ³¼³Á¤", "»óÁ¡");
 }
 
-void homeselectmenu(Player* p)
+void homeselectmenu(Player *p)
 {
     bool command = false;
     int key;
     point = 1;
-    while (!command)
+    while(!command)
     {
-        if (kbhit())
+        if(kbhit())
         {
-            key = getch();
-            if (key == 224) // ë°©í–¥í‚¤
+            key=getch();
+            if(key==224) // ¹æÇâÅ°
             {
-                key = getch();
-                if (key == 75 && point > 1) point--; // ì™¼ìª½
-                if (key == 77 && point < 4) point++; // ì˜¤ë¥¸ìª½
+                key=getch();
+                if(key==75 && point>1) point--; // ¿ŞÂÊ
+                if(key==77 && point<4) point++; // ¿À¸¥ÂÊ
             }
-            if (key == 13) // enterí‚¤
+            if(key==13) // enterÅ°
             {
-                if (point == 1)
+                if(point==1)
                 {
                     command = true;
                     point = 3;
                     movemenu(p);
                 }
-                if (point == 2)
+                if(point==2)
                 {
                     p->heal();
                     Save(p);
                 }
-                if (point == 3)
+                if(point==3)
                 {
                     command = true;
-                    point = 1;
+                    point=1;
                     skillset(p);
                 }
-                if (point == 4)
+                if(point==4)
                 {
                     command = true;
-                    point = 1;
+                    point=1;
                     shop(p);
                 }
             }
-            if (key == 84 || key == 116) showfulllog(); // k
+            if(key==84 || key==116) showfulllog(); // k
             system("cls");
             homemenu(p);
         }
@@ -1193,7 +1184,7 @@ void homeselectmenu(Player* p)
     command = false;
 }
 
-void movemenu(Player* p)
+void movemenu(Player *p)
 {
     bool command = false;
 
@@ -1201,85 +1192,85 @@ void movemenu(Player* p)
 
     showlog();
 
-    cout << "ì´ë™í•  ê³³ì„ ì„ íƒí•´ ì£¼ì„¸ìš”.\n\n";
+    cout << "ÀÌµ¿ÇÒ °÷À» ¼±ÅÃÇØ ÁÖ¼¼¿ä.\n\n";
 
-    for (int i = point - 1; i <= point + 1; i++)
+    for(int i=point-1; i<=point+1; i++)
     {
-        if (i == point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+        if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         cout << worldmap[i] << '\n';
     }
 
-    while (!command)
+    while(!command)
     {
         int key;
-        if (kbhit())
+        if(kbhit())
         {
-            key = getch();
+            key=getch();
             {
-                if (key == 224) // ë°©í–¥í‚¤
+                if(key==224) // ¹æÇâÅ°
                 {
-                    key = getch();
-                    if (key == 72 && point > 1) point--; // ìœ„ìª½
-                    if (key == 80 && point < stage - 1) point++; // ì•„ë˜ìª½
+                    key=getch();
+                    if(key==72 && point>1) point--; // À§ÂÊ
+                    if(key==80 && point<stage-1) point++; // ¾Æ·¡ÂÊ
                 }
-                if (key == 13) // enterí‚¤
+                if(key==13) // enterÅ°
                 {
                     command = true;
                     where = point;
                     point = 1;
-                    if (where == 2)
+                    if(where==2)
                     {
                         weaponforge(p, false);
                         break;
                     }
-                    if (where == 3)
+                    if(where==3)
                     {
                         armorforge(p, false);
                         break;
                     }
-                    Log[t] = "ë‹¹ì‹ ì€ " + worldmap[where] + "(ìœ¼)ë¡œ ì—¬ì •ì„ ë– ë‚¬ë‹¤."; t++;
+                    Log[t] = "´ç½ÅÀº " + worldmap[where] + "(À¸)·Î ¿©Á¤À» ¶°³µ´Ù."; t++;
                     fight(p);
                     readymenu(p);
                 }
-                if (key == 27) //esc
+                if(key==27) //esc
                 {
                     point = 1;
                     break;
                 }
-                if (key == 84 || key == 116) showfulllog(); // k
+                if(key==84 || key==116) showfulllog(); // k
             }
             movemenu(p);
         }
     }
-    command = false;
+    command=false;
     home(p);
 }
 
-void skillset(Player* p)
+void skillset(Player *p)
 {
     system("cls");
-    bool command = false;
+    bool command=false;
 
     showlog();
 
-    for (int i = 1; i <= 4; i++)
+    for(int i=1; i<=4; i++)
     {
-        p->skill[i] = 0;
+        p->skill[i]=0;
     }
-    usingskill = 1;
+    usingskill=1;
 
-    for (int i = 1; i <= totalskill; i++)
+    for(int i=1; i<=totalskill; i++)
     {
-        if (i == point) cout << ">";
+        if(i==point) cout << ">";
 
-        if (get<2>(skills[i]) == 1)
+        if(get<2>(skills[i])==1)
         {
             cout << "    " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
         }
-        else if (get<2>(skills[i]) == 2)
+        else if(get<2>(skills[i])==2)
         {
-            p->skill[usingskill] = i;
+            p->skill[usingskill]=i;
             usingskill++;
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
             cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
@@ -1295,64 +1286,64 @@ void skillset(Player* p)
 
     Save(p);
 
-    while (!command)
+    while(!command)
     {
         int key;
-        if (kbhit())
+        if(kbhit())
         {
-            key = getch();
+            key=getch();
             {
-                if (key == 224) // ë°©í–¥í‚¤
+                if(key==224) // ¹æÇâÅ°
                 {
-                    key = getch();
+                    key=getch();
                     {
-                        if (key == 72) // ìœ„ìª½
+                        if(key==72) // À§ÂÊ
                         {
-                            if (point > 1)
+                            if(point>1)
                             {
                                 point--;
                             }
                         }
-                        if (key == 80) // ì•„ë˜ìª½
+                        if(key==80) // ¾Æ·¡ÂÊ
                         {
-                            if (point < totalskill)
+                            if(point<totalskill)
                             {
                                 point++;
                             }
                         }
                     }
                 }
-                if (key == 13) // enterí‚¤
+                if(key==13) // enterÅ°
                 {
                     command = true;
-                    if (usingskill <= 4 || get<2>(skills[point]) == 2) // ìŠ¤í‚¬ ìµœëŒ€ê°¯ìˆ˜ ë‚´ì— ë“¤ê±°ë‚˜, í•´ì œë¥¼ í•˜ëŠ” ê²½ìš°.
+                    if(usingskill<=4 || get<2>(skills[point])==2) // ½ºÅ³ ÃÖ´ë°¹¼ö ³»¿¡ µé°Å³ª, ÇØÁ¦¸¦ ÇÏ´Â °æ¿ì.
                     {
-                        if (get<2>(skills[point]) == 1) // ì¥ì°©ì˜ ê²½ìš°
+                        if(get<2>(skills[point])==1) // ÀåÂøÀÇ °æ¿ì
                         {
-                            Log[t] = get<0>(skills[point]) + " ìŠ¤í‚¬ì„ ì¥ì°©í•˜ì˜€ìŠµë‹ˆë‹¤."; t++;
-                            get<2>(skills[point]) = 2;
+                            Log[t] = get<0>(skills[point]) + " ½ºÅ³À» ÀåÂøÇÏ¿´½À´Ï´Ù."; t++;
+                            get<2>(skills[point])=2;
                         }
-                        else if (get<2>(skills[point]) == 2) // í•´ì œì˜ ê²½ìš°
+                        else if(get<2>(skills[point])==2) // ÇØÁ¦ÀÇ °æ¿ì
                         {
-                            Log[t] = get<0>(skills[point]) + " ìŠ¤í‚¬ì„ í•´ì œí•˜ì˜€ìŠµë‹ˆë‹¤."; t++;
-                            get<2>(skills[point]) = 1;
+                            Log[t] = get<0>(skills[point]) + " ½ºÅ³À» ÇØÁ¦ÇÏ¿´½À´Ï´Ù."; t++;
+                            get<2>(skills[point])=1;
                         }
                     }
-                    else if (get<2>(skills[point]) == 1) // ìµœëŒ€ê°¯ìˆ˜ì´ë©°, ì¥ì°©ì„ í•˜ëŠ” ê²½ìš°
+                    else if(get<2>(skills[point])==1) // ÃÖ´ë°¹¼öÀÌ¸ç, ÀåÂøÀ» ÇÏ´Â °æ¿ì
                     {
-                        Log[t] = "ìŠ¤í‚¬ ìŠ¬ë¡¯ì´ ê°€ë“ ì°¼ìŠµë‹ˆë‹¤."; t++;
+                        Log[t] = "½ºÅ³ ½½·ÔÀÌ °¡µæ Ã¡½À´Ï´Ù."; t++;
                     }
                 }
-                if (key == 47 || key == 63) // / or ?
+                if(key==47 || key==63) // / or ?
                 {
                     p->skilldescription(point);
                 }
-                if (key == 27) //esc
+                if(key==27) //esc
                 {
                     point = 1;
                     break;
                 }
-                if (key == 84 || key == 116) showfulllog(); // k
+                if(key==84 || key==116) showfulllog(); // k
             }
             skillset(p);
         }
@@ -1361,199 +1352,205 @@ void skillset(Player* p)
     home(p);
 }
 
-void shop(Player* p)
+void shop(Player *p)
 {
     item item;
     system("cls");
-    bool command = false;
+    bool command=false;
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
     showlog();
 
-    cout << "êµ¬ë§¤í•˜ê¸° ìœ„í•´ì„  B, íŒ”ê¸° ìœ„í•´ì„  Së¥¼ ëˆŒëŸ¬ì£¼ì„¸ìš”.\n\n";
-    cout << "í˜„ì¬ ê³¨ë“œ : " << p->gold << "\n\n";
-    for (int i = 1; i <= totalitem + totalskillbooks; i++)
+    cout << "±¸¸ÅÇÏ±â À§ÇØ¼± B, ÆÈ±â À§ÇØ¼± S¸¦ ´­·¯ÁÖ¼¼¿ä.\n\n";
+    cout << "ÇöÀç °ñµå : " << p->gold << "\n\n";
+    for(int i=1; i<=totalitem+totalskillbooks; i++)
     {
-        if (i == point)
+        if(i==point)
         {
-            if (get<1>(itemlist[i]) == -100) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
+            if(get<1>(itemlist[i])==-100) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 4);
             else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
         }
         else
         {
-            if (get<1>(itemlist[i]) == -100) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+            if(get<1>(itemlist[i])==-100) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
             else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
         }
 
-        cout << get<0>(itemlist[i]) << " : BUY " << get<2>(itemlist[i]) << " / SELL " << get<3>(itemlist[i]) << " / ë³´ìœ  ê°œìˆ˜ : (" << p->playeritemlist[i].first << ")" << '\n';
+        cout << get<0>(itemlist[i]) << " : BUY " << get<2>(itemlist[i]) << " / SELL " << get<3>(itemlist[i]) << " / º¸À¯ °³¼ö : (" << p->playeritemlist[i].first << ")" <<'\n';
     }
 
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
-    while (!command)
+    while(!command)
     {
         int key;
-        if (kbhit())
+        if(kbhit())
         {
-            key = getch();
+            key=getch();
 
-            if (key == 224) // ë°©í–¥í‚¤
+            if(key==224) // ¹æÇâÅ°
             {
-                key = getch();
-                if (key == 72 && point > 1) point--; // ìœ„ìª½
-                if (key == 80 && point < totalitem + totalskillbooks) point++; // ì•„ë˜ìª½
+                key=getch();
+                if(key==72 && point>1) point--; // À§ÂÊ
+                if(key==80 && point<totalitem+totalskillbooks) point++; // ¾Æ·¡ÂÊ
             }
 
-            if ((key == 66 || key == 98) && get<1>(itemlist[point]) != -100) // B í‚¤
+            if((key==66 || key==98) && get<1>(itemlist[point])!=-100) // B Å°
             {
-                if (p->gold >= get<2>(itemlist[point]))
+                if(p->gold >= get<2>(itemlist[point]))
                 {
-                    p->gold -= get<2>(itemlist[point]);
+                    p->gold-=get<2>(itemlist[point]);
                     p->playeritemlist[point].first++;
-                    Log[t] = get<0>(itemlist[point]) + "ë¥¼ êµ¬ë§¤í•˜ì˜€ë‹¤."; t++;
+                    Log[t] = get<0>(itemlist[point]) + "¸¦ ±¸¸ÅÇÏ¿´´Ù."; t++;
 
-                    if (get<1>(itemlist[point]) >= 1 && get<1>(itemlist[point]) < 100) // ìŠ¤í‚¬ë¶
+                    if(get<1>(itemlist[point])>=1 && get<1>(itemlist[point])<100) // ½ºÅ³ºÏ
                     {
                         p->LearnSkill(get<1>(itemlist[point]));
-                        get<1>(itemlist[point]) = -100;
+                        get<1>(itemlist[point])=-100;
                     }
                     Save(p);
                 }
                 else
                 {
-                    Log[t] = "ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->gold) + "/" + to_string(get<2>(itemlist[point])) + ")"; t++;
+                    Log[t] = "°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->gold) + "/" + to_string(get<2>(itemlist[point])) + ")"; t++;
                 }
             }
-            if (key == 83 || key == 115) // S í‚¤
+            if(key==83 || key==115) // S Å°
             {
-                if (p->playeritemlist[point].first > 0 && !(p->playeritemlist[point].second >= 1 && p->playeritemlist[point].second < 100))
+                if(p->playeritemlist[point].first > 0 && !(p->playeritemlist[point].second>=1 && p->playeritemlist[point].second<100))
                 {
-                    p->gold += get<3>(itemlist[point]);
+                    p->gold+=get<3>(itemlist[point]);
                     p->playeritemlist[point].first--;
-                    Log[t] = get<0>(itemlist[point]) + "ë¥¼ íŒë§¤í•˜ì˜€ë‹¤.";
+                    Log[t] = get<0>(itemlist[point]) + "¸¦ ÆÇ¸ÅÇÏ¿´´Ù.";
                     t++;
                     Save(p);
                 }
             }
-            if (key == 47 || key == 63)
+            if(key==47 || key==63)
             {
                 item.itemdescription(p, point);
             }
-            if (key == 27) //esc
+            if(key==27) //esc
             {
                 point = 1;
                 break;
             }
-            if (key == 84 || key == 116) showfulllog(); // k
+            if(key==84 || key==116) showfulllog(); // k
             shop(p);
         }
     }
-    command = false;
+    command=false;
     home(p);
 }
 
-void pattack(Player* p, mob* m)
+void pattack(Player *p, mob *m)
 {
-    double multiple = double((p->level - m->level) * 5 + 100) / 100;
-    if (multiple > 1.3) multiple = 1.3;
-    if (multiple < 0) multiple = 0;
-    int damage = round((rand() % p->damage + p->damage) / (1 + (m->defence * 0.1)) * multiple);
-    Log[t] = m->name + "ì—ê²Œ " + to_string(damage) + " ë°ë¯¸ì§€ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤!";
-    m->hp -= damage;
+    double multiple = double((p->level - m->level)*5 + 100)/100;
+    if(multiple>1.3) multiple=1.3;
+    if(multiple < 0) multiple=0;
+    int damage = round((rand() % p->damage + p->damage) / (1+(m->defence*0.1)) * multiple);
+    Log[t] = m->name + "¿¡°Ô " + to_string(damage) + " µ¥¹ÌÁö¸¦ ÀÔÇû½À´Ï´Ù!";
+    m->hp-=damage;
     t++;
-    if (m->hp <= 0)
+    if(m->hp<=0)
     {
         m->Mobdeath(p);
         return;
     }
 }
 
-void mattack(Player* p, mob* m)
+void mattack(Player *p, mob *m)
 {
-    double multiple = double((m->level - p->level) * 5 + 100) / 100;
-    if (multiple > 1.3) multiple = 1.3;
-    if (multiple < 0) multiple = 0;
-    int damage = round((rand() % m->damage + m->damage) / (1 + (p->defence * 0.1)) * multiple);
-    Log[t] = m->name + "ì´(ê°€) ê³µê²©í•˜ì—¬ " + to_string(damage) + " ë°ë¯¸ì§€ë¥¼ ì…ì—ˆìŠµë‹ˆë‹¤!";
-    p->hp -= damage;
+    double multiple = double((m->level - p->level)*5 + 100)/100;
+    if(multiple>1.3) multiple=1.3;
+    if(multiple < 0) multiple=0;
+    int damage = round((rand() % m->damage + m->damage) / (1+(p->defence*0.1)) * multiple);
+    Log[t] = m->name + "ÀÌ(°¡) °ø°İÇÏ¿© " + to_string(damage) + " µ¥¹ÌÁö¸¦ ÀÔ¾ú½À´Ï´Ù!";
+    p->hp-=damage;
     t++;
-    if (p->hp <= 0)
+    if(p->hp<=0)
     {
         return;
     }
 }
 
-void attack(Player* p, mob* m)
+void attack(Player *p, mob *m)
 {
-    if (p->speed >= m->speed)
+    if(p->speed >= m->speed)
     {
         pattack(p, m);
-        if (killtrigger == true) return;
+        if(killtrigger==true) return;
         mattack(p, m);
-        if (p->hp < 0) death(p);
+        if(p->hp<=0)
+        {
+            p->death();
+            home(p);
+        }
     }
     else
     {
         mattack(p, m);
-        if (p->hp < 0) {
-            death(p);
+        if(p->hp<=0)
+        {
+            p->death();
+            home(p);
         }
         pattack(p, m);
     }
-    int mphealing = min(p->maxmp, p->mp + (p->maxmp / 20)) - p->mp; // mp 5% íšŒë³µ
+    int mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% È¸º¹
     p->mp += mphealing;
 }
 
-void skillattack(Player* p, mob* m, int skillnum)
+void skillattack(Player *p, mob *m, int skillnum)
 {
     int damage;
-    double multiple = double((p->level - m->level) * 5 + 100) / 100;
-    if (multiple > 1.3) multiple = 1.3;
+    double multiple = double((p->level - m->level)*5 + 100)/100;
+    if(multiple>1.3) multiple=1.3;
 
-    if (skillnum == 1) // ë°©ì–´
+    if(skillnum == 1) // ¹æ¾î
     {
         int success = rand() % 4;
         int temp = p->hp;
 
-        if (success > 0)
+        if(success>0)
         {
-            Log[t] = get<0>(skills[skillnum]) + "ë¥¼ ì‚¬ìš©í•˜ì—¬ ê³µê²©ì„ ë§‰ì•„ í”¼í•´ëŸ‰ì˜ ì¼ë¶€ë¥¼ ë§ˆë‚˜ë¡œ ë³€í™˜í•©ë‹ˆë‹¤.";
-            p->defence *= 2;
+            Log[t] = get<0>(skills[skillnum]) + "¸¦ »ç¿ëÇÏ¿© °ø°İÀ» ¸·¾Æ ÇÇÇØ·®ÀÇ ÀÏºÎ¸¦ ¸¶³ª·Î º¯È¯ÇÕ´Ï´Ù.";
+            p->defence*=2;
             t++;
             mattack(p, m);
-            p->defence /= 2;
+            p->defence/=2;
 
-            int mphealing = (temp - p->hp) / 2; // ìƒì€ hpì˜ 50%ë§Œí¼ mp íšŒë³µ
-            p->mp = min(p->maxmp, p->mp + mphealing);
+            int mphealing = (temp - p->hp) / 2; // ÀÒÀº hpÀÇ 50%¸¸Å­ mp È¸º¹
+            p->mp = min(p->maxmp, p->mp+mphealing);
 
-            mphealing = min(p->maxmp, p->mp + (p->maxmp / 20)) - p->mp; // mp 5% íšŒë³µ
+            mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% È¸º¹
             p->mp += mphealing;
         }
         else
         {
-            Log[t] = get<0>(skills[skillnum]) + "ë¥¼ ì‚¬ìš©í•˜ì˜€ìœ¼ë‚˜ ë§‰ëŠ” ê²ƒì„ ì‹¤íŒ¨í•˜ì˜€ë‹¤!";
+            Log[t] = get<0>(skills[skillnum]) + "¸¦ »ç¿ëÇÏ¿´À¸³ª ¸·´Â °ÍÀ» ½ÇÆĞÇÏ¿´´Ù!";
             t++;
-            p->defence /= 2;
+            p->defence/=2;
             mattack(p, m);
-            p->defence *= 2;
-            int mphealing = min(p->maxmp, p->mp + (p->maxmp / 20)) - p->mp; // mp 5% íšŒë³µ
+            p->defence*=2;
+            int mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% È¸º¹
             p->mp += mphealing;
         }
 
     }
-    if (skillnum == 2) // í¬ë¡œìŠ¤ì»·
+    if(skillnum == 2) // Å©·Î½ºÄÆ
     {
-        if (get<1>(skills[skillnum]) <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp -= get<1>(skills[skillnum]);
-            for (int i = 0; i < 2; i++)
+            p->mp-=get<1>(skills[skillnum]);
+            for(int i=0; i<2; i++)
             {
-                damage = (rand() % (p->damage * 2) + p->damage) / (1 + (m->defence * 0.1)) * multiple;
-                Log[t] = m->name + "ì—ê²Œ " + get<0>(skills[skillnum]) + "ë¥¼ ì‚¬ìš©í•˜ì—¬ " + to_string(damage) + " ë°ë¯¸ì§€ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤!";
+                damage = (rand() % (p->damage*2) + p->damage) / (1+(m->defence*0.1)) * multiple;
+                Log[t] = m->name + "¿¡°Ô " + get<0>(skills[skillnum]) + "¸¦ »ç¿ëÇÏ¿© " + to_string(damage) + " µ¥¹ÌÁö¸¦ ÀÔÇû½À´Ï´Ù!";
                 t++;
-                m->hp -= damage;
-                if (m->hp <= 0)
+                m->hp-=damage;
+                if(m->hp<=0)
                 {
                     m->Mobdeath(p);
                     return;
@@ -1563,36 +1560,36 @@ void skillattack(Player* p, mob* m, int skillnum)
         }
         else
         {
-            Log[t] = "ë§ˆë‚˜ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
+            Log[t] = "¸¶³ª°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
-    if (skillnum == 3) // íë§
+    if(skillnum == 3) // Èú¸µ
     {
-        if (get<1>(skills[skillnum]) <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp -= get<1>(skills[skillnum]);
-            int healing = min(p->maxhp, p->hp + (p->maxhp / 8)) - p->hp; // hp ì•½ 12.5% íšŒë³µ
+            p->mp-=get<1>(skills[skillnum]);
+            int healing = min(p->maxhp, p->hp+(p->maxhp/8)) - p->hp; // hp ¾à 12.5% È¸º¹
             p->hp += healing;
-            Log[t] = get<0>(skills[skillnum]) + "ì„ ì‚¬ìš©í•˜ì—¬ " + to_string(healing) + " ì²´ë ¥ì„ íšŒë³µí•˜ì˜€ìŠµë‹ˆë‹¤!";
+            Log[t] = get<0>(skills[skillnum]) + "À» »ç¿ëÇÏ¿© " + to_string(healing) + " Ã¼·ÂÀ» È¸º¹ÇÏ¿´½À´Ï´Ù!";
             t++;
         }
         else
         {
-            Log[t] = "ë§ˆë‚˜ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
+            Log[t] = "¸¶³ª°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
-    if (skillnum == 4) // ê¸‰ì†Œì°Œë¥´ê¸°
+    if(skillnum == 4) // ±Ş¼ÒÂî¸£±â
     {
-        if (get<1>(skills[skillnum]) <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp -= get<1>(skills[skillnum]);
+            p->mp-=get<1>(skills[skillnum]);
             damage = (rand() % p->damage) + p->damage * multiple;
-            Log[t] = m->name + "ì—ê²Œ " + get<0>(skills[skillnum]) + "ë¥¼ ì‚¬ìš©í•˜ì—¬ " + to_string(damage) + " ë°ë¯¸ì§€ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤!";
+            Log[t] = m->name + "¿¡°Ô " + get<0>(skills[skillnum]) + "¸¦ »ç¿ëÇÏ¿© " + to_string(damage) + " µ¥¹ÌÁö¸¦ ÀÔÇû½À´Ï´Ù!";
             t++;
-            m->hp -= damage;
-            if (m->hp <= 0)
+            m->hp-=damage;
+            if(m->hp<=0)
             {
                 m->Mobdeath(p);
                 return;
@@ -1601,22 +1598,22 @@ void skillattack(Player* p, mob* m, int skillnum)
         }
         else
         {
-            Log[t] = "ë§ˆë‚˜ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
+            Log[t] = "¸¶³ª°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
-    if (skillnum == 5) // ë¶„ì‡„
+    if(skillnum == 5) // ºĞ¼â
     {
-        if (get<1>(skills[skillnum]) <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp -= get<1>(skills[skillnum]);
-            for (int i = 0; i < 3; i++)
+            p->mp-=get<1>(skills[skillnum]);
+            for(int i=0; i<3; i++)
             {
-                damage = (rand() % (p->damage * 5)) / (1 + (m->defence * 0.1)) * multiple;
-                Log[t] = m->name + "ì—ê²Œ " + get<0>(skills[skillnum]) + "ë¥¼ ì‚¬ìš©í•˜ì—¬ " + to_string(damage) + " ë°ë¯¸ì§€ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤!";
+                damage = (rand() % (p->damage * 5)) / (1+(m->defence*0.1)) * multiple;
+                Log[t] = m->name + "¿¡°Ô " + get<0>(skills[skillnum]) + "¸¦ »ç¿ëÇÏ¿© " + to_string(damage) + " µ¥¹ÌÁö¸¦ ÀÔÇû½À´Ï´Ù!";
                 t++;
-                m->hp -= damage;
-                if (m->hp <= 0)
+                m->hp-=damage;
+                if(m->hp<=0)
                 {
                     m->Mobdeath(p);
                     return;
@@ -1626,20 +1623,20 @@ void skillattack(Player* p, mob* m, int skillnum)
         }
         else
         {
-            Log[t] = "ë§ˆë‚˜ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
+            Log[t] = "¸¶³ª°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
-    if (skillnum == 6) // ê±°ì¸ì˜ì¼ê²©
+    if(skillnum == 6) // °ÅÀÎÀÇÀÏ°İ
     {
-        if (get<1>(skills[skillnum]) <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp -= get<1>(skills[skillnum]);
-            damage = (rand() % (p->damage * 4) + p->damage * 5) / (1 + (m->defence * 0.1)) * (multiple * 3);
-            Log[t] = m->name + "ì—ê²Œ " + get<0>(skills[skillnum]) + "ë¥¼ ì‚¬ìš©í•˜ì—¬ " + to_string(damage) + " ë°ë¯¸ì§€ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤!";
+            p->mp-=get<1>(skills[skillnum]);
+            damage = (rand() % (p->damage*4) + p->damage*5) / (1+(m->defence*0.1)) * (multiple*3);
+            Log[t] = m->name + "¿¡°Ô " + get<0>(skills[skillnum]) + "¸¦ »ç¿ëÇÏ¿© " + to_string(damage) + " µ¥¹ÌÁö¸¦ ÀÔÇû½À´Ï´Ù!";
             t++;
-            m->hp -= damage;
-            if (m->hp <= 0)
+            m->hp-=damage;
+            if(m->hp<=0)
             {
                 m->Mobdeath(p);
                 return;
@@ -1648,20 +1645,20 @@ void skillattack(Player* p, mob* m, int skillnum)
         }
         else
         {
-            Log[t] = "ë§ˆë‚˜ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
+            Log[t] = "¸¶³ª°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
-    if (skillnum == 7) // í¼ìŠ¤íŠ¸ë¸”ëŸ¬ë“œ
+    if(skillnum == 7) // ÆÛ½ºÆ®ºí·¯µå
     {
-        if (get<1>(skills[skillnum]) <= p->mp)
+        if(get<1>(skills[skillnum]) <= p->mp)
         {
-            p->mp -= get<1>(skills[skillnum]);
-            damage = m->hp / 8; // ë‚¨ì€ ì²´ë ¥ì˜ 12.5%
-            Log[t] = m->name + "ì—ê²Œ " + get<0>(skills[skillnum]) + "ë¥¼ ì‚¬ìš©í•˜ì—¬ " + to_string(damage) + " ë°ë¯¸ì§€ë¥¼ ì…í˜”ìŠµë‹ˆë‹¤!";
+            p->mp-=get<1>(skills[skillnum]);
+            damage = m->hp/8; // ³²Àº Ã¼·ÂÀÇ 12.5%
+            Log[t] = m->name + "¿¡°Ô " + get<0>(skills[skillnum]) + "¸¦ »ç¿ëÇÏ¿© " + to_string(damage) + " µ¥¹ÌÁö¸¦ ÀÔÇû½À´Ï´Ù!";
             t++;
-            m->hp -= damage;
-            if (m->hp <= 0)
+            m->hp-=damage;
+            if(m->hp<=0)
             {
                 m->Mobdeath(p);
                 return;
@@ -1670,49 +1667,49 @@ void skillattack(Player* p, mob* m, int skillnum)
         }
         else
         {
-            Log[t] = "ë§ˆë‚˜ê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
+            Log[t] = "¸¶³ª°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->mp) + "/" + to_string(get<1>(skills[skillnum])) + ")";
             t++;
         }
     }
 }
 
-void fight(Player* p)
+void fight(Player *p)
 {
     Save(p);
     system("cls");
     mob m;
 
     showlog();
-    showplayerstatus(p, "íƒí—˜í•œë‹¤", "ëŒì•„ê°„ë‹¤", "", "");
+    showplayerstatus(p, "Å½ÇèÇÑ´Ù", "µ¹¾Æ°£´Ù", "", "");
 }
 
-void readymenu(Player* p)
+void readymenu(Player *p)
 {
     bool command = false;
     int key;
     point = 1;
-    while (!command)
+    while(!command)
     {
-        if (kbhit())
+        if(kbhit())
         {
-            key = getch();
+            key=getch();
             {
-                if (key == 224) // ë°©í–¥í‚¤
+                if(key==224) // ¹æÇâÅ°
                 {
-                    key = getch();
-                    if (key == 75 && point > 1) point--; // ì™¼ìª½
-                    if (key == 77 && point < 2) point++; // ì˜¤ë¥¸ìª½
+                    key=getch();
+                    if(key==75 && point>1) point--; // ¿ŞÂÊ
+                    if(key==77 && point<2) point++; // ¿À¸¥ÂÊ
                 }
-                if (key == 13) // enterí‚¤
+                if(key==13) // enterÅ°
                 {
-                    if (point == 1)
+                    if(point==1)
                     {
                         command = true;
                         summonmob(p);
                     }
-                    if (point == 2)
+                    if(point==2)
                     {
-                        Log[t] = p->name + "(ì´)ëŠ” íƒí—˜ì„ ê·¸ë§Œë‘ê³  ëŒì•„ê°”ë‹¤."; t++;
+                        Log[t] = p->name + "(ÀÌ)´Â Å½ÇèÀ» ±×¸¸µÎ°í µ¹¾Æ°¬´Ù.";t++;
                         command = true;
                         point = 1;
                     }
@@ -1725,79 +1722,79 @@ void readymenu(Player* p)
     home(p);
 }
 
-// ëª¬ìŠ¤í„° ì†Œí™˜ í™•ë¥ 
-void summonmob(Player* p)
+// ¸ó½ºÅÍ ¼ÒÈ¯ È®·ü
+void summonmob(Player *p)
 {
     mob m;
-    if (where == 4)
+    if(where==4)
     {
-        int n = rand() % 100 + 1;
-        if (n <= 40) m.MiniSlime();
-        else if (n <= 70) m.Snake();
-        else if (n <= 98) m.Slime();
-        else if (n <= 100) m.Oak();
+        int n = rand()%100+1;
+        if(n<=40) m.MiniSlime();
+        else if(n<=70) m.Snake();
+        else if(n<=98) m.Slime();
+        else if(n<=100) m.Oak();
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if (where == 5)
+    if(where==5)
     {
-        int n = rand() % 100 + 1;
-        if (n <= 40) m.RockSlime();
-        else if (n <= 80) m.Bat();
-        else if (n <= 95) m.MiniGolem();
-        else if (n <= 100) m.Golem();
+        int n = rand()%100+1;
+        if(n<=40) m.RockSlime();
+        else if(n<=80) m.Bat();
+        else if(n<=95) m.MiniGolem();
+        else if(n<=100) m.Golem();
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if (where == 6)
+    if(where==6)
     {
-        int n = rand() % 100 + 1;
-        if (n <= 30) m.killerdog();
-        else if (n <= 50) m.hunter();
-        else if (n <= 70) m.shadower();
-        else if (n <= 97) m.badknight();
-        else if (n <= 100) m.nohead();
+        int n = rand()%100+1;
+        if(n<=30) m.killerdog();
+        else if(n<=50) m.hunter();
+        else if(n<=70) m.shadower();
+        else if(n<=97) m.badknight();
+        else if(n<=100) m.nohead();
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if (where == 7)
+    if(where==7)
     {
-        int n = rand() % 100 + 1;
-        if (n <= 35) m.zombie();
-        else if (n <= 70) m.skeleton();
-        else if (n <= 90) m.tankzombie();
-        else if (n <= 97) m.darkknight();
-        else if (n <= 100) m.demonite();
+        int n = rand()%100+1;
+        if(n<=35) m.zombie();
+        else if(n<=70) m.skeleton();
+        else if(n<=90) m.tankzombie();
+        else if(n<=97) m.darkknight();
+        else if(n<=100) m.demonite();
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
 }
 
-void fightmenu(mob* m, Player* p, bool skillmode)
+void fightmenu(mob *m, Player *p, bool skillmode)
 {
     system("cls");
-    mobhppercent = (double)m->hp / m->maxhp * 100;
+    mobhppercent = (double)m->hp/m->maxhp * 100;
 
     showlog();
 
-    for (int i = 0; i < 10; i++) //mobhpbar
+    for(int i=0; i<10; i++) //mobhpbar
     {
-        if (i * 10 < mobhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+        if(i*10<mobhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
         else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "â– ";
+        cout << "¡á";
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
     cout << '\n';
-    cout << "(ì )" << m->name << '\n';
+    cout << "(Àû)" << m->name << '\n';
     cout << "HP : " << m->hp << " / " << m->maxhp << '\n';
     cout << '\n';
 
-    if (skillmode == false) showplayerstatus(p, "ê³µê²©", "ìŠ¤í‚¬", "ì•„ì´í…œ", "ë„ë§");
+    if(skillmode==false) showplayerstatus(p, "°ø°İ", "½ºÅ³", "¾ÆÀÌÅÛ", "µµ¸Á");
     else
     {
         string skillarray[5];
-        for (int i = 1; i <= 4; i++)
+        for(int i=1; i<=4; i++)
         {
             skillarray[i] = get<0>(skills[p->skill[i]]) + "(" + to_string(get<1>(skills[p->skill[i]])) + ")";
         }
@@ -1806,75 +1803,75 @@ void fightmenu(mob* m, Player* p, bool skillmode)
     }
 }
 
-void fightselectmenu(mob* m, Player* p)
+void fightselectmenu(mob *m, Player *p)
 {
     bool skillmode = false;
     int key;
     point = 1;
-    while (!killtrigger)
+    while(!killtrigger)
     {
-        if (kbhit())
+        if(kbhit())
         {
-            key = getch();
+            key=getch();
 
-            if (key == 224) // ë°©í–¥í‚¤
+            if(key==224) // ¹æÇâÅ°
             {
-                key = getch();
-                if (key == 75 && point > 1) point--; // ì™¼ìª½
-                if (key == 77 && point < 4) point++; // ì˜¤ë¥¸ìª½
+                key=getch();
+                if(key==75 && point>1) point--; // ¿ŞÂÊ
+                if(key==77 && point<4) point++; // ¿À¸¥ÂÊ
             }
-            if (key == 13) // enterí‚¤
+            if(key==13) // enterÅ°
             {
-                if (skillmode)
+                if(skillmode)
                 {
                     skillattack(p, m, p->skill[point]);
-                    if (killtrigger) point = 1;
+                    if(killtrigger) point = 1;
                 }
                 else
                 {
-                    if (point == 1)
+                    if(point==1)
                     {
-                        attack(p, m);
+                        attack(p,m);
                         Save(p);
                     }
-                    if (point == 2)
+                    if(point==2)
                     {
                         skillmode = true;
                         point = 1;
                     }
-                    if (point == 3)
+                    if(point==3)
                     {
                         bool use = selectitem(p);
-                        if (use)
+                        if(use)
                         {
-                            mattack(p, m);
-                            int mphealing = min(p->maxmp, p->mp + (p->maxmp / 20)) - p->mp; // mp 5% íšŒë³µ
+                            mattack(p,m);
+                            int mphealing = min(p->maxmp, p->mp+(p->maxmp/20)) - p->mp; // mp 5% È¸º¹
                             p->mp += mphealing;
                         }
                     }
-                    if (point == 4)
+                    if(point==4)
                     {
-                        Log[t] = "ë‹¹ì‹ ì€ " + m->name + "(ìœ¼)ë¡œë¶€í„° ë„ë§ì³¤ë‹¤!";
+                        Log[t] = "´ç½ÅÀº " + m->name + "(À¸)·ÎºÎÅÍ µµ¸ÁÃÆ´Ù!";
                         t++;
                         point = 1;
                         return;
                     }
                 }
             }
-            if (key == 47 || key == 63) // / or ?
+            if(key==47 || key==63) // / or ?
             {
-                if (skillmode)
+                if(skillmode)
                 {
-                    if (p->skill[point] != 0) p->skilldescription(p->skill[point]);
+                    if(p->skill[point]!=0) p->skilldescription(p->skill[point]);
                 }
                 else m->mobdescription();
             }
-            if (key == 27 && skillmode) //esc
+            if(key==27 && skillmode) //esc
             {
                 skillmode = !skillmode;
                 point = 2;
             }
-            if (key == 84 || key == 116) showfulllog(); //k
+            if(key==84 || key==116) showfulllog(); //k
             system("cls");
             fightmenu(m, p, skillmode);
         }
@@ -1885,47 +1882,47 @@ void fightselectmenu(mob* m, Player* p)
 }
 
 
-void showitem(Player* p, int point)
+void showitem(Player *p, int point)
 {
-    for (int i = 1; i <= totalitem; i++)
+    for(int i=1; i<=totalitem; i++)
     {
-        if (get<1>(itemlist[i]) >= 1) continue;
+        if(get<1>(itemlist[i])>=1) continue;
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 
-        if (point == i) cout << "> ";
-        if (p->playeritemlist[i].first == 0) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+        if(point==i) cout << "> ";
+        if(p->playeritemlist[i].first==0) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
 
         cout << get<0>(itemlist[i]) << "(" << p->playeritemlist[i].first << ")\n";
     }
     SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
 }
 
-bool selectitem(Player* p)
+bool selectitem(Player *p)
 {
     item item;
     bool selected = false;
     int key;
     point = 1;
 
-    while (!selected)
+    while(!selected)
     {
         system("cls");
         showlog();
         showitem(p, point);
 
-        while (1)
+        while(1)
         {
-            if (kbhit())
+            if(kbhit())
             {
                 key = getch();
-                if (key == 224) // ë°©í–¥í‚¤
+                if(key==224) // ¹æÇâÅ°
                 {
-                    key = getch();
-                    if (key == 72 && point > 1) point--; // ìœ„ìª½
-                    if (key == 80 && point < totalitem) point++; // ì•„ë˜ìª½
+                    key=getch();
+                    if(key==72 && point>1) point--; // À§ÂÊ
+                    if(key==80 && point<totalitem) point++; // ¾Æ·¡ÂÊ
 
                 }
-                if (key == 13) // enterí‚¤
+                if(key==13) // enterÅ°
                 {
                     bool used = item.useitem(p, point);
                     selected = true;
@@ -1933,12 +1930,12 @@ bool selectitem(Player* p)
                     Save(p);
                     return used;
                 }
-                if (key == 47 || key == 63)
+                if(key==47 || key==63)
                 {
                     item.itemdescription(p,
-                        point);
+                                         point);
                 }
-                if (key == 27) //esc
+                if(key==27) //esc
                 {
                     point = 3;
                     selected = true;
@@ -1951,171 +1948,171 @@ bool selectitem(Player* p)
 }
 
 
-void Forge(Player* p, int protect, int chance, string mode, int upmoney) // status ì¦ê°€ëŠ” ì ìš©ì•ˆë¨, ê°€ë” ê°•ì œì¢…ë£Œë¨
+void Forge(Player *p, int protect, int chance, string mode, int upmoney) // status Áõ°¡´Â Àû¿ë¾ÈµÊ, °¡²û °­Á¦Á¾·áµÊ
 {
-    if (p->gold < upmoney)
+    if(p->gold < upmoney)
     {
-        Log[t] = "ê³¨ë“œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤. (" + to_string(p->gold) + "/" + to_string(upmoney) + ")";
+        Log[t] = "°ñµå°¡ ºÎÁ·ÇÕ´Ï´Ù. (" + to_string(p->gold) + "/" + to_string(upmoney) + ")";
         t++;
         return;
     }
-    int k = rand() % 10000 + 1;
-    if (mode == "weapon")
+    int k = rand()%10000 + 1;
+    if(mode=="weapon")
     {
-        if (p->weaponlevel == 20)
+        if(p->weaponlevel==20)
         {
-            Log[t] = "ìµœëŒ€ ê°•í™” ìƒíƒœì…ë‹ˆë‹¤. ê°•í™”ë¥¼ ì·¨ì†Œí•©ë‹ˆë‹¤.";
+            Log[t] = "ÃÖ´ë °­È­ »óÅÂÀÔ´Ï´Ù. °­È­¸¦ Ãë¼ÒÇÕ´Ï´Ù.";
             t++;
             return;
         }
-        p->gold -= upmoney;
-        if (chance * 100 >= k) // ì„±ê³µ
+        p->gold-=upmoney;
+        if(chance*100 >= k) // ¼º°ø
         {
-            Log[t] = "ì¥ë¹„ ê°•í™”ì— ì„±ê³µ í•˜ì˜€ë‹¤! (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel + 1) + ")";
+            Log[t] = "Àåºñ °­È­¿¡ ¼º°ø ÇÏ¿´´Ù! (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel+1) + ")";
             t++;
             p->weaponlevel++;
-            p->damage += forgeadd[p->weaponlevel];
+            p->damage+=forgeadd[p->weaponlevel];
         }
         else
         {
             int down;
-            if (!protect) down = rand() % (p->weaponlevel / 4 <= 0 ? 1 : p->weaponlevel / 4 + 1);
-            else down = rand() % (p->weaponlevel / 6 <= 0 ? 1 : p->weaponlevel / 7 + 1);
-            Log[t] = "ì¥ë¹„ ê°•í™”ì— ì‹¤íŒ¨í•˜ì˜€ë‹¤... (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel - down) + ")";
+            if(!protect) down = rand()%(p->weaponlevel/4<=0?1:p->weaponlevel/4 + 1);
+            else down = rand()%(p->weaponlevel/6<=0?1:p->weaponlevel/7 + 1);
+            Log[t] = "Àåºñ °­È­¿¡ ½ÇÆĞÇÏ¿´´Ù... (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel-down) + ")";
             t++;
-            for (int i = p->weaponlevel; i > p->weaponlevel - down; i--)
+            for(int i=p->weaponlevel; i>p->weaponlevel-down; i--)
             {
-                p->damage -= forgeadd[i];
+                p->damage-=forgeadd[i];
             }
-            p->weaponlevel -= down;
+            p->weaponlevel-=down;
         }
     }
-    if (mode == "armor")
+    if(mode=="armor")
     {
-        if (p->armorlevel == 20)
+        if(p->armorlevel==20)
         {
-            Log[t] = "ìµœëŒ€ ê°•í™” ìƒíƒœì…ë‹ˆë‹¤. ê°•í™”ë¥¼ ì·¨ì†Œí•©ë‹ˆë‹¤.";
+            Log[t] = "ÃÖ´ë °­È­ »óÅÂÀÔ´Ï´Ù. °­È­¸¦ Ãë¼ÒÇÕ´Ï´Ù.";
             t++;
             return;
         }
-        p->gold -= upmoney;
-        if (chance * 100 >= k) // ì„±ê³µ
+        p->gold-=upmoney;
+        if(chance*100 >= k) // ¼º°ø
         {
-            Log[t] = "ë°©ì–´êµ¬ ê°•í™”ì— ì„±ê³µ í•˜ì˜€ë‹¤! (" + to_string(p->armorlevel) + " -> " + to_string(p->armorlevel + 1) + ")";
+            Log[t] = "¹æ¾î±¸ °­È­¿¡ ¼º°ø ÇÏ¿´´Ù! (" + to_string(p->armorlevel) + " -> " + to_string(p->armorlevel+1) + ")";
             t++;
             p->armorlevel++;
-            p->defence += forgeadd[p->armorlevel];
-            p->maxhp += forgeadd[p->armorlevel] * 10;
-            p->hp += forgeadd[p->armorlevel] * 10;
+            p->defence+=forgeadd[p->armorlevel];
+            p->maxhp+=forgeadd[p->armorlevel]*10;
+            p->hp+=forgeadd[p->armorlevel]*10;
         }
         else
         {
             int down;
-            if (!protect) down = rand() % (p->armorlevel / 3 <= 0 ? 1 : p->armorlevel / 3 + 1);
-            else down = rand() % (p->armorlevel / 6 <= 0 ? 1 : p->armorlevel / 6 + 1);
-            Log[t] = "ë°©ì–´êµ¬ ê°•í™”ì— ì‹¤íŒ¨í•˜ì˜€ë‹¤... (" + to_string(p->armorlevel) + " -> " + to_string(p->armorlevel - down) + ")";
+            if(!protect) down = rand()%(p->armorlevel/3<=0?1:p->armorlevel/3 + 1);
+            else down = rand()%(p->armorlevel/6<=0?1:p->armorlevel/6 + 1);
+            Log[t] = "¹æ¾î±¸ °­È­¿¡ ½ÇÆĞÇÏ¿´´Ù... (" + to_string(p->armorlevel) + " -> " + to_string(p->armorlevel-down) + ")";
             t++;
-            for (int i = p->armorlevel; i > p->armorlevel - down; i--)
+            for(int i=p->armorlevel; i>p->armorlevel-down; i--)
             {
-                p->defence -= forgeadd[i];
-                p->maxhp -= forgeadd[p->armorlevel] * 10;
-                p->hp -= forgeadd[p->armorlevel] * 10;
+                p->defence-=forgeadd[i];
+                p->maxhp-=forgeadd[p->armorlevel]*10;
+                p->hp-=forgeadd[p->armorlevel]*10;
             }
-            p->armorlevel -= down;
+            p->armorlevel-=down;
         }
     }
     Save(p);
-    if (mode == "weapon") weaponforge(p, true);
-    if (mode == "armor") armorforge(p, true);
+    if(mode=="weapon") weaponforge(p, true);
+    if(mode=="armor") armorforge(p, true);
 }
 
-void weaponforge(Player* p, bool visit)
+void weaponforge(Player *p, bool visit)
 {
     int key;
     int chance;
     system("cls");
-    if (!visit)
+    if(!visit)
     {
-        Log[t] = "ë‹¹ì‹ ì€ ë¬´ê¸°ê°•í™”ì†Œì— ë“¤ë €ë‹¤.";
+        Log[t] = "´ç½ÅÀº ¹«±â°­È­¼Ò¿¡ µé·¶´Ù.";
         t++;
     }
 
     showlog();
 
     // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
-    if (p->weaponlevel <= 4) chance = 100 - p->weaponlevel * 5;
-    else if (p->weaponlevel <= 6) chance = 70;
-    else if (p->weaponlevel <= 8) chance = 60;
-    else if (p->weaponlevel <= 11) chance = 50;
-    else if (p->weaponlevel <= 14) chance = 40;
-    else if (p->weaponlevel <= 16) chance = 30;
-    else if (p->weaponlevel == 17) chance = 20;
-    else if (p->weaponlevel == 18) chance = 10;
+    if(p->weaponlevel<=4) chance = 100 - p->weaponlevel*5;
+    else if(p->weaponlevel<=6) chance = 70;
+    else if(p->weaponlevel<=8) chance = 60;
+    else if(p->weaponlevel<=11) chance = 50;
+    else if(p->weaponlevel<=14) chance = 40;
+    else if(p->weaponlevel<=16) chance = 30;
+    else if(p->weaponlevel==17) chance = 20;
+    else if(p->weaponlevel==18) chance = 10;
     else chance = 5;
 
-    cout << "ë¬´ê¸° ê°•í™” (í˜„ì¬ : " << p->weaponlevel << ")" << " í™•ë¥  : " << chance << "  ë°ë¯¸ì§€:" << p->damage << "\n\n";
+    cout << "¹«±â °­È­ (ÇöÀç : " << p->weaponlevel << ")" << " È®·ü : " << chance << "  µ¥¹ÌÁö:" << p->damage <<"\n\n";
 
-    cout << "ê°•í™”ë¥¼ ì›í•œë‹¤ë©´ 'o' í‚¤ë¥¼ ëˆ„ë¥´ì„¸ìš”.   í•„ìš” ê³¨ë“œ : " << p->weaponlevel * 1000 << "\n\n";
-    cout << "ë³´í˜¸ê°•í™”(+15 ì´í•˜)ë¥¼ ì›í•œë‹¤ë©´ 'p' í‚¤ë¥¼ ëˆ„ë¥´ì„¸ìš”.   í•„ìš” ê³¨ë“œ : " << p->weaponlevel * 10000 << "\n\n";
-    cout << "ê°•í™”ë¥¼ í•˜ê³  ì‹¶ì§€ ì•Šë‹¤ë©´ 'Esc' í‚¤ë¥¼ ëˆ„ë¥´ì„¸ìš”.\n\n";
-    cout << "ë³´ìœ  ê³¨ë“œ : " << p->gold << "\n\n";
+    cout << "°­È­¸¦ ¿øÇÑ´Ù¸é 'o' Å°¸¦ ´©¸£¼¼¿ä.   ÇÊ¿ä °ñµå : " << p->weaponlevel*1000 << "\n\n";
+    cout << "º¸È£°­È­(+15 ÀÌÇÏ)¸¦ ¿øÇÑ´Ù¸é 'p' Å°¸¦ ´©¸£¼¼¿ä.   ÇÊ¿ä °ñµå : " << p->weaponlevel*10000 << "\n\n";
+    cout << "°­È­¸¦ ÇÏ°í ½ÍÁö ¾Ê´Ù¸é 'Esc' Å°¸¦ ´©¸£¼¼¿ä.\n\n";
+    cout << "º¸À¯ °ñµå : " << p->gold << "\n\n";
 
-    key = getch();
-    if (key == 224) // ë°©í–¥í‚¤ë¡œ ì¢…ë£Œ ë°©ì§€
+    key=getch();
+    if(key==224) // ¹æÇâÅ°·Î Á¾·á ¹æÁö
     {
         getch();
         weaponforge(p, true);
     }
-    else if (key == 'o' || key == 'O') Forge(p, 0, chance, "weapon", p->weaponlevel * 1000);
-    else if (key == 'p' || key == 'P') Forge(p, 1, chance, "weapon", p->weaponlevel * 10000);
-    else if (key == 84 || key == 116) showfulllog(); // k
-    else if (key == 27) return;
+    else if(key=='o' || key=='O') Forge(p, 0, chance, "weapon", p->weaponlevel*1000);
+    else if(key=='p' || key=='P') Forge(p, 1, chance, "weapon", p->weaponlevel*10000);
+    else if(key==84 || key==116) showfulllog(); // k
+    else if(key==27) return;
     else weaponforge(p, true);
 
 }
 
-void armorforge(Player* p, bool visit)
+void armorforge(Player *p, bool visit)
 {
     int key;
     int chance;
     system("cls");
 
-    if (!visit)
+    if(!visit)
     {
-        Log[t] = "ë‹¹ì‹ ì€ ë°©ì–´êµ¬ê°•í™”ì†Œì— ë“¤ë €ë‹¤.";
+        Log[t] = "´ç½ÅÀº ¹æ¾î±¸°­È­¼Ò¿¡ µé·¶´Ù.";
         t++;
     }
 
     showlog();
 
     // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
-    if (p->armorlevel <= 4) chance = 100 - p->armorlevel * 5;
-    else if (p->armorlevel <= 6) chance = 70;
-    else if (p->armorlevel <= 8) chance = 60;
-    else if (p->armorlevel <= 11) chance = 50;
-    else if (p->armorlevel <= 14) chance = 40;
-    else if (p->armorlevel <= 16) chance = 30;
-    else if (p->armorlevel == 17) chance = 20;
-    else if (p->armorlevel == 18) chance = 10;
+    if(p->armorlevel<=4) chance = 100 - p->armorlevel*5;
+    else if(p->armorlevel<=6) chance = 70;
+    else if(p->armorlevel<=8) chance = 60;
+    else if(p->armorlevel<=11) chance = 50;
+    else if(p->armorlevel<=14) chance = 40;
+    else if(p->armorlevel<=16) chance = 30;
+    else if(p->armorlevel==17) chance = 20;
+    else if(p->armorlevel==18) chance = 10;
     else chance = 5;
 
-    cout << "ë°©ì–´êµ¬ ê°•í™” (í˜„ì¬ : " << p->armorlevel << ")" << " í™•ë¥  : " << chance << "  ë°©ì–´ë ¥:" << p->defence << "  ìµœëŒ€ ì²´ë ¥:" << p->maxhp << "\n\n";
+    cout << "¹æ¾î±¸ °­È­ (ÇöÀç : " << p->armorlevel << ")" << " È®·ü : " << chance << "  ¹æ¾î·Â:" << p->defence << "  ÃÖ´ë Ã¼·Â:" << p->maxhp << "\n\n";
 
-    cout << "ê°•í™”ë¥¼ ì›í•œë‹¤ë©´ 'o' í‚¤ë¥¼ ëˆ„ë¥´ì„¸ìš”.   í•„ìš” ê³¨ë“œ : " << p->armorlevel * 2000 << "\n\n";
-    cout << "ë³´í˜¸ê°•í™”(+10 ì´í•˜)ë¥¼ ì›í•œë‹¤ë©´ 'p' í‚¤ë¥¼ ëˆ„ë¥´ì„¸ìš”.   í•„ìš” ê³¨ë“œ : " << p->armorlevel * 20000 << "\n\n";
-    cout << "ê°•í™”ë¥¼ í•˜ê³  ì‹¶ì§€ ì•Šë‹¤ë©´ 'Esc' í‚¤ë¥¼ ëˆ„ë¥´ì„¸ìš”.\n\n";
-    cout << "ë³´ìœ  ê³¨ë“œ : " << p->gold << "\n\n";
+    cout << "°­È­¸¦ ¿øÇÑ´Ù¸é 'o' Å°¸¦ ´©¸£¼¼¿ä.   ÇÊ¿ä °ñµå : " << p->armorlevel*2000 << "\n\n";
+    cout << "º¸È£°­È­(+10 ÀÌÇÏ)¸¦ ¿øÇÑ´Ù¸é 'p' Å°¸¦ ´©¸£¼¼¿ä.   ÇÊ¿ä °ñµå : " << p->armorlevel*20000 << "\n\n";
+    cout << "°­È­¸¦ ÇÏ°í ½ÍÁö ¾Ê´Ù¸é 'Esc' Å°¸¦ ´©¸£¼¼¿ä.\n\n";
+    cout << "º¸À¯ °ñµå : " << p->gold << "\n\n";
 
-    key = getch();
-    if (key == 224) // ë°©í–¥í‚¤ë¡œ ì¢…ë£Œ ë°©ì§€
+    key=getch();
+    if(key==224) // ¹æÇâÅ°·Î Á¾·á ¹æÁö
     {
         getch();
         armorforge(p, true);
     }
-    else if (key == 'o' || key == 'O') Forge(p, 0, chance, "armor", p->armorlevel * 2000);
-    else if (key == 'p' || key == 'P') Forge(p, 1, chance, "armor", p->armorlevel * 20000);
-    else if (key == 84 || key == 116) showfulllog(); // k
-    else if (key == 27) return;
+    else if(key=='o' || key=='O') Forge(p, 0, chance, "armor", p->armorlevel*2000);
+    else if(key=='p' || key=='P') Forge(p, 1, chance, "armor", p->armorlevel*20000);
+    else if(key==84 || key==116) showfulllog(); // k
+    else if(key==27) return;
     else armorforge(p, true);
 }
 
@@ -2124,8 +2121,8 @@ int main()
     srand(GetTickCount());
     Player p;
     int restart = Login(&p);
-    if (restart) return 0;
+    if(restart) return 0;
     Load(&p);
-    Log[0] = "#Log Start"; t++;
+    Log[0]="#Log Start"; t++;
     home(&p);
 }
