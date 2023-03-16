@@ -671,6 +671,39 @@ class item
                 return true;
             }
         }
+        void itemdescription(Player *p, int num)
+        {
+            system("cls");
+            cout << "아이템 설명\n\n";
+            cout << "ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ\n\n";
+
+            cout << "아이템 이름 : " << get<0>(itemlist[num]) << " 보유 개수 : " << get<0>(p->playeritemlist[num]) << "\n\n";
+            if(num==1)
+            {
+                cout << "작은 포션입니다. 사용시 체력을 50 회복합니다.";
+            }
+            if(num==2)
+            {
+                cout << "일반 크기의 포션입니다. 사용시 체력을 300 회복합니다.";
+            }
+            if(num==3)
+            {
+                cout << "큰 크기의 포션입니다. 사용시 체력을 1000 회복합니다.";
+            }
+            if(num==4)
+            {
+                cout << "퍼스트블러드를 배울수 있는 스킬북입니다. 구매 즉시 퍼스트블러드를 습득합니다.\n";
+                cout << "(판매 불가, 최대 보유 수량: 1개)";
+            }
+            while(1)
+            {
+                if(kbhit())
+                {
+                    int key=getch();
+                    if(key==27) break;//esc
+                }
+            }
+        }
 };
 
 bool Login(Player *p); // 첫 로그인 시 실행되는 함수
@@ -1311,6 +1344,7 @@ void skillset(Player *p)
 
 void shop(Player *p)
 {
+    item item;
     system("cls");
     bool command=false;
 
@@ -1382,6 +1416,10 @@ void shop(Player *p)
                     t++;
                     Save(p);
                 }
+            }
+            if(key==47 || key==63)
+            {
+                item.itemdescription(p, point);
             }
             if(key==27) //esc
             {
@@ -1871,6 +1909,11 @@ bool selectitem(Player *p)
                     point = 3;
                     Save(p);
                     return used;
+                }
+                if(key==47 || key==63)
+                {
+                    item.itemdescription(p,
+                                         point);
                 }
                 if(key==27) //esc
                 {
