@@ -869,7 +869,7 @@ bool Login(Player* p)
                         key = getch();
                         if (key == 75 && point > 1) point--; // 왼쪽
                         if (key == 77 && point < 2) point++; // 오른쪽
-                    }   
+                    }
                     if (key == 13) // enter키
                     {
                         if (point == 1)
