@@ -792,7 +792,64 @@ bool Login(Player *p)
         p->skill[4]=0;
         return false;
     }
-    
+    else
+    {
+        for(int i=1; i<=2; i++)
+        {
+            if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+            else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            if(i==1) cout << "이어하기";
+            if(i==2) cout << "새로하기";
+            cout << "   ";
+        }
+        // 로고 및 버튼 선택 (이어하기) / (새로하기)
+        bool command = false;
+        int key;
+        point = 1;
+        while(!command)
+        {
+            if(kbhit())
+            {
+                key=getch();
+                {
+                    if(key==224) // 방향키
+                    {
+                        key=getch();
+                        if(key==75 && point>1) point--; // 왼쪽
+                        if(key==77 && point<2) point++; // 오른쪽
+                    }
+                    if(key==13) // enter키
+                    {
+                        if(point==1)
+                        {
+                            command = true;
+                            return false;
+                        }
+                        if(point==2)
+                        {
+                            fp = fopen("./Save/playerinfom.txt", "w");
+                            fprintf(fp, "register:%d\n", 0);
+                            fclose(fp);
+                            system("cls");
+                            cout << "초기화가 완료되었습니다. 다시 실행해 주세요.";
+                            return true;
+                        }
+                    }
+                    system("cls");
+                }
+
+                for(int i=1; i<=4; i++)
+                {
+                    if(i==point) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 6);
+                    else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+                    if(i==1) cout << "이어하기";
+                    if(i==2) cout << "새로하기";
+                    cout << "   ";
+                }
+            }
+        }
+
+    }
 }
 
 void Save(Player *p)
