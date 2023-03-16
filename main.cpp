@@ -741,7 +741,7 @@ void death(Player* p) {
     Save(p);
     system("cls");
     cout << p->name << "님이 사망하여 골드를 모두 잃었습니다." << endl;
-    cout << "집으로 귀환하시겠습니까? ( 귀환하려면 스페이스 바 키를 누르세요";
+    cout << "집으로 귀환하시겠습니까? ( 귀환하려면 스페이스 바 키를 누르세요 )";
     while (1)
     {
         if (kbhit())

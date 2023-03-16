@@ -68,23 +68,23 @@ C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1399,19): warning C4996: 'getch': 
 C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1403,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
 C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1461,16): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1477,16): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1553,92): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1592,43): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1616,80): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1639,92): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1697,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1699,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1703,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1817,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1819,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1823,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1919,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1921,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1924,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2064,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2067,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2110,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2113,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1552,92): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1591,43): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1615,80): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1638,92): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1696,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1698,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1702,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1816,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1818,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1822,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1918,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1920,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1923,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2063,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2066,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2109,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(2112,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
 C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(905): warning C4715: 'Login': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1952): warning C4715: 'selectitem': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\user\Desktop\Code\TRPG\TRPG\main.cpp(1951): warning C4715: 'selectitem': 모든 제어 경로에서 값을 반환하지는 않습니다.
   TRPG.vcxproj -> C:\Users\user\Desktop\Code\TRPG\TRPG\x64\Debug\TRPG.exe
