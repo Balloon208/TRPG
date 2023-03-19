@@ -1,5 +1,5 @@
-register:0
-adsf
+register:2
+hjk
 maxhp:100
 hp:100
 maxmp:50
@@ -9,7 +9,7 @@ defence:5
 speed:5
 gold:0
 level:1
-exp:28
+exp:0
 LVUPexp:50
 weaponlevel:0
 armorlevel:0

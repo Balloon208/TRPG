@@ -1086,6 +1086,7 @@ void showplayerstatus(Player* p, string slot1, string slot2, string slot3, strin
 void fulllog(int current, int finish)
 {
     system("cls");
+    cout << "ESC 를 눌러 돌아가세요. 방향키 위 아래로 이동 가능)" << "\n\n";
     for (int i = current; i <= finish; i++)
     {
         cout << "[" << i << "]" << " " << Log[i] << '\n';
@@ -1185,7 +1186,7 @@ void homeselectmenu(Player* p)
                     shop(p);
                 }
             }
-            if (key == 84 || key == 116) showfulllog(); // k
+            if (key == 84 || key == 116) showfulllog(); // t키
             system("cls");
             homemenu(p);
         }
@@ -1247,7 +1248,7 @@ void movemenu(Player* p)
                     point = 1;
                     break;
                 }
-                if (key == 84 || key == 116) showfulllog(); // k
+                if (key == 84 || key == 116) showfulllog(); // t키
             }
             movemenu(p);
         }
@@ -1352,7 +1353,7 @@ void skillset(Player* p)
                     point = 1;
                     break;
                 }
-                if (key == 84 || key == 116) showfulllog(); // k
+                if (key == 84 || key == 116) showfulllog(); // t키
             }
             skillset(p);
         }
@@ -1445,7 +1446,7 @@ void shop(Player* p)
                 point = 1;
                 break;
             }
-            if (key == 84 || key == 116) showfulllog(); // k
+            if (key == 84 || key == 116) showfulllog(); // t키
             shop(p);
         }
     }
@@ -1717,6 +1718,7 @@ void readymenu(Player* p)
                         point = 1;
                     }
                 }
+                if (key == 84 || key == 116) showfulllog();
                 system("cls");
                 fight(p);
             }
@@ -1874,7 +1876,7 @@ void fightselectmenu(mob* m, Player* p)
                 skillmode = !skillmode;
                 point = 2;
             }
-            if (key == 84 || key == 116) showfulllog(); //k
+            if (key == 84 || key == 116) showfulllog(); // t키
             system("cls");
             fightmenu(m, p, skillmode);
         }
@@ -2068,7 +2070,11 @@ void weaponforge(Player* p, bool visit)
     }
     else if (key == 'o' || key == 'O') Forge(p, 0, chance, "weapon", p->weaponlevel * 1000);
     else if (key == 'p' || key == 'P') Forge(p, 1, chance, "weapon", p->weaponlevel * 10000);
-    else if (key == 84 || key == 116) showfulllog(); // k
+    else if (key == 84 || key == 116)
+    {
+        showfulllog(); // t키
+        weaponforge(p, true);
+    }
     else if (key == 27) return;
     else weaponforge(p, true);
 
@@ -2114,7 +2120,11 @@ void armorforge(Player* p, bool visit)
     }
     else if (key == 'o' || key == 'O') Forge(p, 0, chance, "armor", p->armorlevel * 2000);
     else if (key == 'p' || key == 'P') Forge(p, 1, chance, "armor", p->armorlevel * 20000);
-    else if (key == 84 || key == 116) showfulllog(); // k
+    else if (key == 84 || key == 116)
+    {
+        showfulllog(); // t키
+        armorforge(p, true);
+    }
     else if (key == 27) return;
     else armorforge(p, true);
 }
@@ -2127,5 +2137,7 @@ int main()
     if (restart) return 0;
     Load(&p);
     Log[0] = "#Log Start"; t++;
+    Log[1] = "[팁]T 키를 눌러 전체 로그를 확인할 수 있습니다."; t++;
+    Log[2] = "[팁]? 키를 눌러 몬스터, 아이템, 스킬들의 세부 정보를 확인할 수 있습니다."; t++;
     home(&p);
 }
