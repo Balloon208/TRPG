@@ -1,0 +1,43 @@
+#include <iostream>
+#include <algorithm>
+#include <stdlib.h>
+#include <string>
+#include <cmath>
+#include <windows.h>
+#include <vector>
+#include <conio.h>
+#include <tuple>
+
+using namespace std;
+
+double mobhppercent, playerhppercent, playermppercent, playerexppercent;
+
+int forgeadd[21] = { 0,1,2,3,4,5,5,5,5,5,5,7,7,8,8,8,10,15,20,25,30 };
+int point = 1;
+int where = 0;
+int t = 0; // 턴이 지난 횟수
+int totalskill = 7;
+int totalitem = 3;
+int totalskillbooks = 1;
+int usingskill;
+bool killtrigger = false;
+int stage = 9;
+
+string worldmap[10] = {
+"-",
+"전직소",
+"무기 강화소",
+"방어구 강화소",
+"시작의 숲 (권장 레벨 LV1 이상)",
+"케이브 동굴 (권장 레벨 LV7 이상)",
+"수상한 공터 (권장 레벨 LV12 이상)",
+"저주받은 땅 (권장 레벨 LV20 이상)",
+"-",
+"-",
+};
+
+tuple<string, int, int> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
+tuple<string, int, int, int> itemlist[500]; // 아이템 이름, 아이템 종류 ,구매가, 판매가
+
+string Log[100000];
+
