@@ -380,7 +380,7 @@ void showplayerstatus(Player* p, string slot1, string slot2, string slot3, strin
 void fulllog(int current, int finish)
 {
     system("cls");
-    cout << "ESC 를 눌러 돌아가세요. 방향키 위 아래로 이동 가능)" << "\n\n";
+    cout << "ESC 를 눌러 돌아가세요. (방향키 위 아래로 이동 가능)" << "\n\n";
     for (int i = current; i <= finish; i++)
     {
         cout << "[" << i << "]" << " " << Log[i] << '\n';
