@@ -1,4 +1,4 @@
-register:2
+register:0
 asdf
 maxhp:100
 hp:81
