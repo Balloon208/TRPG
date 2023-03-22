@@ -362,14 +362,14 @@ public:
     // 저주받은 땅
     void zombie()
     {
-        this->name = "(LV15) 좀비";
+        this->name = "(LV17) 좀비";
         this->mobcode = "G1";
         this->maxhp = 1000;
         this->hp = maxhp;
         this->damage = 80;
         this->defence = 30;
         this->speed = 40;
-        this->level = 15;
+        this->level = 17;
         this->exp = 680;
         this->gold = 2500;
         this->desc = "일반적인 좀비입니다. 다행히도, 물려도 감염은 되지 않습니다.";
@@ -377,14 +377,14 @@ public:
     }
     void skeleton()
     {
-        this->name = "(LV17) 스켈레톤";
+        this->name = "(LV18) 스켈레톤";
         this->mobcode = "G2";
         this->maxhp = 777;
         this->hp = maxhp;
         this->damage = 150;
         this->defence = 20;
         this->speed = 50;
-        this->level = 17;
+        this->level = 18;
         this->exp = 980;
         this->gold = 2800;
         this->desc = "뼈로 이루어진 스켈레톤 입니다.\n모 게임과는 다르게 근접으로 공격합니다.\n";
