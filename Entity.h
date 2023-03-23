@@ -408,14 +408,14 @@ public:
     }
     void darkknight()
     {
-        this->name = "(LV20) 칠흑의 기사";
+        this->name = "(LV21) 칠흑의 기사";
         this->mobcode = "G4";
         this->maxhp = 1500;
         this->hp = maxhp;
         this->damage = 130;
         this->defence = 50;
         this->speed = 35;
-        this->level = 20;
+        this->level = 21;
         this->exp = 1250;
         this->gold = 3830;
         this->desc = "악의에 가득찬 기운이 그에게서 느껴집니다.\n오직 당신만을 죽이려는 눈빛을 보입니다.";
