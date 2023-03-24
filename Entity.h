@@ -123,7 +123,7 @@ public:
         if (skillnum == 6)
         {
             cout << "거구의 오크의 힘을 마나로 구현하여\n적에게 매우 강력한 데미지를 입힙니다.\n";
-            cout << "본인보다 약한 생명체에게 큰 데미지를 입니다.\n\n획득처 : [BOSS](LV15) 오크 처치시 일정 확률로 획득";
+            cout << "본인보다 약한 생명체에게 큰 데미지를 입힙니다.\n\n획득처 : [BOSS](LV15) 오크 처치시 일정 확률로 획득";
         }
         if (skillnum == 7)
         {
@@ -521,11 +521,10 @@ public:
             if (getnum < 5000)
             {
                 amount = 1;
-                Log[t] = this->name + " 를 죽여" + get<0>(itemlist[3]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
+                Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[3]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;
                 p->playeritemlist[3].first += amount;
             }
         }
-
         if (mobcode == "FB")
         {
             if (getnum < 500 && get<2>(skills[5]) == 0)

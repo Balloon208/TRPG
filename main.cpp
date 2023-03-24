@@ -5,6 +5,7 @@ void Save(Player* p); // 게임 진행 상황을 저장하는 함수
 void Load(Player* p); // 이전에 진행한 게임을 불러오는 함수
 void showlog(); // 로그를 보여주는 함수
 void showplayerstatus(Player* p, string slot1, string slot2, string slot3, string slot4); // 플레이어 스테이터스
+void showmobstatus(mob* m);
 void fulllog(int current, int finish); // 풀로그 보여주는 함수
 void showfulllog(); // 풀로그 인터페이스
 void home(Player* p); // 마을
@@ -13,14 +14,14 @@ void homeselectmenu(Player* p); // 마을에서 선택
 void movemenu(Player* p); // 이동할 곳 선택
 void skillset(Player* p); // 스킬 장착 및 해제
 void shop(Player* p); // 상점
-void pattack(Player* p, mob* m); // Player 공격
+void pattack(Player* p, mob* m, bool skillmode); // Player 공격
 void mattack(Player* p, mob* m); // Mob 공격
 void attack(Player* p, mob* m); // 전투 진행 함수
 void skillattack(Player* p, mob* m, int skillnum); // 스킬 공격(항상 선공)
-void fight(Player* p); // 탐험 인터페이스
 void readymenu(Player* p); // 탐험에서의 선택
 void summonmob(Player* p); // 몹 소환 및 확률
 void fightmenu(mob* m, Player* p, bool skillmode); // 전투 인터페이스
+void fight(Player* p); // 탐험 인터페이스
 void fightselectmenu(mob* m, Player* p); // 전투 중 선택
 bool selectitem(Player* p); // 아이템 선택
 void showitem(Player* p); // 아이템 보여주기
@@ -377,6 +378,23 @@ void showplayerstatus(Player* p, string slot1, string slot2, string slot3, strin
     cout << "]";
 }
 
+void showmobstatus(mob* m)
+{
+    mobhppercent = (double)m->hp / m->maxhp * 100;
+    for (int i = 0; i < 10; i++) //mobhpbar
+    {
+        if (i * 10 < mobhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
+        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+        cout << "■";
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+
+    cout << '\n';
+    cout << "(적)" << m->name << '\n';
+    cout << "HP : " << m->hp << " / " << m->maxhp << '\n';
+    cout << '\n';
+}
+
 void fulllog(int current, int finish)
 {
     system("cls");
@@ -493,7 +511,6 @@ void movemenu(Player* p)
     bool command = false;
 
     system("cls");
-
     showlog();
 
     cout << "이동할 곳을 선택해 주세요.\n\n";
@@ -515,20 +532,26 @@ void movemenu(Player* p)
                 if (key == 224) // 방향키
                 {
                     key = getch();
-                    if (key == 72 && point > 1) point--; // 위쪽
-                    if (key == 80 && point < stage - 1) point++; // 아래쪽
+                    if (key == 72 && point > 1)// 위쪽
+                    {
+                        point--;
+                    }
+                    if (key == 80 && point < stage - 1)// 아래쪽
+                    {
+                        point++;
+                    }
                 }
                 if (key == 13) // enter키
                 {
                     command = true;
                     where = point;
                     point = 1;
-                    if (where == 2)
+                    if (where == 1)
                     {
                         weaponforge(p, false);
                         break;
                     }
-                    if (where == 3)
+                    if (where == 2)
                     {
                         armorforge(p, false);
                         break;
@@ -775,25 +798,25 @@ void mattack(Player* p, mob* m)
     t++;
     if (p->hp <= 0)
     {
-        return;
+        death(p);
     }
 }
 
-void attack(Player* p, mob* m)
+void attack(Player* p, mob* m, bool skillmode)
 {
     if (p->speed >= m->speed)
     {
         pattack(p, m);
         if (killtrigger == true) return;
+        fightmenu(m, p, skillmode);
+        Delay(100);
         mattack(p, m);
-        if (p->hp < 0) death(p);
     }
     else
     {
         mattack(p, m);
-        if (p->hp < 0) {
-            death(p);
-        }
+        fightmenu(m, p, skillmode);
+        Delay(100);
         pattack(p, m);
     }
     int mphealing = min(p->maxmp, p->mp + (p->maxmp / 20)) - p->mp; // mp 5% 회복
@@ -816,6 +839,8 @@ void skillattack(Player* p, mob* m, int skillnum)
             Log[t] = get<0>(skills[skillnum]) + "를 사용하여 공격을 막아 피해량의 일부를 마나로 변환합니다.";
             p->defence *= 2;
             t++;
+            fightmenu(m, p, true);
+            Delay(100);
             mattack(p, m);
             p->defence /= 2;
 
@@ -830,6 +855,8 @@ void skillattack(Player* p, mob* m, int skillnum)
             Log[t] = get<0>(skills[skillnum]) + "를 사용하였으나 막는 것을 실패하였다!";
             t++;
             p->defence /= 2;
+            fightmenu(m, p, true);
+            Delay(100);
             mattack(p, m);
             p->defence *= 2;
             int mphealing = min(p->maxmp, p->mp + (p->maxmp / 20)) - p->mp; // mp 5% 회복
@@ -854,6 +881,8 @@ void skillattack(Player* p, mob* m, int skillnum)
                     return;
                 }
             }
+            fightmenu(m, p, true);
+            Delay(100);
             mattack(p, m);
         }
         else
@@ -892,6 +921,8 @@ void skillattack(Player* p, mob* m, int skillnum)
                 m->Mobdeath(p);
                 return;
             }
+            fightmenu(m, p, true);
+            Delay(100);
             mattack(p, m);
         }
         else
@@ -917,6 +948,8 @@ void skillattack(Player* p, mob* m, int skillnum)
                     return;
                 }
             }
+            fightmenu(m, p, true);
+            Delay(100);
             mattack(p, m);
         }
         else
@@ -939,6 +972,8 @@ void skillattack(Player* p, mob* m, int skillnum)
                 m->Mobdeath(p);
                 return;
             }
+            fightmenu(m, p, true);
+            Delay(100);
             mattack(p, m);
         }
         else
@@ -961,6 +996,8 @@ void skillattack(Player* p, mob* m, int skillnum)
                 m->Mobdeath(p);
                 return;
             }
+            fightmenu(m, p, true);
+            Delay(100);
             mattack(p, m);
         }
         else
@@ -1025,7 +1062,7 @@ void readymenu(Player* p)
 void summonmob(Player* p)
 {
     mob m;
-    if (where == 4)
+    if (where == 3)
     {
         int n = rand() % 100 + 1;
         if (n <= 40) m.MiniSlime();
@@ -1035,7 +1072,7 @@ void summonmob(Player* p)
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if (where == 5)
+    if (where == 4)
     {
         int n = rand() % 100 + 1;
         if (n <= 40) m.RockSlime();
@@ -1045,7 +1082,7 @@ void summonmob(Player* p)
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if (where == 6)
+    if (where == 5)
     {
         int n = rand() % 100 + 1;
         if (n <= 30) m.killerdog();
@@ -1056,7 +1093,7 @@ void summonmob(Player* p)
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
-    if (where == 7)
+    if (where == 6)
     {
         int n = rand() % 100 + 1;
         if (n <= 35) m.zombie();
@@ -1072,22 +1109,10 @@ void summonmob(Player* p)
 void fightmenu(mob* m, Player* p, bool skillmode)
 {
     system("cls");
-    mobhppercent = (double)m->hp / m->maxhp * 100;
 
     showlog();
 
-    for (int i = 0; i < 10; i++) //mobhpbar
-    {
-        if (i * 10 < mobhppercent) SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 12);
-        else SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-        cout << "■";
-    }
-    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-
-    cout << '\n';
-    cout << "(적)" << m->name << '\n';
-    cout << "HP : " << m->hp << " / " << m->maxhp << '\n';
-    cout << '\n';
+    showmobstatus(m);
 
     if (skillmode == false) showplayerstatus(p, "공격", "스킬", "아이템", "도망");
     else
@@ -1130,7 +1155,7 @@ void fightselectmenu(mob* m, Player* p)
                 {
                     if (point == 1)
                     {
-                        attack(p, m);
+                        attack(p, m, skillmode);
                         Save(p);
                     }
                     if (point == 2)
@@ -1219,7 +1244,6 @@ bool selectitem(Player* p)
                     key = getch();
                     if (key == 72 && point > 1) point--; // 위쪽
                     if (key == 80 && point < totalitem) point++; // 아래쪽
-
                 }
                 if (key == 13) // enter키
                 {
@@ -1231,8 +1255,7 @@ bool selectitem(Player* p)
                 }
                 if (key == 47 || key == 63)
                 {
-                    item.itemdescription(p,
-                        point);
+                    item.itemdescription(p,point);
                 }
                 if (key == 27) //esc
                 {
@@ -1348,7 +1371,7 @@ void weaponforge(Player* p, bool visit)
     else if (p->weaponlevel == 17) chance = 20;
     else if (p->weaponlevel == 18) chance = 10;
     else chance = 5;
-
+    
     cout << "무기 강화 (현재 : " << p->weaponlevel << ")" << " 확률 : " << chance << "  데미지:" << p->damage << "\n\n";
 
     cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << p->weaponlevel * 1000 << "\n\n";
@@ -1362,8 +1385,14 @@ void weaponforge(Player* p, bool visit)
         getch();
         weaponforge(p, true);
     }
-    else if (key == 'o' || key == 'O') Forge(p, 0, chance, "weapon", p->weaponlevel * 1000);
-    else if (key == 'p' || key == 'P') Forge(p, 1, chance, "weapon", p->weaponlevel * 10000);
+    else if (key == 'o' || key == 'O')
+    {
+        Forge(p, 0, chance, "weapon", p->weaponlevel * 1000);
+    }
+    else if (key == 'p' || key == 'P')
+    {
+        Forge(p, 1, chance, "weapon", p->weaponlevel * 10000);
+    }
     else if (key == 84 || key == 116)
     {
         showfulllog(); // t키

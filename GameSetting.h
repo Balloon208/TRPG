@@ -25,7 +25,6 @@ int stage = 9;
 
 string worldmap[10] = {
 "-",
-"전직소",
 "무기 강화소",
 "방어구 강화소",
 "시작의 숲 (권장 레벨 LV1 이상)",
@@ -34,6 +33,7 @@ string worldmap[10] = {
 "저주받은 땅 (권장 레벨 LV20 이상)",
 "-",
 "-",
+"-"
 };
 
 tuple<string, int, int> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
@@ -41,3 +41,11 @@ tuple<string, int, int, int> itemlist[500]; // 아이템 이름, 아이템 종류 ,구매가,
 
 string Log[100000];
 
+void Delay(int num)
+{
+    Sleep(num);
+    if (kbhit())
+    {
+        while (kbhit()) getch();
+    }
+}
