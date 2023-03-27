@@ -127,8 +127,10 @@ public:
         }
         if (skillnum == 7)
         {
-            cout << "마력을 이용하여 적에게 체력 비례 데미지를 줍니다.\n";
-            cout << "상대방이 약해질수록 해당 스킬의 위력도 감소합니다.\n\n획득처 : 상점에서 구매";
+            cout << "마력을 이용하여 방어력을 무시하는 공격을 가합니다.\n";
+            cout << "적에게 체력 비례 데미지와 방어 무시 데미지를 줍니다.\n";
+            cout << "그러나 상대방이 약해질수록 해당 스킬의 최종 데미지도 감소합니다.\n";
+            cout << "(체력 비례 데미지 이후의 체력을 기준으로 방어 무시 데미지가 계산됩니다.)\n\n획득처 : 상점에서 구매";
         }
         while (1)
         {
@@ -267,7 +269,6 @@ public:
     void Golem()
     {
         this->name = "(LV13) 골렘";
-
         this->maxhp = 700;
         this->mobcode = "C4";
         this->hp = maxhp;
@@ -406,7 +407,7 @@ public:
         this->desc = "단단한 근육을 가진 좀비의 진화종입니다. 방어력이 매우 높습니다";
         Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
     }
-    void darkknight()
+    void blackknight()
     {
         this->name = "(LV21) 칠흑의 기사";
         this->mobcode = "G4";
@@ -416,7 +417,7 @@ public:
         this->defence = 50;
         this->speed = 35;
         this->level = 21;
-        this->exp = 1250;
+        this->exp = 1550;
         this->gold = 3830;
         this->desc = "악의에 가득찬 기운이 그에게서 느껴집니다.\n오직 당신만을 죽이려는 눈빛을 보입니다.";
         Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
@@ -431,12 +432,108 @@ public:
         this->defence = 999999;
         this->speed = 20;
         this->level = 35;
-        this->exp = 25000;
+        this->exp = 120000;
         this->gold = 75000;
         this->desc = "마왕 간부급의 악마인 '데모나이트' 입니다.\n";
         this->desc += "일반적인 방법으로는 공격이 통하지 않아 특별한 방법으로 처치해야 할 것 같습니다.";
         Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
     }
+
+    // 어둠의 미로
+    void devilwall()
+    {
+        this->name = "(LV15) 악마벽";
+        this->mobcode = "M1";
+        this->maxhp = 1000;
+        this->hp = maxhp;
+        this->damage = 100;
+        this->defence = 1;
+        this->speed = 1;
+        this->level = 15;
+        this->exp = 550;
+        this->gold = 2800;
+        this->desc = "방어력이 매우 높은 벽입니다.\n";
+        this->desc += "그렇게 체력은 높아 보이지 않습니다.";
+        Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
+    }
+    void imp1()
+    {
+        this->name = "(LV25) 하급 임프";
+        this->mobcode = "M2";
+        this->maxhp = 3500;
+        this->hp = maxhp;
+        this->damage = 1080;
+        this->defence = 20;
+        this->speed = 30;
+        this->level = 25;
+        this->exp = 4000;
+        this->gold = 6500;
+        this->desc = "하급 악마종입니다. 하급이지만, 무시할 수는 없어 보입니다.";
+        Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
+    }
+    void darkknight()
+    {
+        this->name = "(LV27) 다크 나이트";
+        this->mobcode = "M3";
+        this->maxhp = 4400;
+        this->hp = maxhp;
+        this->damage = 800;
+        this->defence = 40;
+        this->speed = 40;
+        this->level = 27;
+        this->exp = 3700;
+        this->gold = 6200;
+        this->desc = "칠흑의 기사의 상위 개체인 다크 나이트입니다.\n";
+        this->desc += "비교적으로 매우 강해져서 돌아왔습니다.";
+        Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
+    }
+    void darkshadower()
+    {
+        this->name = "(LV27) 칠흑의 암살자";
+        this->mobcode = "M4";
+        this->maxhp = 1200;
+        this->hp = maxhp;
+        this->damage = 5000;
+        this->defence = 20;
+        this->speed = 100;
+        this->level = 27;
+        this->exp = 2500;
+        this->gold = 8800;
+        this->desc = "암살자가 어둠의 힘을 받아들여 더욱 강력해졌습니다.\n";
+        this->desc += "그의 무지막지한 공격력은 무시할 수 없습니다.";
+        Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
+    }
+    void devilslime()
+    {
+        this->name = "(LV27) 데빌 슬라임";
+        this->mobcode = "M5";
+        this->maxhp = 4920;
+        this->hp = maxhp;
+        this->damage = 650;
+        this->defence = 33;
+        this->speed = 44;
+        this->level = 27;
+        this->exp = 4500;
+        this->gold = 7700;
+        this->desc = "과거 마을을 멸망시켰던 악마의 슬라임입니다.";
+        Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
+    }
+    void imp2()
+    {
+        this->name = "(LV28) 중급 임프";
+        this->mobcode = "M6";
+        this->maxhp = 5180;
+        this->hp = maxhp;
+        this->damage = 770;
+        this->defence = 40;
+        this->speed = 20;
+        this->level = 28;
+        this->exp = 5350;
+        this->gold = 8900;
+        this->desc = "중급 악마종입니다. 골고루 스텟이 분배되어 있어 상대하기 힘들어 보입니다.";
+        Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
+    }
+
 
     void Mobdeath(Player* p)
     {
@@ -518,7 +615,7 @@ public:
         if (mobcode == "G2" || mobcode == "G3" || mobcode == "G4") return;
         if (mobcode == "G1" && !penaltyflag)
         {
-            if (getnum < 5000)
+            if (getnum < 300)
             {
                 amount = 1;
                 Log[t] = this->name + " 를 죽여 " + get<0>(itemlist[3]) + "x" + to_string(amount) + " 를 획득하였습니다!"; t++;

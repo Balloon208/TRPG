@@ -987,7 +987,12 @@ void skillattack(Player* p, mob* m, int skillnum)
         if (get<1>(skills[skillnum]) <= p->mp)
         {
             p->mp -= get<1>(skills[skillnum]);
-            damage = m->hp / 8; // 남은 체력의 12.5%
+            damage = m->hp / 5 + m->maxhp / 20; // (남은 체력의 20% + 최대 체력의 5%)
+            Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
+            t++;
+
+            m->hp -= damage;
+            damage = round(double((rand() % (p->damage * 5) + p->damage * 3) * m->hp / m->maxhp)); // 데미지 3배~8배 (방어 관통)) * 남은 체력% /100
             Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp -= damage;
@@ -1099,8 +1104,20 @@ void summonmob(Player* p)
         if (n <= 35) m.zombie();
         else if (n <= 70) m.skeleton();
         else if (n <= 90) m.tankzombie();
-        else if (n <= 97) m.darkknight();
+        else if (n <= 97) m.blackknight();
         else if (n <= 100) m.demonite();
+        fightmenu(&m, p, false);
+        fightselectmenu(&m, p);
+    }
+    if (where == 7)
+    {
+        int n = rand() % 100 + 1;
+        if (n <= 5) m.devilwall();
+        else if (n <= 30) m.imp1();
+        else if (n <= 55) m.darkknight();
+        else if (n <= 70) m.darkshadower();
+        else if (n <= 90) m.devilslime();
+        else if (n <= 100) m.imp2();
         fightmenu(&m, p, false);
         fightselectmenu(&m, p);
     }
