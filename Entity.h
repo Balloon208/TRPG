@@ -63,8 +63,8 @@ public:
 
     void LVUP()
     {
-        this->maxhp += (10 + (level / 2) - 1);
-        this->maxmp += (5 + (level / 2) - 1);
+        this->maxhp *= 1.1;
+        this->maxmp *= 1.1;
         this->damage += (1 + int(level / 4));
         this->defence += (1 + int(level / 4));
         this->speed += 1;
@@ -74,7 +74,7 @@ public:
         this->exp -= this->LVUPexp;
         this->level++;
         this->LVUPexp *= 1.3;
-        Log[t] = "레벨이 상승 하였습니다!" + to_string(this->level - 1) + "->" + to_string(this->level); t++;
+        Log[t] = "레벨이 상승 하였습니다! (" + to_string(this->level - 1) + " -> " + to_string(this->level) + ")";  t++;
 
         if (this->level == 3 && get<2>(skills[2]) == 0)
         {
@@ -447,7 +447,7 @@ public:
         this->maxhp = 1000;
         this->hp = maxhp;
         this->damage = 100;
-        this->defence = 1;
+        this->defence = 1000;
         this->speed = 1;
         this->level = 15;
         this->exp = 550;
@@ -510,7 +510,7 @@ public:
         this->maxhp = 4920;
         this->hp = maxhp;
         this->damage = 650;
-        this->defence = 33;
+        this->defence = 23;
         this->speed = 44;
         this->level = 27;
         this->exp = 4500;
@@ -525,7 +525,7 @@ public:
         this->maxhp = 5180;
         this->hp = maxhp;
         this->damage = 770;
-        this->defence = 40;
+        this->defence = 35;
         this->speed = 20;
         this->level = 28;
         this->exp = 5350;

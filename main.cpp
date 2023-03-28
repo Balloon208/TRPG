@@ -45,6 +45,7 @@ void death(Player* p) {
             if (key == 32) break; //esc
         }
     }
+    point = 1;
     home(p);
 }
 
@@ -993,6 +994,7 @@ void skillattack(Player* p, mob* m, int skillnum)
 
             m->hp -= damage;
             damage = round(double((rand() % (p->damage * 5) + p->damage * 3) * m->hp / m->maxhp)); // 데미지 3배~8배 (방어 관통)) * 남은 체력% /100
+            if (damage < 0) damage = 0;
             Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp -= damage;
@@ -1310,18 +1312,22 @@ void Forge(Player* p, int protect, int chance, string mode, int upmoney) // stat
             Log[t] = "장비 강화에 성공 하였다! (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel + 1) + ")";
             t++;
             p->weaponlevel++;
-            p->damage += forgeadd[p->weaponlevel];
+            p->damage += weaponforgeadd[p->weaponlevel];
         }
         else
         {
             int down;
-            if (!protect) down = rand() % (p->weaponlevel / 4 <= 0 ? 1 : p->weaponlevel / 4 + 1);
-            else down = rand() % (p->weaponlevel / 6 <= 0 ? 1 : p->weaponlevel / 7 + 1);
+            if (!protect) down = rand() % (p->weaponlevel / 5 <= 0 ? 1 : p->weaponlevel / 5 + 1);
+            else down = 0;
+
+            if (p->weaponlevel >= 5 && p->weaponlevel < 10 && p->weaponlevel - down < 5) down = p->weaponlevel - 5;
+            else if (p->weaponlevel >= 10 && p->weaponlevel < 15 && p->weaponlevel - down < 10) down = p->weaponlevel - 10;
+            else if (p->weaponlevel >= 15 && p->weaponlevel < 20 && p->weaponlevel - down < 15) down = p->weaponlevel - 15;
             Log[t] = "장비 강화에 실패하였다... (" + to_string(p->weaponlevel) + " -> " + to_string(p->weaponlevel - down) + ")";
             t++;
             for (int i = p->weaponlevel; i > p->weaponlevel - down; i--)
             {
-                p->damage -= forgeadd[i];
+                p->damage -= weaponforgeadd[i];
             }
             p->weaponlevel -= down;
         }
@@ -1340,22 +1346,27 @@ void Forge(Player* p, int protect, int chance, string mode, int upmoney) // stat
             Log[t] = "방어구 강화에 성공 하였다! (" + to_string(p->armorlevel) + " -> " + to_string(p->armorlevel + 1) + ")";
             t++;
             p->armorlevel++;
-            p->defence += forgeadd[p->armorlevel];
-            p->maxhp += forgeadd[p->armorlevel] * 10;
-            p->hp += forgeadd[p->armorlevel] * 10;
+            p->defence += armorforgeadd[p->armorlevel];
+            p->maxhp += armorforgeadd[p->armorlevel] * 10;
+            p->hp += armorforgeadd[p->armorlevel] * 10;
         }
         else
         {
             int down;
-            if (!protect) down = rand() % (p->armorlevel / 3 <= 0 ? 1 : p->armorlevel / 3 + 1);
-            else down = rand() % (p->armorlevel / 6 <= 0 ? 1 : p->armorlevel / 6 + 1);
+            if (!protect) down = rand() % (p->armorlevel / 5 <= 0 ? 1 : p->armorlevel / 5 + 1);
+            else down = 0;
+
+            if (p->armorlevel >= 5 && p->armorlevel < 10 && p->armorlevel - down < 5) down = p->armorlevel - 5;
+            else if (p->armorlevel >= 10 && p->armorlevel < 15 && p->armorlevel - down < 10) down = p->armorlevel - 10;
+            else if (p->armorlevel >= 15 && p->armorlevel < 20 && p->armorlevel - down < 15) down = p->armorlevel - 15;
+
             Log[t] = "방어구 강화에 실패하였다... (" + to_string(p->armorlevel) + " -> " + to_string(p->armorlevel - down) + ")";
             t++;
             for (int i = p->armorlevel; i > p->armorlevel - down; i--)
             {
-                p->defence -= forgeadd[i];
-                p->maxhp -= forgeadd[p->armorlevel] * 10;
-                p->hp -= forgeadd[p->armorlevel] * 10;
+                p->defence -= armorforgeadd[i];
+                p->maxhp -= armorforgeadd[p->armorlevel] * 10;
+                p->hp -= armorforgeadd[p->armorlevel] * 10;
             }
             p->armorlevel -= down;
         }
@@ -1378,21 +1389,26 @@ void weaponforge(Player* p, bool visit)
 
     showlog();
 
-    // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
-    if (p->weaponlevel <= 4) chance = 100 - p->weaponlevel * 5;
-    else if (p->weaponlevel <= 6) chance = 70;
-    else if (p->weaponlevel <= 8) chance = 60;
-    else if (p->weaponlevel <= 11) chance = 50;
-    else if (p->weaponlevel <= 14) chance = 40;
-    else if (p->weaponlevel <= 16) chance = 30;
-    else if (p->weaponlevel == 17) chance = 20;
-    else if (p->weaponlevel == 18) chance = 10;
-    else chance = 5;
+    // 100 95 90 85 80 70 70 70 60 60 50 50 40 40 40 30 30 20 20 10
+    if (p->weaponlevel < 5) chance = 100 - p->weaponlevel * 5;
+    else if (p->weaponlevel < 8) chance = 70;
+    else if (p->weaponlevel < 10) chance = 60;
+    else if (p->weaponlevel < 12) chance = 50;
+    else if (p->weaponlevel < 15) chance = 40;
+    else if (p->weaponlevel < 17) chance = 30;
+    else if (p->weaponlevel < 19) chance = 20;
+    else chance = 10;
     
+    int needgold=0;
+    if (p->weaponlevel < 5) needgold = p->weaponlevel * 1000;
+    else if (p->weaponlevel < 10) needgold = p->weaponlevel * 2000;
+    else if (p->weaponlevel < 15) needgold = p->weaponlevel * 10000;
+    else if (p->weaponlevel < 18) needgold = p->weaponlevel * 20000;
+    else if (p->weaponlevel < 20) needgold = p->weaponlevel * 100000;
     cout << "무기 강화 (현재 : " << p->weaponlevel << ")" << " 확률 : " << chance << "  데미지:" << p->damage << "\n\n";
 
-    cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << p->weaponlevel * 1000 << "\n\n";
-    cout << "보호강화(+15 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << p->weaponlevel * 10000 << "\n\n";
+    cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << needgold << "\n\n";
+    cout << "보호강화(+15 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << needgold * 5 << "\n\n";
     cout << "강화를 하고 싶지 않다면 'Esc' 키를 누르세요.\n\n";
     cout << "보유 골드 : " << p->gold << "\n\n";
 
@@ -1404,11 +1420,11 @@ void weaponforge(Player* p, bool visit)
     }
     else if (key == 'o' || key == 'O')
     {
-        Forge(p, 0, chance, "weapon", p->weaponlevel * 1000);
+        Forge(p, 0, chance, "weapon", needgold);
     }
     else if (key == 'p' || key == 'P')
     {
-        Forge(p, 1, chance, "weapon", p->weaponlevel * 10000);
+        Forge(p, 1, chance, "weapon", needgold * 5);
     }
     else if (key == 84 || key == 116)
     {
@@ -1434,21 +1450,27 @@ void armorforge(Player* p, bool visit)
 
     showlog();
 
-    // 100 95 90 85 80 70 70 60 60 50 50 50 40 40 40 30 30 20 10 5
-    if (p->armorlevel <= 4) chance = 100 - p->armorlevel * 5;
-    else if (p->armorlevel <= 6) chance = 70;
-    else if (p->armorlevel <= 8) chance = 60;
-    else if (p->armorlevel <= 11) chance = 50;
-    else if (p->armorlevel <= 14) chance = 40;
-    else if (p->armorlevel <= 16) chance = 30;
-    else if (p->armorlevel == 17) chance = 20;
-    else if (p->armorlevel == 18) chance = 10;
+    // 100 95 90 85 80 70 70 70 60 60 50 50 40 40 40 30 30 20 20 10
+    if (p->armorlevel < 5) chance = 100 - p->armorlevel * 5;
+    else if (p->armorlevel < 8) chance = 70;
+    else if (p->armorlevel < 10) chance = 60;
+    else if (p->armorlevel < 12) chance = 50;
+    else if (p->armorlevel < 15) chance = 40;
+    else if (p->armorlevel < 17) chance = 30;
+    else if (p->armorlevel < 19) chance = 20;
     else chance = 5;
+
+    int needgold=0;
+    if (p->armorlevel < 5) needgold = p->armorlevel * 1500;
+    else if (p->armorlevel < 10) needgold =  p->armorlevel * 3000;
+    else if (p->armorlevel < 15) needgold = p->armorlevel * 15000;
+    else if (p->armorlevel < 18) needgold = p->armorlevel * 30000;
+    else if (p->armorlevel < 20) needgold = p->armorlevel * 150000;
 
     cout << "방어구 강화 (현재 : " << p->armorlevel << ")" << " 확률 : " << chance << "  방어력:" << p->defence << "  최대 체력:" << p->maxhp << "\n\n";
 
-    cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << p->armorlevel * 2000 << "\n\n";
-    cout << "보호강화(+10 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << p->armorlevel * 20000 << "\n\n";
+    cout << "강화를 원한다면 'o' 키를 누르세요.   필요 골드 : " << needgold << "\n\n";
+    cout << "보호강화(+10 이하)를 원한다면 'p' 키를 누르세요.   필요 골드 : " << needgold * 5 << "\n\n";
     cout << "강화를 하고 싶지 않다면 'Esc' 키를 누르세요.\n\n";
     cout << "보유 골드 : " << p->gold << "\n\n";
 
@@ -1458,8 +1480,8 @@ void armorforge(Player* p, bool visit)
         getch();
         armorforge(p, true);
     }
-    else if (key == 'o' || key == 'O') Forge(p, 0, chance, "armor", p->armorlevel * 2000);
-    else if (key == 'p' || key == 'P') Forge(p, 1, chance, "armor", p->armorlevel * 20000);
+    else if (key == 'o' || key == 'O') Forge(p, 0, chance, "armor", needgold);
+    else if (key == 'p' || key == 'P') Forge(p, 1, chance, "armor", needgold * 5);
     else if (key == 84 || key == 116)
     {
         showfulllog(); // t키
