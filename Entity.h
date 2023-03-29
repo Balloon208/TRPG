@@ -462,7 +462,7 @@ public:
         this->mobcode = "M2";
         this->maxhp = 3500;
         this->hp = maxhp;
-        this->damage = 1080;
+        this->damage = 250;
         this->defence = 20;
         this->speed = 30;
         this->level = 25;
@@ -477,8 +477,8 @@ public:
         this->mobcode = "M3";
         this->maxhp = 4400;
         this->hp = maxhp;
-        this->damage = 800;
-        this->defence = 40;
+        this->damage = 200;
+        this->defence = 50;
         this->speed = 40;
         this->level = 27;
         this->exp = 3700;
@@ -509,12 +509,12 @@ public:
         this->mobcode = "M5";
         this->maxhp = 4920;
         this->hp = maxhp;
-        this->damage = 650;
-        this->defence = 23;
+        this->damage = 220;
+        this->defence = 33;
         this->speed = 44;
         this->level = 27;
         this->exp = 4500;
-        this->gold = 7700;
+        this->gold = 5500;
         this->desc = "과거 마을을 멸망시켰던 악마의 슬라임입니다.";
         Log[t] = this->name + "(을)를 만났다. 무엇을 할까?"; t++;
     }
@@ -524,8 +524,8 @@ public:
         this->mobcode = "M6";
         this->maxhp = 5180;
         this->hp = maxhp;
-        this->damage = 770;
-        this->defence = 35;
+        this->damage = 240;
+        this->defence = 40;
         this->speed = 20;
         this->level = 28;
         this->exp = 5350;
@@ -697,7 +697,7 @@ public:
         {
             if (num == 1)
             {
-                int healing = 50;
+                int healing = 200;
                 int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
                 Log[t] = get<0>(itemlist[1]) + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
 
@@ -706,7 +706,7 @@ public:
             }
             if (num == 2)
             {
-                int healing = 300;
+                int healing = 700;
                 int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
                 Log[t] = get<0>(itemlist[2]) + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
 
@@ -715,7 +715,7 @@ public:
             }
             if (num == 3)
             {
-                int healing = 1000;
+                int healing = 2000;
                 int trueheal = min(p->maxhp, p->hp + healing) - p->hp;
                 Log[t] = get<0>(itemlist[3]) + "을 사용하여 체력을 " + to_string(trueheal) + "회복했습니다."; t++;
 
@@ -735,15 +735,15 @@ public:
         cout << "아이템 이름 : " << get<0>(itemlist[num]) << " 보유 개수 : " << get<0>(p->playeritemlist[num]) << "\n\n";
         if (num == 1)
         {
-            cout << "작은 포션입니다. 사용시 체력을 50 회복합니다.";
+            cout << "작은 포션입니다. 사용시 체력을 200 회복합니다.";
         }
         if (num == 2)
         {
-            cout << "일반 크기의 포션입니다. 사용시 체력을 300 회복합니다.";
+            cout << "일반 크기의 포션입니다. 사용시 체력을 700 회복합니다.";
         }
         if (num == 3)
         {
-            cout << "큰 크기의 포션입니다. 사용시 체력을 1000 회복합니다.";
+            cout << "큰 크기의 포션입니다. 사용시 체력을 2000 회복합니다.";
         }
         if (num == 4)
         {

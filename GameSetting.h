@@ -50,3 +50,16 @@ void Delay(int num)
         while (kbhit()) getch();
     }
 }
+
+float log3(int num)
+{
+    float cnt = 0;
+    while (num / 3 != 0)
+    {
+        num /= 3;
+        cnt++;
+    }
+    cnt += num / 3;
+    if (cnt < 1) cnt=1; // DivisionByZero, 데미지의 극한값 제한을 하기 위함
+    return cnt;
+}

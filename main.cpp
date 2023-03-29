@@ -777,7 +777,8 @@ void pattack(Player* p, mob* m)
     double multiple = double((p->level - m->level) * 5 + 100) / 100;
     if (multiple > 1.3) multiple = 1.3;
     if (multiple < 0) multiple = 0;
-    int damage = round((rand() % p->damage + p->damage) / (1 + (m->defence * 0.1)) * multiple);
+
+    int damage = round((rand() % p->damage + p->damage) / log3(m->defence) * multiple);
     Log[t] = m->name + "에게 " + to_string(damage) + " 데미지를 입혔습니다!";
     m->hp -= damage;
     t++;
@@ -793,7 +794,7 @@ void mattack(Player* p, mob* m)
     double multiple = double((m->level - p->level) * 5 + 100) / 100;
     if (multiple > 1.3) multiple = 1.3;
     if (multiple < 0) multiple = 0;
-    int damage = round((rand() % m->damage + m->damage) / (1 + (p->defence * 0.1)) * multiple);
+    int damage = round((rand() % m->damage + m->damage) / log3(p->defence) * multiple);
     Log[t] = m->name + "이(가) 공격하여 " + to_string(damage) + " 데미지를 입었습니다!";
     p->hp -= damage;
     t++;
@@ -872,7 +873,7 @@ void skillattack(Player* p, mob* m, int skillnum)
             p->mp -= get<1>(skills[skillnum]);
             for (int i = 0; i < 2; i++)
             {
-                damage = (rand() % (p->damage * 2) + p->damage) / (1 + (m->defence * 0.1)) * multiple;
+                damage = (rand() % (p->damage * 2) + p->damage) / log3(m->defence) * multiple;
                 Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp -= damage;
@@ -939,7 +940,7 @@ void skillattack(Player* p, mob* m, int skillnum)
             p->mp -= get<1>(skills[skillnum]);
             for (int i = 0; i < 3; i++)
             {
-                damage = (rand() % (p->damage * 5)) / (1 + (m->defence * 0.1)) * multiple;
+                damage = (rand() % (p->damage * 5)) / log3(m->defence) * multiple;
                 Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
                 t++;
                 m->hp -= damage;
@@ -963,8 +964,9 @@ void skillattack(Player* p, mob* m, int skillnum)
     {
         if (get<1>(skills[skillnum]) <= p->mp)
         {
+            if (multiple < 1) multiple = 1;
             p->mp -= get<1>(skills[skillnum]);
-            damage = (rand() % (p->damage * 4) + p->damage * 5) / (1 + (m->defence * 0.1)) * (multiple * 3);
+            damage = (rand() % (p->damage * 5) + p->damage * 10) / log3(m->defence) * pow(multiple,2);
             Log[t] = m->name + "에게 " + get<0>(skills[skillnum]) + "를 사용하여 " + to_string(damage) + " 데미지를 입혔습니다!";
             t++;
             m->hp -= damage;
