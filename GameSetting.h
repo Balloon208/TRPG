@@ -13,7 +13,7 @@ using namespace std;
 double mobhppercent, playerhppercent, playermppercent, playerexppercent;
 
 int weaponforgeadd[21] = { 0,2,4,7,10,15,20,25,30,35,40,100,100,100,100,100,150,150,200,200,300 };
-int armorforgeadd[21] = { 0,2,3,3,5,5,7,7,8,8,10,20,20,20,20,20,30,30,30,40,50};
+int armorforgeadd[21] = { 0,2,3,3,5,5,7,7,8,8,10,20,20,30,30,30,50,50,50,80,100};
 int point = 1;
 int where = 0;
 int t = 0; // 턴이 지난 횟수
