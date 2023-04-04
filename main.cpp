@@ -12,7 +12,7 @@ void home(Player* p); // 마을
 void homemenu(Player* p); // 마을 인터페이스
 void homeselectmenu(Player* p); // 마을에서 선택
 void movemenu(Player* p); // 이동할 곳 선택
-void skillset(Player* p); // 스킬 장착 및 해제
+void skillset(Player* p, bool mode); // 스킬 장착 및 해제
 void shop(Player* p); // 상점
 void pattack(Player* p, mob* m, bool skillmode); // Player 공격
 void mattack(Player* p, mob* m); // Mob 공격
@@ -98,6 +98,12 @@ bool Login(Player* p)
         fprintf(fp, "퍼스트블러드 200 0\n");
         fprintf(fp, "0, 0, 0, 0");
 
+        fclose(fp);
+
+        fp = fopen("./Save/playerpassiveskills.txt", "w");
+
+        // 스킬 설정 옵션 (skill setting), name, Mana, Learned(1 = 스킬 배움, 2 = 장착 중)
+        fprintf(fp, "[Passive] 강인한 힘 30 0\n");
         fclose(fp);
 
         fp = fopen("./Save/itemDB.txt", "w");
@@ -490,7 +496,7 @@ void homeselectmenu(Player* p)
                 {
                     command = true;
                     point = 1;
-                    skillset(p);
+                    skillset(p, false);
                 }
                 if (point == 4)
                 {
@@ -575,7 +581,7 @@ void movemenu(Player* p)
     home(p);
 }
 
-void skillset(Player* p)
+void skillset(Player* p, bool mode=false)
 {
     system("cls");
     bool command = false;
@@ -598,8 +604,16 @@ void skillset(Player* p)
         }
         else if (get<2>(skills[i]) == 2)
         {
-            p->skill[usingskill] = i;
-            usingskill++;
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+            cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+        }
+        else if (get<2>(skills[i]) == 11)
+        {
+            cout << "    " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
+        }
+        else if (get<2>(skills[i]) == 12)
+        {
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
             cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
@@ -620,60 +634,67 @@ void skillset(Player* p)
         if (kbhit())
         {
             key = getch();
+            if (key == 224) // 방향키
             {
-                if (key == 224) // 방향키
+                key = getch();
+                if (key == 72) // 위쪽
                 {
-                    key = getch();
+                    if (point > 1)
                     {
-                        if (key == 72) // 위쪽
-                        {
-                            if (point > 1)
-                            {
-                                point--;
-                            }
-                        }
-                        if (key == 80) // 아래쪽
-                        {
-                            if (point < totalskill)
-                            {
-                                point++;
-                            }
-                        }
+                        point--;
                     }
                 }
-                if (key == 13) // enter키
+                if (key == 80) // 아래쪽
                 {
-                    command = true;
-                    if (usingskill <= 4 || get<2>(skills[point]) == 2) // 스킬 최대갯수 내에 들거나, 해제를 하는 경우.
+                    if (point < totalskill)
                     {
-                        if (get<2>(skills[point]) == 1) // 장착의 경우
-                        {
-                            Log[t] = get<0>(skills[point]) + " 스킬을 장착하였습니다."; t++;
-                            get<2>(skills[point]) = 2;
-                        }
-                        else if (get<2>(skills[point]) == 2) // 해제의 경우
-                        {
-                            Log[t] = get<0>(skills[point]) + " 스킬을 해제하였습니다."; t++;
-                            get<2>(skills[point]) = 1;
-                        }
-                    }
-                    else if (get<2>(skills[point]) == 1) // 최대갯수이며, 장착을 하는 경우
-                    {
-                        Log[t] = "스킬 슬롯이 가득 찼습니다."; t++;
+                        point++;
                     }
                 }
-                if (key == 47 || key == 63) // / or ?
-                {
-                    p->skilldescription(point);
-                }
-                if (key == 27) //esc
-                {
-                    point = 1;
-                    break;
-                }
-                if (key == 84 || key == 116) showfulllog(); // t키
             }
-            skillset(p);
+            if (key == 13) // enter키
+            {
+                command = true;
+                if (usingskill <= 4 || get<2>(skills[point]) == 2) // 스킬 최대갯수 내에 들거나, 해제를 하는 경우.
+                {
+                    if (get<2>(skills[point]) == 1) // 장착의 경우
+                    {
+                        Log[t] = get<0>(skills[point]) + " 스킬을 장착하였습니다."; t++;
+                        get<2>(skills[point]) = 2;
+                    }
+                    else if (get<2>(skills[point]) == 2) // 해제의 경우
+                    {
+                        Log[t] = get<0>(skills[point]) + " 스킬을 해제하였습니다."; t++;
+                        get<2>(skills[point]) = 1;
+                    }
+                }
+                else if (get<2>(skills[point]) == 1) // 최대갯수이며, 장착을 하는 경우
+                {
+                    Log[t] = "스킬 슬롯이 가득 찼습니다."; t++;
+                }
+                else if (get<2>(skills[point]) == 11)
+                {
+                    Log[t] = get<0>(skills[point]) + " 스킬을 장착하였습니다."; t++;
+                    get<2>(skills[point]) = 12;
+                }
+                else if (get<2>(skills[point]) == 12)
+                {
+                    Log[t] = get<0>(skills[point]) + " 스킬을 해제하였습니다."; t++;
+                    get<2>(skills[point]) = 11;
+                }
+            }
+            if (key == 47 || key == 63) // / or ?
+            {
+                p->skilldescription(point);
+            }
+            if (key == 27) //esc
+            {
+               point = 1;
+               break;
+            }
+            if (key == 84 || key == 116) showfulllog(); // t키
+
+            skillset(p, mode);
         }
     }
     command = false;
@@ -1016,6 +1037,13 @@ void skillattack(Player* p, mob* m, int skillnum)
         }
     }
 }
+
+/*
+void skillpassive(Player* p)
+{
+    if
+}
+*/
 
 void fight(Player* p)
 {

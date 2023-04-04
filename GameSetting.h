@@ -18,6 +18,7 @@ int point = 1;
 int where = 0;
 int t = 0; // 턴이 지난 횟수
 int totalskill = 7;
+int totalpassive = 1;
 int totalitem = 3;
 int totalskillbooks = 1;
 int usingskill;
@@ -38,6 +39,7 @@ string worldmap[10] = {
 };
 
 tuple<string, int, int> skills[500]; // 스킬 이름(띄어 쓰기 X), ManaCost, Learned(1 = 스킬 배움, 2 = 장착 중)
+tuple<string, int> passiveskills[500]; // 스킬 이름(띄어 쓰기 X), Learned(1 = 스킬 배움, 2 = 장착 중)
 tuple<string, int, int, int> itemlist[500]; // 아이템 이름, 아이템 종류 ,구매가, 판매가
 
 string Log[100000];
