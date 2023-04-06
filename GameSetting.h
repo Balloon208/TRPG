@@ -62,6 +62,6 @@ float log3(int num)
         cnt++;
     }
     cnt += num / 3;
-    if (cnt < 1) cnt=1; // DivisionByZero, 데미지의 극한값 제한을 하기 위함
+    if (cnt <= 1) cnt=1; // DivisionByZero, 데미지의 극한값 제한을 하기 위함
     return cnt;
 }

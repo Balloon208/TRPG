@@ -1,1 +1,1 @@
-[Passive]강인한힘 30 0
+[Passive]강인한힘 0

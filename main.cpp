@@ -13,6 +13,7 @@ void homemenu(Player* p); // 마을 인터페이스
 void homeselectmenu(Player* p); // 마을에서 선택
 void movemenu(Player* p); // 이동할 곳 선택
 void skillset(Player* p, bool mode); // 스킬 장착 및 해제
+void passiveeffect(Player* p, mob* m, bool onoff); // 패시브 효과 적용/미적용
 void shop(Player* p); // 상점
 void pattack(Player* p, mob* m, bool skillmode); // Player 공격
 void mattack(Player* p, mob* m); // Mob 공격
@@ -103,7 +104,7 @@ bool Login(Player* p)
         fp = fopen("./Save/playerpassiveskills.txt", "w");
 
         // 스킬 설정 옵션 (skill setting), name, Mana, Learned(1 = 스킬 배움, 2 = 장착 중)
-        fprintf(fp, "[Passive] 강인한 힘 30 0\n");
+        fprintf(fp, "[Passive]강인한힘 0\n");
         fclose(fp);
 
         fp = fopen("./Save/itemDB.txt", "w");
@@ -238,6 +239,13 @@ void Save(Player* p)
     fprintf(fp, "%d %d %d %d", p->skill[1], p->skill[2], p->skill[3], p->skill[4]);
     fclose(fp);
 
+    fp = fopen("./Save/playerpassiveskills.txt", "w");
+    for (int i = 1; i <= totalpassive; i++)
+    {
+        fprintf(fp, "%s %d\n", get<0>(passiveskills[i]).c_str(), get<1>(passiveskills[i]));
+    }
+    fclose(fp);
+
     fp = fopen("./Save/playeritem.txt", "w");
 
     char itemnames[10001];
@@ -292,6 +300,15 @@ void Load(Player* p)
         get<0>(skills[i]) = skillnames;
     }
     fscanf(fp, "%d %d %d %d", &p->skill[1], &p->skill[2], &p->skill[3], &p->skill[4]);
+    fclose(fp);
+
+    fp = fopen("./Save/playerpassiveskills.txt", "r");
+    for (int i = 1; i <= totalpassive; i++)
+    {
+        char skillnames[10000];
+        fscanf(fp, "%s %d\n", skillnames, &get<1>(passiveskills[i]));
+        get<0>(passiveskills[i]) = skillnames;
+    }
     fclose(fp);
 
     fp = fopen("./Save/itemDB.txt", "r");
@@ -594,35 +611,52 @@ void skillset(Player* p, bool mode=false)
     }
     usingskill = 1;
 
-    for (int i = 1; i <= totalskill; i++)
+    if (mode == false)
     {
-        if (i == point) cout << ">";
+        for (int i = 1; i <= totalskill; i++)
+        {
+            if (i == point) cout << ">";
 
-        if (get<2>(skills[i]) == 1)
-        {
-            cout << "    " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
+            if (get<2>(skills[i]) == 1)
+            {
+                cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
+            }
+            else if (get<2>(skills[i]) == 2)
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+                cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            }
+            else
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+                cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            }
         }
-        else if (get<2>(skills[i]) == 2)
+    }
+    else
+    {
+        for (int i = 1; i <= totalpassive; i++)
         {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-            cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        }
-        else if (get<2>(skills[i]) == 11)
-        {
-            cout << "    " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
-        }
-        else if (get<2>(skills[i]) == 12)
-        {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
-            cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
-        }
-        else
-        {
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
-            cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
-            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            if (i == point) cout << ">";
+
+            if (get<1>(passiveskills[i]) == 1)
+            {
+                cout << "   " << get<0>(passiveskills[i]) << '\n';
+            }
+            else if (get<1>(passiveskills[i]) == 2)
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
+                cout << "   " << get<0>(passiveskills[i]) << '\n';
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            }
+            else
+            {
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 8);
+                cout << "   " << get<0>(passiveskills[i]) << '\n';
+                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
+            }
         }
     }
 
@@ -646,46 +680,68 @@ void skillset(Player* p, bool mode=false)
                 }
                 if (key == 80) // 아래쪽
                 {
-                    if (point < totalskill)
+                    if (mode == false)
                     {
-                        point++;
+                        if (point < totalskill)
+                        {
+                            point++;
+                        }
+                    }
+                    else
+                    {
+                        if (point < totalpassive)
+                        {
+                            point++;
+                        }
                     }
                 }
             }
             if (key == 13) // enter키
             {
                 command = true;
-                if (usingskill <= 4 || get<2>(skills[point]) == 2) // 스킬 최대갯수 내에 들거나, 해제를 하는 경우.
+
+                if (mode == false)
                 {
-                    if (get<2>(skills[point]) == 1) // 장착의 경우
+                    if (usingskill <= 4 || get<2>(skills[point]) == 2) // 스킬 최대갯수 내에 들거나, 해제를 하는 경우.
                     {
-                        Log[t] = get<0>(skills[point]) + " 스킬을 장착하였습니다."; t++;
-                        get<2>(skills[point]) = 2;
+                        if (get<2>(skills[point]) == 1) // 장착의 경우
+                        {
+                            Log[t] = get<0>(skills[point]) + " 스킬을 장착하였습니다."; t++;
+                            get<2>(skills[point]) = 2;
+                        }
+                        else if (get<2>(skills[point]) == 2) // 해제의 경우
+                        {
+                            Log[t] = get<0>(skills[point]) + " 스킬을 해제하였습니다."; t++;
+                            get<2>(skills[point]) = 1;
+                        }
                     }
-                    else if (get<2>(skills[point]) == 2) // 해제의 경우
+                    else if (get<2>(skills[point]) == 1) // 최대갯수이며, 장착을 하는 경우
                     {
-                        Log[t] = get<0>(skills[point]) + " 스킬을 해제하였습니다."; t++;
-                        get<2>(skills[point]) = 1;
+                        Log[t] = "스킬 슬롯이 가득 찼습니다."; t++;
                     }
                 }
-                else if (get<2>(skills[point]) == 1) // 최대갯수이며, 장착을 하는 경우
+                else
                 {
-                    Log[t] = "스킬 슬롯이 가득 찼습니다."; t++;
-                }
-                else if (get<2>(skills[point]) == 11)
-                {
-                    Log[t] = get<0>(skills[point]) + " 스킬을 장착하였습니다."; t++;
-                    get<2>(skills[point]) = 12;
-                }
-                else if (get<2>(skills[point]) == 12)
-                {
-                    Log[t] = get<0>(skills[point]) + " 스킬을 해제하였습니다."; t++;
-                    get<2>(skills[point]) = 11;
+                    if (get<1>(passiveskills[point]) == 1)
+                    {
+                        Log[t] = get<0>(passiveskills[point]) + " 을 활성화하였습니다."; t++;
+                        get<1>(passiveskills[point]) = 2;        
+                    }
+                    else if (get<1>(passiveskills[point]) == 2)
+                    {
+                        Log[t] = get<0>(passiveskills[point]) + " 을 비활성화하였습니다."; t++;
+                        get<1>(passiveskills[point]) = 1;
+                    }
                 }
             }
             if (key == 47 || key == 63) // / or ?
             {
                 p->skilldescription(point);
+            }
+            if (key == 77 || key == 109) // / or ?
+            {
+                mode = !mode;
+                point = 1;
             }
             if (key == 27) //esc
             {
@@ -699,6 +755,24 @@ void skillset(Player* p, bool mode=false)
     }
     command = false;
     home(p);
+}
+
+void passiveeffect(Player* p, mob* m, bool onoff)
+{
+    if (get<1>(passiveskills[1]) == 2) // 강인한힘
+    {
+        int amount = 5;
+
+        if (onoff == true)
+        {
+            Log[t] = "전투에 돌입하여 " + get<0>(passiveskills[1]) + " 효과가 적용됩니다."; t++;
+            p->damage += amount;
+        }
+        else
+        {
+            p->damage -= amount;
+        }
+    }
 }
 
 void shop(Player* p)
@@ -797,7 +871,7 @@ void pattack(Player* p, mob* m)
 {
     double multiple = double((p->level - m->level) * 5 + 100) / 100;
     if (multiple > 1.3) multiple = 1.3;
-    if (multiple < 0) multiple = 0;
+    if (multiple < 0.5) multiple = 0.5;
 
     int damage = round((rand() % p->damage + p->damage) / log3(m->defence) * multiple);
     Log[t] = m->name + "에게 " + to_string(damage) + " 데미지를 입혔습니다!";
@@ -806,6 +880,7 @@ void pattack(Player* p, mob* m)
     if (m->hp <= 0)
     {
         m->Mobdeath(p);
+        passiveeffect(p, m, false);
         return;
     }
 }
@@ -814,13 +889,14 @@ void mattack(Player* p, mob* m)
 {
     double multiple = double((m->level - p->level) * 5 + 100) / 100;
     if (multiple > 1.3) multiple = 1.3;
-    if (multiple < 0) multiple = 0;
+    if (multiple < 0.5) multiple = 0.5;
     int damage = round((rand() % m->damage + m->damage) / log3(p->defence) * multiple);
     Log[t] = m->name + "이(가) 공격하여 " + to_string(damage) + " 데미지를 입었습니다!";
     p->hp -= damage;
     t++;
     if (p->hp <= 0)
     {
+        passiveeffect(p, m, false);
         death(p);
     }
 }
@@ -1038,13 +1114,6 @@ void skillattack(Player* p, mob* m, int skillnum)
     }
 }
 
-/*
-void skillpassive(Player* p)
-{
-    if
-}
-*/
-
 void fight(Player* p)
 {
     Save(p);
@@ -1106,8 +1175,6 @@ void summonmob(Player* p)
         else if (n <= 70) m.Snake();
         else if (n <= 98) m.Slime();
         else if (n <= 100) m.Oak();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
     }
     if (where == 4)
     {
@@ -1116,8 +1183,6 @@ void summonmob(Player* p)
         else if (n <= 80) m.Bat();
         else if (n <= 95) m.MiniGolem();
         else if (n <= 100) m.Golem();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
     }
     if (where == 5)
     {
@@ -1127,8 +1192,6 @@ void summonmob(Player* p)
         else if (n <= 70) m.shadower();
         else if (n <= 97) m.badknight();
         else if (n <= 100) m.nohead();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
     }
     if (where == 6)
     {
@@ -1138,8 +1201,6 @@ void summonmob(Player* p)
         else if (n <= 90) m.tankzombie();
         else if (n <= 97) m.blackknight();
         else if (n <= 100) m.demonite();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
     }
     if (where == 7)
     {
@@ -1150,9 +1211,10 @@ void summonmob(Player* p)
         else if (n <= 70) m.darkshadower();
         else if (n <= 90) m.devilslime();
         else if (n <= 100) m.imp2();
-        fightmenu(&m, p, false);
-        fightselectmenu(&m, p);
     }
+    passiveeffect(p, &m, true);
+    fightmenu(&m, p, false);
+    fightselectmenu(&m, p);
 }
 
 void fightmenu(mob* m, Player* p, bool skillmode)
