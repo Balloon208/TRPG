@@ -605,14 +605,16 @@ void skillset(Player* p, bool mode=false)
 
     showlog();
 
-    for (int i = 1; i <= 4; i++)
-    {
-        p->skill[i] = 0;
-    }
-    usingskill = 1;
+    if (mode == false) cout << "C 키를 눌러 스킬 선택 모드를 변경하세요. (현재 : Active skill)\n\n";
+    else cout << "C 키를 눌러 스킬 선택 모드를 변경하세요. (현재 : Passive skill)\n\n";
 
     if (mode == false)
     {
+        for (int i = 1; i <= 4; i++)
+        {
+            p->skill[i] = 0;
+        }
+        usingskill = 1;
         for (int i = 1; i <= totalskill; i++)
         {
             if (i == point) cout << ">";
@@ -623,6 +625,8 @@ void skillset(Player* p, bool mode=false)
             }
             else if (get<2>(skills[i]) == 2)
             {
+                p->skill[usingskill] = i;
+                usingskill++;
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 2);
                 cout << "   " << get<0>(skills[i]) << "(" << get<1>(skills[i]) << ")" << '\n';
                 SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), 7);
@@ -736,9 +740,9 @@ void skillset(Player* p, bool mode=false)
             }
             if (key == 47 || key == 63) // / or ?
             {
-                p->skilldescription(point);
+                p->skilldescription(point, mode);
             }
-            if (key == 77 || key == 109) // / or ?
+            if (key == 67 || key == 99) // c키
             {
                 mode = !mode;
                 point = 1;
@@ -1267,7 +1271,6 @@ void fightselectmenu(mob* m, Player* p)
                     if (point == 1)
                     {
                         attack(p, m, skillmode);
-                        Save(p);
                     }
                     if (point == 2)
                     {
@@ -1289,6 +1292,7 @@ void fightselectmenu(mob* m, Player* p)
                         Log[t] = "당신은 " + m->name + "(으)로부터 도망쳤다!";
                         t++;
                         point = 1;
+                        passiveeffect(p, m, false);
                         return;
                     }
                 }
@@ -1297,7 +1301,7 @@ void fightselectmenu(mob* m, Player* p)
             {
                 if (skillmode)
                 {
-                    if (p->skill[point] != 0) p->skilldescription(p->skill[point]);
+                    if (p->skill[point] != 0) p->skilldescription(p->skill[point], false);
                 }
                 else m->mobdescription();
             }
@@ -1361,7 +1365,6 @@ bool selectitem(Player* p)
                     bool used = item.useitem(p, point);
                     selected = true;
                     point = 3;
-                    Save(p);
                     return used;
                 }
                 if (key == 47 || key == 63)
@@ -1550,7 +1553,7 @@ void armorforge(Player* p, bool visit)
     else if (p->armorlevel < 15) chance = 40;
     else if (p->armorlevel < 17) chance = 30;
     else if (p->armorlevel < 19) chance = 20;
-    else chance = 5;
+    else chance = 10;
 
     int needgold=0;
     if (p->armorlevel < 5) needgold = p->armorlevel * 1500;

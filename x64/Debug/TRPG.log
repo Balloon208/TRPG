@@ -4,14 +4,14 @@ C:\Users\user\Desktop\C_program\textRPG\GameSetting.h(52,16): warning C4996: 'kb
 C:\Users\user\Desktop\C_program\textRPG\Entity.h(66,24): warning C4244: '*=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\Users\user\Desktop\C_program\textRPG\Entity.h(67,24): warning C4244: '*=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
 C:\Users\user\Desktop\C_program\textRPG\Entity.h(76,26): warning C4244: '*=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(137,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(139,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(550,27): warning C4244: '/=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(551,26): warning C4244: '/=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(673,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(675,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(755,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\Entity.h(757,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(147,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(149,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(560,27): warning C4244: '/=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(561,26): warning C4244: '/=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(683,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(685,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(765,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\Entity.h(767,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
 C:\Users\user\Desktop\C_program\textRPG\main.cpp(43,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
 C:\Users\user\Desktop\C_program\textRPG\main.cpp(45,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
 C:\Users\user\Desktop\C_program\textRPG\main.cpp(60,10): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
@@ -68,32 +68,32 @@ C:\Users\user\Desktop\C_program\textRPG\main.cpp(495,23): warning C4996: 'getch'
 C:\Users\user\Desktop\C_program\textRPG\main.cpp(552,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
 C:\Users\user\Desktop\C_program\textRPG\main.cpp(554,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
 C:\Users\user\Desktop\C_program\textRPG\main.cpp(558,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(668,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(670,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(673,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(811,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(813,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(817,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(876,16): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(893,16): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(973,84): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1014,43): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1040,72): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1066,85): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1095,27): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1134,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1136,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1140,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1248,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1250,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1254,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1350,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1352,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1355,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1507,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1510,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1569,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1572,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(672,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(674,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(677,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(815,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(817,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(821,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(880,16): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(897,16): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(977,84): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1018,43): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1044,72): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1070,85): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1099,27): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1138,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1140,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1144,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1252,13): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1254,19): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1258,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1354,17): warning C4996: 'kbhit': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _kbhit. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1356,23): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1359,27): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1510,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1513,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1572,11): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1575,9): warning C4996: 'getch': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _getch. See online help for details.
 C:\Users\user\Desktop\C_program\textRPG\main.cpp(208): warning C4715: 'Login': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\Users\user\Desktop\C_program\textRPG\main.cpp(1381): warning C4715: 'selectitem': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\user\Desktop\C_program\textRPG\main.cpp(1384): warning C4715: 'selectitem': 모든 제어 경로에서 값을 반환하지는 않습니다.
   TRPG.vcxproj -> C:\Users\user\Desktop\C_program\textRPG\x64\Debug\TRPG.exe
