@@ -65,3 +65,4 @@ float log3(int num)
     if (cnt <= 1) cnt=1; // DivisionByZero, 데미지의 극한값 제한을 하기 위함
     return cnt;
 }
+
