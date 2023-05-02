@@ -18,12 +18,13 @@ int point = 1;
 int where = 0;
 int t = 0; // 턴이 지난 횟수
 int totalskill = 7;
-int totalpassive = 1;
+int totalpassive = 3;
 int totalitem = 3;
 int totalskillbooks = 1;
 int usingskill;
 bool killtrigger = false;
 int stage = 9;
+int memory[10][10];
 
 string worldmap[10] = {
 "-",

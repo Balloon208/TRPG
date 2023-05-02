@@ -90,6 +90,8 @@ bool Login(Player* p)
 
         // 스킬 설정 옵션 (skill setting), name, Mana, Learned(1 = 스킬 배움, 2 = 장착 중)
         fprintf(fp, "[Passive]강인한힘 0\n");
+        fprintf(fp, "[Passive]광인화 0\n");
+        fprintf(fp, "[Passive]철갑화 0\n");
         fclose(fp);
 
         fp = fopen("./Save/itemDB.txt", "w");
@@ -533,6 +535,7 @@ void homeselectmenu(Player* p)
                 }
             }
             if (key == 84 || key == 116) showfulllog(); // t키
+            if (key == 73 || key == 105) p->playerdescription(); // i키
             system("cls");
             homemenu(p);
         }
@@ -600,6 +603,7 @@ void movemenu(Player* p)
                     break;
                 }
                 if (key == 84 || key == 116) showfulllog(); // t키
+                if (key == 73 || key == 105) p->playerdescription(); // i키
             }
             movemenu(p);
         }
@@ -665,7 +669,7 @@ void shop(Player* p)
 
                     if (get<1>(itemlist[point]) >= 1 && get<1>(itemlist[point]) < 100) // 스킬북
                     {
-                        p->LearnSkill(get<1>(itemlist[point]));
+                        p->LearnSkill("A", get<1>(itemlist[point]));
                         get<1>(itemlist[point]) = -100;
                     }
                     Save(p);
@@ -696,6 +700,7 @@ void shop(Player* p)
                 break;
             }
             if (key == 84 || key == 116) showfulllog(); // t키
+            if (key == 73 || key == 105) p->playerdescription(); // i키
             shop(p);
         }
     }
@@ -718,8 +723,8 @@ void pattack(Player* p, mob* m)
     t++;
     if (m->hp <= 0)
     {
-        m->Mobdeath(p);
         passiveeffect(p, m, false);
+        m->Mobdeath(p);
         return;
     }
 }
@@ -1112,7 +1117,7 @@ void skillset(Player* p, bool mode = false)
                 break;
             }
             if (key == 84 || key == 116) showfulllog(); // t키
-
+            if (key == 73 || key == 105) p->playerdescription(); // i키
             skillset(p, mode);
         }
     }
@@ -1125,6 +1130,19 @@ void skillset(Player* p, bool mode = false)
 
 void passiveeffect(Player* p, mob* m, bool onoff)
 {
+    if (onoff == true)
+    {
+        memory[0][0] = p->damage;
+        memory[0][1] = p->defence;
+        memory[0][2] = p->speed;
+    }
+    else
+    {
+        p->damage = memory[0][0];
+        p->defence = memory[0][1];
+        p->speed = memory[0][2];
+    }
+
     if (get<1>(passiveskills[1]) == 2) // 강인한힘
     {
         int amount = 5;
@@ -1134,9 +1152,23 @@ void passiveeffect(Player* p, mob* m, bool onoff)
             Log[t] = "전투에 돌입하여 " + get<0>(passiveskills[1]) + " 효과가 적용됩니다."; t++;
             p->damage += amount;
         }
-        else
+    }
+    if (get<1>(passiveskills[2]) == 2) // 광인화
+    {
+        if (onoff == true)
         {
-            p->damage -= amount;
+            Log[t] = "전투에 돌입하여 " + get<0>(passiveskills[2]) + " 효과가 적용됩니다."; t++;
+            p->damage *= 1.5;
+            p->defence /= 2;
+        }
+    }
+    if (get<1>(passiveskills[3]) == 2) // 철갑화
+    {
+        if (onoff == true)
+        {
+            Log[t] = "전투에 돌입하여 " + get<0>(passiveskills[3]) + " 효과가 적용됩니다."; t++;
+            p->defence *= 1.1;
+            p->speed = 1;
         }
     }
 }
@@ -1242,6 +1274,7 @@ void readymenu(Player* p)
                     }
                 }
                 if (key == 84 || key == 116) showfulllog();
+                if (key == 73 || key == 105) p->playerdescription(); // i키
                 system("cls");
                 fight(p);
             }
@@ -1340,6 +1373,7 @@ void fightselectmenu(mob* m, Player* p)
                 point = 2;
             }
             if (key == 84 || key == 116) showfulllog(); // t키
+            if (key == 73 || key == 105) p->playerdescription(); // i키
             system("cls");
             fightmenu(m, p, skillmode);
         }
@@ -1562,6 +1596,11 @@ void weaponforge(Player* p, bool visit)
         showfulllog(); // t키
         weaponforge(p, true);
     }
+    else if (key == 73 || key == 105)
+    {
+        p->playerdescription(); // i키
+        weaponforge(p, true);
+    }
     else if (key == 27) return;
     else weaponforge(p, true);
 
@@ -1618,6 +1657,11 @@ void armorforge(Player* p, bool visit)
         showfulllog(); // t키
         armorforge(p, true);
     }
+    else if (key == 73 || key == 105)
+    {
+        p->playerdescription(); // i키
+        armorforge(p, true);
+    }
     else if (key == 27) return;
     else armorforge(p, true);
 }
@@ -1634,6 +1678,7 @@ int main()
     Log[0] = "#Log Start"; t++;
     Log[1] = "[팁]T 키를 눌러 전체 로그를 확인할 수 있습니다."; t++;
     Log[2] = "[팁]? 키를 눌러 몬스터, 아이템, 스킬들의 세부 정보를 확인할 수 있습니다."; t++;
+    Log[3] = "[팁]I 키를 눌러 본인의 스테이터스를 확인할 수 있습니다."; t++;
     home(&p);
 }
 #pragma endregion

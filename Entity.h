@@ -27,37 +27,51 @@ public:
         Log[t] = this->name + "(이)는 휴식을 하여 전부 회복하였다."; t++;
     }
 
-    void LearnSkill(int num)
+    void LearnSkill(string mode, int num)
     {
-        if (num == 2)
+        if (mode == "A")
         {
-            Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            get<2>(skills[2]) = 1;
+            if (num == 2)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            if (num == 3)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            if (num == 4)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            if (num == 5)
+            {
+                Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            if (num == 6)
+            {
+                Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            if (num == 7)
+            {
+                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            get<2>(skills[num]) = 1;
         }
-        if (num == 3)
+        if (mode == "P")
         {
-            Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            get<2>(skills[3]) = 1;
-        }
-        if (num == 4)
-        {
-            Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            get<2>(skills[4]) = 1;
-        }
-        if (num == 5)
-        {
-            Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            get<2>(skills[5]) = 1;
-        }
-        if (num == 6)
-        {
-            Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            get<2>(skills[6]) = 1;
-        }
-        if (num == 7)
-        {
-            Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            get<2>(skills[7]) = 1;
+            if (num == 1)
+            {
+                Log[t] = get<0>(passiveskills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            if (num == 2)
+            {
+                Log[t] = get<0>(passiveskills[num]) + "을(를) 습득하였습니다!"; t++; 
+            }
+            if (num == 3)
+            {
+                Log[t] = get<0>(passiveskills[num]) + "을(를) 습득하였습니다!"; t++;
+            }
+            get<1>(passiveskills[num]) = 1;
         }
     }
 
@@ -78,15 +92,19 @@ public:
 
         if (this->level == 3 && get<2>(skills[2]) == 0)
         {
-            this->LearnSkill(2);
+            this->LearnSkill("A", 2);
+        }
+        if (this->level == 5 && get<1>(passiveskills[1]) == 0)
+        {
+            this->LearnSkill("P", 1);
         }
         if (this->level == 10 && get<2>(skills[3]) == 0)
         {
-            this->LearnSkill(3);
+            this->LearnSkill("A", 3);
         }
         if (this->level == 15 && get<2>(skills[4]) == 0)
         {
-            this->LearnSkill(4);
+            this->LearnSkill("A", 4);
         }
         if (this->LVUPexp < this->exp) this->LVUP();
     }
@@ -139,7 +157,16 @@ public:
             cout << "스킬 이름 : " << get<0>(passiveskills[skillnum]) << "\n\n";
             if (skillnum == 1)
             {
-                cout << "공격력을 5 증가 시킵니다.";
+                cout << "공격력을 5 증가 시킵니다.\n\n";
+                cout << "획득처 : 레벨 5 달성";
+            }
+            if (skillnum == 2)
+            {
+                cout << "전투에 미친 상태가 됩니다. 공격력이 1.5배가 되나 방어력이 1/2배 됩니다.\n\n";
+            }
+            if (skillnum == 3)
+            {
+                cout << "몸의 속도를 버리고 방어에 신경을 씀으로서 방어력이 1.1배가 됩니다.\n\n";
             }
         }
         while (1)
@@ -148,6 +175,45 @@ public:
             {
                 int key = getch();
                 if (key == 27) break;//esc
+            }
+        }
+    }
+
+    void playerdescription()
+    {
+        system("cls");
+        cout << "플레이어 정보\n\n";
+        cout << "LV." << this->level << " " << round((double)this->exp/this->LVUPexp *1000) / 10 << "% (" << this->exp << "/" << this->LVUPexp << ") \n";
+        cout << this->name << "\n\n";
+
+        cout << "HP : " << this->hp << " / " << this->maxhp << '\n';
+        cout << "MP : " << this->mp << " / " << this->maxmp << '\n';
+        cout << "Damage : " << this->damage << '\n';
+        cout << "Defence : " << this->defence << '\n';
+        cout << "Speed : " << this->speed << '\n';
+        cout << "Weaponlevel : " << this->weaponlevel << '\n';
+        cout << "Armorlevel : " << this->armorlevel << '\n';
+        cout << "Gold : " << this->gold << "\n\n";
+        cout << "Active Skillset\n";
+        for (int i = 1; i <= 4; i++)
+        {
+            if (this->skill[i] != 0) cout << get<0>(skills[this->skill[i]]) << '\n';
+            else cout << "-" << '\n';
+        }
+        cout << '\n';
+        cout << "Passive Skillset\n";
+        for (int i = 0; i < totalpassive; i++)
+        {
+            if(get<1>(passiveskills[i])==2) cout << get<0>(passiveskills[i]) << '\n';
+        }
+        
+        while (1)
+        {
+            if (kbhit())
+            {
+                int key = getch();
+                if (key == 27) break;//esc
+                break;
             }
         }
     }
@@ -636,12 +702,12 @@ public:
         {
             if (getnum < 500 && get<2>(skills[5]) == 0)
             {
-                p->LearnSkill(5);
+                p->LearnSkill("A", 5);
             }
             getnum = rand() % 1000;
             if (getnum < 200 && get<2>(skills[6]) == 0)
             {
-                p->LearnSkill(6);
+                p->LearnSkill("A", 6);
             }
             if (!penaltyflag)
             {
