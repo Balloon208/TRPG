@@ -720,6 +720,13 @@ public:
                 p->playeritemlist[2].first += amount;
             }
         }
+        if (mobcode == "SB")
+        {
+            if (getnum < 500 && get<1>(passiveskills[2]) == 0)
+            {
+                p->LearnSkill("P", 2);
+            }
+        }
     }
 
     void mobdescription(bool showstatus = false)

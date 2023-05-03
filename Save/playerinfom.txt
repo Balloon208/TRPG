@@ -1,15 +1,1 @@
-register:2
-admin
-maxhp:759
-hp:759
-maxmp:259
-mp:259
-damage:212
-defence:78
-speed:23
-gold:6903
-level:19
-exp:1453
-LVUPexp:5501
-weaponlevel:9
-armorlevel:4
+register:0
