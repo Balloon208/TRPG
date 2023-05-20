@@ -31,43 +31,19 @@ public:
     {
         if (mode == "A")
         {
-            if (num == 2)
+            if (num == 2 || num == 3 || num == 4 || num == 7)
             {
                 Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
             }
-            if (num == 3)
-            {
-                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            }
-            if (num == 4)
-            {
-                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            }
-            if (num == 5)
+            if (num == 5 || num == 6)
             {
                 Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            }
-            if (num == 6)
-            {
-                Log[t] = "[BOSS](LV15) 오크 를 죽여 " + get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
-            }
-            if (num == 7)
-            {
-                Log[t] = get<0>(skills[num]) + "을(를) 습득하였습니다!"; t++;
             }
             get<2>(skills[num]) = 1;
         }
         if (mode == "P")
         {
-            if (num == 1)
-            {
-                Log[t] = get<0>(passiveskills[num]) + "을(를) 습득하였습니다!"; t++;
-            }
-            if (num == 2)
-            {
-                Log[t] = get<0>(passiveskills[num]) + "을(를) 습득하였습니다!"; t++; 
-            }
-            if (num == 3)
+            if (num == 1 || num == 2 || num == 3)
             {
                 Log[t] = get<0>(passiveskills[num]) + "을(를) 습득하였습니다!"; t++;
             }
@@ -90,6 +66,10 @@ public:
         this->LVUPexp *= 1.3;
         Log[t] = "레벨이 상승 하였습니다! (" + to_string(this->level - 1) + " -> " + to_string(this->level) + ")";  t++;
 
+        if (this->LVUPexp < this->exp) this->LVUP();
+
+        #pragma region LVUPSkills
+
         if (this->level == 3 && get<2>(skills[2]) == 0)
         {
             this->LearnSkill("A", 2);
@@ -106,7 +86,7 @@ public:
         {
             this->LearnSkill("A", 4);
         }
-        if (this->LVUPexp < this->exp) this->LVUP();
+        #pragma endregion
     }
 
     void skilldescription(int skillnum, bool mode)
