@@ -70,19 +70,19 @@ public:
 
         #pragma region LVUPSkills
 
-        if (this->level == 3 && get<2>(skills[2]) == 0)
+        if (this->level >= 3 && get<2>(skills[2]) == 0)
         {
             this->LearnSkill("A", 2);
         }
-        if (this->level == 5 && get<1>(passiveskills[1]) == 0)
+        if (this->level >= 5 && get<1>(passiveskills[1]) == 0)
         {
             this->LearnSkill("P", 1);
         }
-        if (this->level == 10 && get<2>(skills[3]) == 0)
+        if (this->level >= 10 && get<2>(skills[3]) == 0)
         {
             this->LearnSkill("A", 3);
         }
-        if (this->level == 15 && get<2>(skills[4]) == 0)
+        if (this->level >= 15 && get<2>(skills[4]) == 0)
         {
             this->LearnSkill("A", 4);
         }

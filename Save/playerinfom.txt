@@ -1,1 +1,15 @@
-register:0
+register:2
+k
+maxhp:958
+hp:958
+maxmp:455
+mp:435
+damage:100
+defence:95
+speed:29
+gold:214
+level:25
+exp:11658
+LVUPexp:26547
+weaponlevel:0
+armorlevel:0
