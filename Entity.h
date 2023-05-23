@@ -193,7 +193,6 @@ public:
             {
                 int key = getch();
                 if (key == 27) break;//esc
-                break;
             }
         }
     }

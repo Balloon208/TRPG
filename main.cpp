@@ -711,6 +711,12 @@ void shop(Player* p)
 
 #pragma region AttackLogic
 
+void kill(Player* p, mob* m)
+{
+    passiveeffect(p, m, false);
+    m->Mobdeath(p);
+}
+
 void pattack(Player* p, mob* m)
 {
     double multiple = double((p->level - m->level) * 5 + 100) / 100;
@@ -723,8 +729,7 @@ void pattack(Player* p, mob* m)
     t++;
     if (m->hp <= 0)
     {
-        passiveeffect(p, m, false);
-        m->Mobdeath(p);
+        kill(p, m);
         return;
     }
 }
@@ -824,7 +829,7 @@ void skillattack(Player* p, mob* m, int skillnum)
                 m->hp -= damage;
                 if (m->hp <= 0)
                 {
-                    m->Mobdeath(p);
+                    kill(p, m);
                     return;
                 }
             }
@@ -865,7 +870,7 @@ void skillattack(Player* p, mob* m, int skillnum)
             m->hp -= damage;
             if (m->hp <= 0)
             {
-                m->Mobdeath(p);
+                kill(p, m);
                 return;
             }
             fightmenu(m, p, true);
@@ -891,7 +896,7 @@ void skillattack(Player* p, mob* m, int skillnum)
                 m->hp -= damage;
                 if (m->hp <= 0)
                 {
-                    m->Mobdeath(p);
+                    kill(p, m);
                     return;
                 }
             }
@@ -917,7 +922,7 @@ void skillattack(Player* p, mob* m, int skillnum)
             m->hp -= damage;
             if (m->hp <= 0)
             {
-                m->Mobdeath(p);
+                kill(p, m);
                 return;
             }
             fightmenu(m, p, true);
@@ -947,7 +952,7 @@ void skillattack(Player* p, mob* m, int skillnum)
             m->hp -= damage;
             if (m->hp <= 0)
             {
-                m->Mobdeath(p);
+                kill(p, m);
                 return;
             }
             fightmenu(m, p, true);

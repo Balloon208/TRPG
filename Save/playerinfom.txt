@@ -1,15 +1,1 @@
-register:2
-집가고싶다
-maxhp:832
-hp:592
-maxmp:215
-mp:215
-damage:137
-defence:67
-speed:21
-gold:7346
-level:17
-exp:2164
-LVUPexp:3256
-weaponlevel:7
-armorlevel:5
+register:0
