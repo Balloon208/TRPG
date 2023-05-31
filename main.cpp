@@ -778,7 +778,7 @@ void attack(Player* p, mob* m, bool skillmode)
 void skillattack(Player* p, mob* m, int skillnum)
 {
     int damage;
-    double multiple = double((p->level - m->level) * 5 + 100) / 100;
+    double multiple = double((p->level - m->level) * 4 + 100) / 100;
     if (multiple > 1.3) multiple = 1.3;
 
     if (skillnum == 1) // 방어
