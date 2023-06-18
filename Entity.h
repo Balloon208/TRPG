@@ -577,7 +577,7 @@ public:
     {
         this->name = "(LV28) 중급 임프";
         this->mobcode = "M6";
-        this->maxhp = 5180;
+        this->maxhp = 5320;
         this->hp = maxhp;
         this->damage = 240;
         this->defence = 40;

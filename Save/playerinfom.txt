@@ -1,4 +1,4 @@
-register:2
+register:0
 k
 maxhp:958
 hp:958
